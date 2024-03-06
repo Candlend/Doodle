@@ -2,18 +2,19 @@
 
 #include "Core.h"
 
-namespace RhyEngine {
+namespace RhyEngine
+{
 
-	class RHY_API Application
-	{
-	public:
-		Application();
-		virtual ~Application();
+class RHY_API Application
+{
+public:
+    Application();
+    virtual ~Application();
 
-		void Run();
-	};
+    void Run();
+};
 
-	// To be defined in CLIENT
-	Application* CreateApplication();
+// To be defined in CLIENT
+Application *CreateApplication();
 
-}
+} // namespace RhyEngine

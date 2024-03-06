@@ -1,19 +1,17 @@
 #include "Application.h"
 
-namespace RhyEngine {
+namespace RhyEngine
+{
 
-	Application::Application()
-	{
-	}
+Application::Application() = default;
 
+Application::~Application() = default;
 
-	Application::~Application()
-	{
-	}
-
-	void Application::Run()
-	{
-		while (true);
-	}
-
+void Application::Run()
+{
+    while (true)
+    {
+    }
 }
+
+} // namespace RhyEngine

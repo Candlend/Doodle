@@ -33,3 +33,5 @@ target("Sandbox")
     -- 添加依赖库
     add_deps("RhyEngine")
     add_includedirs("RhyEngine/src")
+
+    add_packages("spdlog", "imgui", "cereal")

@@ -1,14 +1,14 @@
 #pragma once
 
-#ifdef RHY_PLATFORM_WINDOWS
+extern RhyEngine::Application *RhyEngine::CreateApplication();
 
-extern RhyEngine::Application* RhyEngine::CreateApplication();
-
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-	auto app = RhyEngine::CreateApplication();
-	app->Run();
-	delete app;
+    RhyEngine::Log::Init();
+	RHY_CORE_WARN("Initialized Log!");
+	int a = 5;
+	RHY_INFO("Hello! Var={0}", a);
+    auto app = RhyEngine::CreateApplication();
+    app->Run();
+    delete app;
 }
-
-#endif

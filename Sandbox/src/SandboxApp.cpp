@@ -3,19 +3,12 @@
 class Sandbox : public RhyEngine::Application
 {
 public:
-	Sandbox()
-	{
+    Sandbox() = default;
 
-	}
-
-	~Sandbox()
-	{
-
-	}
-
+    ~Sandbox() = default;
 };
 
-RhyEngine::Application* RhyEngine::CreateApplication()
+RhyEngine::Application *RhyEngine::CreateApplication()
 {
-	return new Sandbox();
+    return new Sandbox();
 }
