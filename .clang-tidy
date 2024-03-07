@@ -176,11 +176,11 @@ CheckOptions:
   - key: readability-identifier-naming.MemberCase
     value: camelBack
   - key: readability-identifier-naming.ClassMemberPrefix
-    value: ''
+    value: 'm_'
   - key: readability-identifier-naming.PrivateMemberPrefix
-    value: '_'
+    value: ''
   - key: readability-identifier-naming.ProtectedMemberPrefix
-    value: '_'
+    value: ''
   - key: readability-identifier-naming.PublicMemberCase
     value: camelBack
   - key: readability-identifier-naming.MethodCase
