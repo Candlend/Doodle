@@ -1,4 +1,6 @@
 #include "Application.h"
+#include "RhyEngine/Events/ApplicationEvent.h"
+#include "Log.h"
 
 namespace RhyEngine
 {

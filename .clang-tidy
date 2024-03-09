@@ -184,11 +184,11 @@ CheckOptions:
   - key: readability-identifier-naming.PublicMemberCase
     value: camelBack
   - key: readability-identifier-naming.MethodCase
-    value: camelBack
+    value: CamelBack
   - key: readability-identifier-naming.PrivateMethodPrefix
-    value: '_'
+    value: ''
   - key: readability-identifier-naming.ProtectedMethodPrefix
-    value: '_'
+    value: ''
   - key: readability-identifier-naming.ParameterPackCase
     value: camelBack
   - key: readability-identifier-naming.StructCase

@@ -12,7 +12,9 @@ elseif is_os("macosx") then
 end
 
 set_optimize("fastest")
-set_languages("c++23")
+set_languages("c++20")
+add_rules("plugin.compile_commands.autoupdate", {outputdir = ".vscode"})
+add_rules("plugin.vsxmake.autoupdate")
 
 target("RhyEngine")
     set_kind("shared")
@@ -20,6 +22,7 @@ target("RhyEngine")
     -- 添加源文件
     add_files("RhyEngine/src/**.cpp")
     add_defines("RHY_BUILD_DLL")
+    add_includedirs("RhyEngine/src")
     
     -- 添加依赖库
     add_packages("spdlog", "imgui", "cereal")
