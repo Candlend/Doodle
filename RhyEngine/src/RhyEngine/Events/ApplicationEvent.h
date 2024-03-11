@@ -1,31 +1,30 @@
 #pragma once
 
-#include <sstream>
-
+#include "pch.h"
 #include "Event.h"
 
 namespace RhyEngine
 {
-class RHY_API WindowResizeEvent : public Event
+class RHY_API WindowResizeEvent : public BaseEvent
 {
 public:
-    WindowResizeEvent(const unsigned int width, const unsigned int height) : m_Width(width), m_Height(height)
+    WindowResizeEvent(const unsigned int width, const unsigned int height) : m_width(width), m_height(height)
     {
     }
 
     inline unsigned int GetWidth() const
     {
-        return m_Width;
+        return m_width;
     }
     inline unsigned int GetHeight() const
     {
-        return m_Height;
+        return m_height;
     }
 
     std::string ToString() const override
     {
         std::stringstream ss;
-        ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
+        ss << "WindowResizeEvent: " << m_width << ", " << m_height;
         return ss.str();
     }
 
@@ -33,10 +32,10 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
 private:
-    unsigned int m_Width, m_Height;
+    unsigned int m_width, m_height;
 };
 
-class RHY_API WindowCloseEvent : public Event
+class RHY_API WindowCloseEvent : public BaseEvent
 {
 public:
     WindowCloseEvent() = default;
@@ -45,7 +44,7 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
-class RHY_API AppTickEvent : public Event
+class RHY_API AppTickEvent : public BaseEvent
 {
 public:
     AppTickEvent() = default;
@@ -54,7 +53,7 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
-class RHY_API AppUpdateEvent : public Event
+class RHY_API AppUpdateEvent : public BaseEvent
 {
 public:
     AppUpdateEvent() = default;
@@ -63,7 +62,7 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
-class RHY_API AppRenderEvent : public Event
+class RHY_API AppRenderEvent : public BaseEvent
 {
 public:
     AppRenderEvent() = default;

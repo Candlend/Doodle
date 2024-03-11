@@ -18,12 +18,17 @@ add_rules("plugin.vsxmake.autoupdate")
 
 target("RhyEngine")
     set_kind("shared")
+    add_defines("RHY_BUILD_DLL")
 
     -- 添加源文件
     add_files("RhyEngine/src/**.cpp")
-    add_defines("RHY_BUILD_DLL")
+    add_headerfiles("RhyEngine/src/**.h")
     add_includedirs("RhyEngine/src")
     
+    -- 添加预编译头
+    set_pcheader("RhyEngine/src/pch.h")
+    set_pcxxheader("RhyEngine/src/pch.h")
+
     -- 添加依赖库
     add_packages("spdlog", "imgui", "cereal")
     

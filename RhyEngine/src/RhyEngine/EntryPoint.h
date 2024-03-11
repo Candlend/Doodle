@@ -11,7 +11,7 @@ int main(int /*argc*/, char ** /*argv*/)
     RHY_CORE_WARN("Initialized Log!");
     int a = 5;
     RHY_INFO("Hello! Var={0}", a);
-    auto *app = RhyEngine::CreateApplication();
-    app->Run();
-    delete app;
+    auto *pApp = RhyEngine::CreateApplication();
+    pApp->Run();
+    delete pApp;
 }

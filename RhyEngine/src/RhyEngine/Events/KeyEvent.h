@@ -1,54 +1,53 @@
 #pragma once
 
+#include "pch.h"
 #include "Event.h"
-
-#include <sstream>
 
 namespace RhyEngine {
 
-	class RHY_API KeyEvent : public Event
+	class RHY_API BaseKeyEvent : public BaseEvent
 	{
 	public:
-		inline int GetKeyCode() const { return m_KeyCode; }
+		inline int GetKeyCode() const { return m_keyCode; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 	protected:
-		explicit KeyEvent(int keycode)
-			: m_KeyCode(keycode) {}
+		explicit BaseKeyEvent(int keycode)
+			: m_keyCode(keycode) {}
 
-		int m_KeyCode;
+		int m_keyCode;
 	};
 
-	class RHY_API KeyPressedEvent : public KeyEvent
+	class RHY_API KeyPressedEvent : public BaseKeyEvent
 	{
 	public:
 		KeyPressedEvent(int keycode, int repeatCount)
-			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
+			: BaseKeyEvent(keycode), m_repeatCount(repeatCount) {}
 
-		inline int GetRepeatCount() const { return m_RepeatCount; }
+		inline int GetRepeatCount() const { return m_repeatCount; }
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << " repeats)";
+			ss << "KeyPressedEvent: " << m_keyCode << " (" << m_repeatCount << " repeats)";
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
-		int m_RepeatCount;
+		int m_repeatCount;
 	};
 
-	class RHY_API KeyReleasedEvent : public KeyEvent
+	class RHY_API KeyReleasedEvent : public BaseKeyEvent
 	{
 	public:
 		explicit KeyReleasedEvent(int keycode)
-			: KeyEvent(keycode) {}
+			: BaseKeyEvent(keycode) {}
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyReleasedEvent: " << m_KeyCode;
+			ss << "KeyReleasedEvent: " << m_keyCode;
 			return ss.str();
 		}
 

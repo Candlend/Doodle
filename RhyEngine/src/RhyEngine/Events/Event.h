@@ -1,9 +1,6 @@
 #pragma once
 
-#include <functional>
-#include <iostream>
-#include <string>
-
+#include "pch.h"
 #include "RhyEngine/Core.h"
 
 namespace RhyEngine
@@ -64,7 +61,7 @@ enum EventCategory
         return category;                                                                                               \
     }
 
-class RHY_API Event
+class RHY_API BaseEvent
 {
     friend class EventDispatcher;
 
@@ -83,7 +80,7 @@ public:
     }
 
 protected:
-    bool m_Handled = false;
+    bool m_handled = false;
 };
 
 class RHY_API EventDispatcher
@@ -91,25 +88,25 @@ class RHY_API EventDispatcher
     template <typename T> using EventFn = std::function<bool(T &)>;
 
 public:
-    explicit EventDispatcher(Event &event) : m_Event(event)
+    explicit EventDispatcher(BaseEvent &event) : m_event(event)
     {
     }
 
     template <typename T> bool Dispatch(EventFn<T> func)
     {
-        if (m_Event.GetEventType() == T::GetStaticType())
+        if (m_event.GetEventType() == T::GetStaticType())
         {
-            m_Event.m_Handled = func(*static_cast<T *>(&m_Event));
+            m_event.m_handled = func(*static_cast<T *>(&m_event));
             return true;
         }
         return false;
     }
 
 private:
-    Event &m_Event;
+    BaseEvent &m_event;
 };
 
-inline std::ostream &operator<<(std::ostream &os, const Event &e)
+inline std::ostream &operator<<(std::ostream &os, const BaseEvent &e)
 {
     return os << e.ToString();
 }

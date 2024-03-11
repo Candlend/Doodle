@@ -1,13 +1,14 @@
 #pragma once
-
-#include <memory>
-#include <spdlog/fmt/ostr.h>
+#include "pch.h"
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 
 #include "Core.h"
 
 namespace RhyEngine
 {
+
+static std::shared_ptr<spdlog::logger> g_CoreLogger;    
 
 class RHY_API Log
 {
@@ -16,21 +17,22 @@ public:
 
     inline static std::shared_ptr<spdlog::logger> &GetCoreLogger()
     {
-        return m_CoreLogger;
+        std::cout << "11" << std::endl;
+        return s_coreLogger;
     }
     inline static std::shared_ptr<spdlog::logger> &GetClientLogger()
     {
-        return m_ClientLogger;
+        return s_clientLogger;
     }
 
     // 删除构造函数，防止实例化
     Log() = delete;
-    Log(const Log&) = delete;
-    Log& operator=(const Log&) = delete;
+    Log(const Log &) = delete;
+    Log &operator=(const Log &) = delete;
 
 private:
-    static std::shared_ptr<spdlog::logger> m_CoreLogger;
-    static std::shared_ptr<spdlog::logger> m_ClientLogger;
+    static std::shared_ptr<spdlog::logger> s_coreLogger;
+    static std::shared_ptr<spdlog::logger> s_clientLogger;
 };
 
 } // namespace RhyEngine
