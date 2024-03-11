@@ -34,3 +34,4 @@
 .xmake
 .vscode
 build
+.cache

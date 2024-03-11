@@ -171,37 +171,37 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.LocalVariableCase
     value: camelBack
-  - key: readability-identifier-naming.StaticConstantCase
-    value: CamelCase
   - key: readability-identifier-naming.MemberCase
     value: camelBack
-  - key: readability-identifier-naming.ClassMemberPrefix
-    value: 'm_'
-  - key: readability-identifier-naming.PrivateMemberPrefix
-    value: ''
-  - key: readability-identifier-naming.ProtectedMemberPrefix
-    value: ''
   - key: readability-identifier-naming.PublicMemberCase
     value: camelBack
   - key: readability-identifier-naming.MethodCase
-    value: CamelBack
-  - key: readability-identifier-naming.PrivateMethodPrefix
-    value: ''
-  - key: readability-identifier-naming.ProtectedMethodPrefix
-    value: ''
+    value: CamelCase
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
   - key: readability-identifier-naming.ParameterPackCase
     value: camelBack
   - key: readability-identifier-naming.StructCase
-    value: CamelCase
-  - key: readability-identifier-naming.TemplateTemplateParameterCase
-    value: CamelCase
-  - key: readability-identifier-naming.TemplateUsingCase
-    value: camelBack
-  - key: readability-identifier-naming.TypeTemplateParameterCase
     value: CamelCase
   - key: readability-identifier-naming.TypedefCase
     value: CamelCase
   - key: readability-identifier-naming.UnionCase
     value: CamelCase
-  - key: readability-identifier-naming.UsingCase
+  - key: readability-identifier-naming.StaticVariablePrefix
+    value: 's_'
+  - key: readability-identifier-naming.GlobalVariablePrefix
+    value: 'g_'
+  - key: readability-identifier-naming.ClassMemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalPointerHungarianPrefix
+    value: 'On'
+  - key: readability-identifier-naming.LocalPointerHungarianPrefix
+    value: 'On'
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.NamespaceCase
     value: CamelCase
+  - key: readability-identifier-naming.AbstractClassPrefix
+    value: 'Base'

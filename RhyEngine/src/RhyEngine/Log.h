@@ -16,16 +16,21 @@ public:
 
     inline static std::shared_ptr<spdlog::logger> &GetCoreLogger()
     {
-        return CoreLogger;
+        return m_CoreLogger;
     }
     inline static std::shared_ptr<spdlog::logger> &GetClientLogger()
     {
-        return ClientLogger;
+        return m_ClientLogger;
     }
 
+    // 删除构造函数，防止实例化
+    Log() = delete;
+    Log(const Log&) = delete;
+    Log& operator=(const Log&) = delete;
+
 private:
-    static std::shared_ptr<spdlog::logger> CoreLogger;
-    static std::shared_ptr<spdlog::logger> ClientLogger;
+    static std::shared_ptr<spdlog::logger> m_CoreLogger;
+    static std::shared_ptr<spdlog::logger> m_ClientLogger;
 };
 
 } // namespace RhyEngine
