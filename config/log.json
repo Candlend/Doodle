@@ -1,0 +1,16 @@
+{
+    "core":{
+        "log_level": "trace",
+        "log_pattern": "%^[%Y-%m-%d %H:%M:%S] (%s:%#) %n: %v%$",
+        "log_file": "logs/core.log",
+        "log_file_size": "5MB",
+        "log_file_count": 3
+    },
+    "client":{
+        "log_level": "debug",
+        "log_pattern": "%^[%Y-%m-%d %H:%M:%S] (%s:%#) %n: %v%$",
+        "log_file": "logs/client.log",
+        "log_file_size": "5MB",
+        "log_file_count": 3
+    }
+}

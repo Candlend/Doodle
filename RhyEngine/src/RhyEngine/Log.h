@@ -3,34 +3,21 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 
-#include "Core.h"
+#include "RhyEngine/Core.h"
 
 namespace RhyEngine
 {
-
-static std::shared_ptr<spdlog::logger> g_CoreLogger;    
 
 class RHY_API Log
 {
 public:
     static void Init();
-
-    inline static std::shared_ptr<spdlog::logger> &GetCoreLogger()
-    {
-        std::cout << "11" << std::endl;
-        return s_coreLogger;
-    }
-    inline static std::shared_ptr<spdlog::logger> &GetClientLogger()
-    {
-        return s_clientLogger;
-    }
-
-    // 删除构造函数，防止实例化
-    Log() = delete;
-    Log(const Log &) = delete;
-    Log &operator=(const Log &) = delete;
+    static void LoadConfig(const std::string& configFile);
+    inline static std::shared_ptr<spdlog::logger>& GetCoreLogger();
+    static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
 private:
+    static void SetLogLevel(const std::string& levelStr, std::shared_ptr<spdlog::logger> &logger);
     static std::shared_ptr<spdlog::logger> s_coreLogger;
     static std::shared_ptr<spdlog::logger> s_clientLogger;
 };
@@ -38,13 +25,15 @@ private:
 } // namespace RhyEngine
 
 // Core log macros
-#define RHY_CORE_TRACE(...) ::RhyEngine::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define RHY_CORE_INFO(...) ::RhyEngine::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define RHY_CORE_WARN(...) ::RhyEngine::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define RHY_CORE_ERROR(...) ::RhyEngine::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define RHY_CORE_TRACE(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetCoreLogger(), spdlog::level::trace, __VA_ARGS__)
+#define RHY_CORE_DEBUG(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetCoreLogger(), spdlog::level::debug, __VA_ARGS__)
+#define RHY_CORE_INFO(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetCoreLogger(), spdlog::level::info, __VA_ARGS__)
+#define RHY_CORE_WARN(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetCoreLogger(), spdlog::level::warn, __VA_ARGS__)
+#define RHY_CORE_ERROR(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetCoreLogger(), spdlog::level::err, __VA_ARGS__)
 
 // Client log macros
-#define RHY_TRACE(...) ::RhyEngine::Log::GetClientLogger()->trace(__VA_ARGS__)
-#define RHY_INFO(...) ::RhyEngine::Log::GetClientLogger()->info(__VA_ARGS__)
-#define RHY_WARN(...) ::RhyEngine::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define RHY_ERROR(...) ::RhyEngine::Log::GetClientLogger()->error(__VA_ARGS__)
+#define RHY_TRACE(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetClientLogger(), spdlog::level::trace, __VA_ARGS__)
+#define RHY_DEBUG(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetClientLogger(), spdlog::level::debug, __VA_ARGS__)
+#define RHY_INFO(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetClientLogger(), spdlog::level::info, __VA_ARGS__)
+#define RHY_WARN(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetClientLogger(), spdlog::level::warn, __VA_ARGS__)
+#define RHY_ERROR(...) SPDLOG_LOGGER_CALL(::RhyEngine::Log::GetClientLogger(), spdlog::level::err, __VA_ARGS__)

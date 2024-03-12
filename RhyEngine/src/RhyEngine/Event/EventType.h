@@ -1,16 +1,5 @@
 #pragma once
 
-#include "pch.h"
-#include "RhyEngine/Core.h"
-
-namespace RhyEngine
-{
-
-// Events in RhyEngine are currently blocking, meaning when an event occurs it
-// immediately gets dispatched and must be dealt with right then an there.
-// For the future, a better strategy might be to buffer events in an event
-// bus and process them during the "event" part of the update stage.
-
 enum class EventType
 {
     None = 0,
@@ -60,55 +49,3 @@ enum EventCategory
     {                                                                                                                  \
         return category;                                                                                               \
     }
-
-class RHY_API BaseEvent
-{
-    friend class EventDispatcher;
-
-public:
-    virtual EventType GetEventType() const = 0;
-    virtual const char *GetName() const = 0;
-    virtual int GetCategoryFlags() const = 0;
-    virtual std::string ToString() const
-    {
-        return GetName();
-    }
-
-    inline bool IsInCategory(EventCategory category) const
-    {
-        return GetCategoryFlags() & category;
-    }
-
-protected:
-    bool m_handled = false;
-};
-
-class RHY_API EventDispatcher
-{
-    template <typename T> using EventFn = std::function<bool(T &)>;
-
-public:
-    explicit EventDispatcher(BaseEvent &event) : m_event(event)
-    {
-    }
-
-    template <typename T> bool Dispatch(EventFn<T> func)
-    {
-        if (m_event.GetEventType() == T::GetStaticType())
-        {
-            m_event.m_handled = func(*static_cast<T *>(&m_event));
-            return true;
-        }
-        return false;
-    }
-
-private:
-    BaseEvent &m_event;
-};
-
-inline std::ostream &operator<<(std::ostream &os, const BaseEvent &e)
-{
-    return os << e.ToString();
-}
-
-} // namespace RhyEngine
