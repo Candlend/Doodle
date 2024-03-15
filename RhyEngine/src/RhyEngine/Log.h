@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
-#include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
 
 #include "RhyEngine/Core.h"
 
@@ -12,12 +12,12 @@ class RHY_API Log
 {
 public:
     static void Init();
-    static void LoadConfig(const std::string& configFile);
-    inline static std::shared_ptr<spdlog::logger>& GetCoreLogger();
-    static std::shared_ptr<spdlog::logger>& GetClientLogger();
+    static void LoadConfig(const std::string &configFile);
+    inline static std::shared_ptr<spdlog::logger> &GetCoreLogger();
+    static std::shared_ptr<spdlog::logger> &GetClientLogger();
 
 private:
-    static void SetLogLevel(const std::string& levelStr, std::shared_ptr<spdlog::logger> &logger);
+    static void SetLogLevel(const std::string &levelStr, std::shared_ptr<spdlog::logger> &logger);
     static std::shared_ptr<spdlog::logger> s_coreLogger;
     static std::shared_ptr<spdlog::logger> s_clientLogger;
 };

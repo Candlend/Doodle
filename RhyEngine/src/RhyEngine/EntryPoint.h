@@ -8,9 +8,6 @@ extern RhyEngine::Application *RhyEngine::CreateApplication();
 int main(int /*argc*/, char ** /*argv*/)
 {
     RhyEngine::Log::Init();
-    RHY_CORE_WARN("Initialized Log!");
-    int a = 5;
-    RHY_INFO("Hello! Var={0}", a);
     auto *pApp = RhyEngine::CreateApplication();
     pApp->Run();
     delete pApp;
