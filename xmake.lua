@@ -1,7 +1,7 @@
 set_project("RhyEngine")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
-add_requires("spdlog", "imgui", "cereal", "nlohmann_json")
+add_requires("spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
 
 if is_os("windows") then
     add_defines("RHY_PLATFORM_WINDOWS")
@@ -37,7 +37,7 @@ target("RhyEngine")
     set_pcxxheader("RhyEngine/src/pch.h")
 
     -- 添加依赖库
-    add_packages("spdlog", "imgui", "cereal", "nlohmann_json")
+    add_packages("spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
     
 target("Sandbox")
     set_kind("binary")

@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "RhyEngine/Log.h"
+
 #ifdef RHY_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

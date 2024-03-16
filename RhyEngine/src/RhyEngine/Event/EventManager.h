@@ -12,8 +12,8 @@ class RHY_API EventManager : public Singleton<EventManager>
 public:
     using EventCallback = std::function<void(BaseEvent &)>;
 
-    template <typename T> void AddListener(EventType eventType, EventCallback callback);
-    template <typename T> void RemoveListener(EventType eventType, EventCallback callback);
+    void AddListener(EventType eventType, EventCallback callback);
+    void RemoveListener(EventType eventType, EventCallback callback);
     void Dispatch(BaseEvent &event);
 
 private:

@@ -1,10 +1,13 @@
+#include "pch.h"
+#include "Log.h"
+
+#include "spdlog/sinks/stdout_color_sinks.h"
 #include <nlohmann/json.hpp>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include "Common/Util.h"
 #include "Log.h"
-
 
 using json = nlohmann::json;
 

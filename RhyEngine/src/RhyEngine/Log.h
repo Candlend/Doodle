@@ -1,9 +1,8 @@
 #pragma once
-#include "pch.h"
-#include <spdlog/fmt/ostr.h>
-#include <spdlog/spdlog.h>
 
-#include "RhyEngine/Core.h"
+#include "Core.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 
 namespace RhyEngine
 {
