@@ -80,15 +80,18 @@ void WindowsWindow::Init(const WindowProps &props)
         case GLFW_PRESS: {
             KeyPressedEvent event(key, 0);
             data.EventCallback(event);
+            data.KeyRepeatCounts[key] = 0; // 初始化重复计数
             break;
         }
         case GLFW_RELEASE: {
             KeyReleasedEvent event(key);
             data.EventCallback(event);
+            data.KeyRepeatCounts.erase(key); // 移除按键的重复计数
             break;
         }
         case GLFW_REPEAT: {
-            KeyPressedEvent event(key, 1);
+            data.KeyRepeatCounts[key]++; // 增加重复计数
+            KeyPressedEvent event(key, data.KeyRepeatCounts[key]);
             data.EventCallback(event);
             break;
         }

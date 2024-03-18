@@ -39,6 +39,7 @@ private:
         bool VSync;
 
         EventCallback EventCallback;
+        std::unordered_map<int, int> KeyRepeatCounts;
     };
 
     virtual void Init(const WindowProps &props);
