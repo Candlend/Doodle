@@ -12,9 +12,12 @@ namespace RhyEngine
 
 Application::Application()
 {
+    RHY_CORE_ASSERT(!s_Instance, "Application already exists!");
+    s_Instance = this;
+
     m_window = std::unique_ptr<Window>(Window::Create());
     m_window->SetEventCallback([this](BaseEvent &e) { OnEvent(e); });
-    EventManager::GetInstance().AddListener(EventType::WindowClose, [this](BaseEvent & /*e*/) { return Quit(); });
+    m_eventManager.AddListener(EventType::WindowClose, [this](BaseEvent & /*e*/) { return Quit(); });
 }
 
 void Application::Run()
@@ -23,6 +26,10 @@ void Application::Run()
     {
         glClearColor(1, 0, 1, 1);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        for (BaseLayer* layer : m_layerStack)
+            layer->OnUpdate();
+
         m_window->OnUpdate();
     }
 }
@@ -36,6 +43,25 @@ bool Application::Quit()
 void Application::OnEvent(BaseEvent &e)
 {
     RHY_CORE_TRACE(e.ToString());
-    EventManager::GetInstance().Dispatch(e);
+    m_eventManager.Dispatch(e);
+    for (auto it = m_layerStack.end(); it != m_layerStack.begin(); )
+    {
+        (*--it)->OnEvent(e);
+        if (e.Handled)
+            break;
+    }
 }
+
+void Application::PushLayer(BaseLayer* layer)
+{
+    m_layerStack.PushLayer(layer);
+    layer->OnAttach();
+}
+
+void Application::PushOverlay(BaseLayer* layer)
+{
+    m_layerStack.PushOverlay(layer);
+    layer->OnAttach();
+}
+
 } // namespace RhyEngine

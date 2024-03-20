@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Event.h"
-#include "RhyEngine/Common/Singleton.h"
 #include "RhyEngine/Core.h"
 
 namespace RhyEngine
 {
 
-class RHY_API EventManager : public Singleton<EventManager>
+class RHY_API EventManager
 {
 public:
     using EventCallback = std::function<void(BaseEvent &)>;

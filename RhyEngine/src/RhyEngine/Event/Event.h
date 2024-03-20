@@ -68,6 +68,8 @@ class RHY_API BaseEvent
     friend class EventManager;
 
 public:
+    bool Handled = false;
+
     virtual EventType GetEventType() const = 0;
     virtual const char *GetName() const = 0;
     virtual int GetCategoryFlags() const = 0;
@@ -80,9 +82,6 @@ public:
     {
         return GetCategoryFlags() & category;
     }
-
-protected:
-    bool m_handled = false;
 };
 
 inline std::ostream &operator<<(std::ostream &os, const BaseEvent &e)

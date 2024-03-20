@@ -3,7 +3,9 @@
 class Sandbox : public RhyEngine::Application
 {
 public:
-    Sandbox() = default;
+    Sandbox() {
+        PushOverlay(new RhyEngine::ImGuiLayer());
+    }
 
     ~Sandbox() override = default;
 };

@@ -17,8 +17,8 @@ public:
 
 private:
     static void SetLogLevel(const std::string &levelStr, std::shared_ptr<spdlog::logger> &logger);
-    static std::shared_ptr<spdlog::logger> s_coreLogger;
-    static std::shared_ptr<spdlog::logger> s_clientLogger;
+    static std::shared_ptr<spdlog::logger> s_CoreLogger;
+    static std::shared_ptr<spdlog::logger> s_ClientLogger;
 };
 
 } // namespace RhyEngine

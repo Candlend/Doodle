@@ -14,15 +14,15 @@ using json = nlohmann::json;
 namespace RhyEngine
 {
 
-std::shared_ptr<spdlog::logger> Log::s_coreLogger;
-std::shared_ptr<spdlog::logger> Log::s_clientLogger;
+std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
+std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
 
 void Log::Init()
 {
     try
     {
-        s_coreLogger = spdlog::stdout_color_mt("CORE");
-        s_clientLogger = spdlog::stdout_color_mt("CLIENT");
+        s_CoreLogger = spdlog::stdout_color_mt("CORE");
+        s_ClientLogger = spdlog::stdout_color_mt("CLIENT");
         Log::LoadConfig("config/log.json");
     }
     catch (const std::exception &e)
@@ -59,7 +59,7 @@ void Log::LoadConfig(const std::string &configFile)
     {
         auto coreConfig = config["core"];
         std::string coreLogLevel = coreConfig.value("log_level", "info");
-        SetLogLevel(coreLogLevel, s_coreLogger);
+        SetLogLevel(coreLogLevel, s_CoreLogger);
 
         // 读取日志文件输出设置
         std::string coreLogFile = coreConfig.value("log_file", "logs/core.log");
@@ -80,11 +80,11 @@ void Log::LoadConfig(const std::string &configFile)
         // 创建核心旋转文件输出日志器
         auto coreRotatingSink =
             std::make_shared<spdlog::sinks::rotating_file_sink_mt>(coreLogFile, coreLogFileSize, coreLogFileCount);
-        s_coreLogger->sinks().push_back(coreRotatingSink);
+        s_CoreLogger->sinks().push_back(coreRotatingSink);
 
         // 读取日志格式
         std::string coreLogPattern = coreConfig.value("log_pattern", "%^[%Y-%m-%d %H:%M:%S] %n: %v%$");
-        s_coreLogger->set_pattern(coreLogPattern);
+        s_CoreLogger->set_pattern(coreLogPattern);
     }
 
     // 读取客户端日志配置
@@ -92,7 +92,7 @@ void Log::LoadConfig(const std::string &configFile)
     {
         auto clientConfig = config["client"];
         std::string clientLogLevel = clientConfig.value("log_level", "info");
-        SetLogLevel(clientLogLevel, s_clientLogger);
+        SetLogLevel(clientLogLevel, s_ClientLogger);
 
         // 读取日志文件输出设置
         std::string clientLogFile = clientConfig.value("log_file", "logs/client.log");
@@ -114,11 +114,11 @@ void Log::LoadConfig(const std::string &configFile)
         // 创建客户端旋转文件输出日志器
         auto clientRotatingSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             clientLogFile, clientLogFileSize, clientLogFileCount);
-        s_clientLogger->sinks().push_back(clientRotatingSink);
+        s_ClientLogger->sinks().push_back(clientRotatingSink);
 
         // 读取日志格式
         std::string clientLogPattern = clientConfig.value("log_pattern", "%^[%Y-%m-%d %H:%M:%S] %n: %v%$");
-        s_clientLogger->set_pattern(clientLogPattern);
+        s_ClientLogger->set_pattern(clientLogPattern);
     }
 }
 
@@ -145,12 +145,12 @@ void Log::SetLogLevel(const std::string &levelStr, std::shared_ptr<spdlog::logge
 
 std::shared_ptr<spdlog::logger> &Log::GetCoreLogger()
 {
-    return s_coreLogger;
+    return s_CoreLogger;
 }
 
 std::shared_ptr<spdlog::logger> &Log::GetClientLogger()
 {
-    return s_clientLogger;
+    return s_ClientLogger;
 }
 
 } // namespace RhyEngine

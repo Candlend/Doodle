@@ -2,4 +2,6 @@
 
 #include "RhyEngine/Application.h"
 #include "RhyEngine/Log.h"
+#include "RhyEngine/Layer/ImGuiLayer.h"
 #include "RhyEngine/EntryPoint.h"
+
