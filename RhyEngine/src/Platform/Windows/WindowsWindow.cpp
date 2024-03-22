@@ -129,8 +129,6 @@ void WindowsWindow::Init(const WindowProps &props)
         MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
         data.EventCallback(event);
     });
-
-    RHY_CORE_INFO("Created window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 }
 
 void WindowsWindow::Shutdown()

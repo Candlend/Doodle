@@ -1,4 +1,5 @@
 #include <RhyEngine.h>
+#include <memory>
 
 class Sandbox : public RhyEngine::Application
 {
@@ -10,7 +11,7 @@ public:
     ~Sandbox() override = default;
 };
 
-RhyEngine::Application *RhyEngine::CreateApplication()
+RhyEngine::Application* RhyEngine::CreateApplication()
 {
-    return new Sandbox();
+	return new Sandbox();
 }

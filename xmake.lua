@@ -38,6 +38,10 @@ target("RhyEngine")
 
     -- 添加依赖库
     add_packages("spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
+
+    if is_mode("debug") then
+        set_optimize("none")
+    end
     
 target("Sandbox")
     set_kind("binary")
