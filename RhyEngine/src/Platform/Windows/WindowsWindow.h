@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "RhyEngine/KeyCode.h"
 #include "RhyEngine/Window.h"
 
 namespace RhyEngine
@@ -30,7 +31,7 @@ public:
     }
     void SetVSync(bool enabled) override;
     bool IsVSync() const override;
-
+    inline virtual void* GetNativeWindow() const override { return m_window; }
 private:
     struct WindowData
     {
@@ -39,7 +40,7 @@ private:
         bool VSync;
 
         EventCallback EventCallback;
-        std::unordered_map<int, int> KeyRepeatCounts;
+        std::unordered_map<KeyCode, int> KeyRepeatCounts;
     };
 
     virtual void Init(const WindowProps &props);

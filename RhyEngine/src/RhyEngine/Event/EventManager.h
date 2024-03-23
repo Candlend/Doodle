@@ -68,10 +68,7 @@ template <typename T> void EventManager::AddListener(EventCallbackFn<T> &callbac
 {
     EventType eventType = T::GetStaticType();
     auto &listeners = m_eventListeners[eventType];
-    std::ostringstream oss;
-    oss << &callback;
-    std::string ptrStr = oss.str();
-    RHY_DEBUG("AddListener {0} {1}", typeid(callback).name(), ptrStr);
+    RHY_DEBUG("AddListener {0}", typeid(callback).name());
     EventCallback eventCallback{nullptr, reinterpret_cast<void *>(&callback), [callback](BaseEvent &event) -> bool {
         return callback(static_cast<T &>(event));
     }};
@@ -108,6 +105,7 @@ template <typename T, typename C> void EventManager::RemoveListener(C *obj, bool
 {
     EventType eventType = T::GetStaticType();
     auto &listeners = m_eventListeners[eventType];
+    RHY_DEBUG("RemoveListener {0}", typeid(func).name());
     void *a = void_cast(func);
     auto it = std::remove_if(listeners.begin(), listeners.end(), [&](const EventCallback &listener) {
         return listener.Obj == static_cast<void *>(obj) && listener.Func == void_cast(func);

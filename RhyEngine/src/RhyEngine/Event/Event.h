@@ -20,7 +20,7 @@ enum class EventType
     AppRender,
     KeyPressed,
     KeyReleased,
-    KeyTyped,
+    CharInput,
     MouseButtonPressed,
     MouseButtonReleased,
     MouseMoved,

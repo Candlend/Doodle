@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "RhyEngine/MouseButtonCode.h"
 
 namespace RhyEngine {
 
@@ -55,7 +56,7 @@ namespace RhyEngine {
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
-		explicit BaseMouseButtonEvent(int button)
+		explicit BaseMouseButtonEvent(MouseButtonCode button)
 			: m_button(button) {}
 
 		int m_button;
@@ -64,7 +65,7 @@ namespace RhyEngine {
 	class RHY_API MouseButtonPressedEvent : public BaseMouseButtonEvent
 	{
 	public:
-		explicit MouseButtonPressedEvent(int button)
+		explicit MouseButtonPressedEvent(MouseButtonCode button)
 			: BaseMouseButtonEvent(button) {}
 
 		std::string ToString() const override
@@ -80,7 +81,7 @@ namespace RhyEngine {
 	class RHY_API MouseButtonReleasedEvent : public BaseMouseButtonEvent
 	{
 	public:
-		explicit MouseButtonReleasedEvent(int button)
+		explicit MouseButtonReleasedEvent(MouseButtonCode button)
 			: BaseMouseButtonEvent(button) {}
 
 		std::string ToString() const override

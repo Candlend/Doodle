@@ -1,3 +1,5 @@
+#include "RhyEngine/KeyCode.h"
+#include "RhyEngine/MouseButtonCode.h"
 #include "pch.h"
 
 #include "RhyEngine/Event/ApplicationEvent.h"
@@ -74,42 +76,48 @@ void WindowsWindow::Init(const WindowProps &props)
 
     glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int /*scancode*/, int action, int /*mods*/) {
         WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-
+        KeyCode keycode = static_cast<KeyCode>(key);
         switch (action)
         {
         case GLFW_PRESS: {
-            KeyPressedEvent event(key, 0);
+            KeyPressedEvent event(keycode, 0);
             data.EventCallback(event);
-            data.KeyRepeatCounts[key] = 0; // 初始化重复计数
+            data.KeyRepeatCounts[keycode] = 0; // 初始化重复计数
             break;
         }
         case GLFW_RELEASE: {
-            KeyReleasedEvent event(key);
+            KeyReleasedEvent event(keycode);
             data.EventCallback(event);
-            data.KeyRepeatCounts.erase(key); // 移除按键的重复计数
+            data.KeyRepeatCounts.erase(keycode); // 移除按键的重复计数
             break;
         }
         case GLFW_REPEAT: {
-            data.KeyRepeatCounts[key]++; // 增加重复计数
-            KeyPressedEvent event(key, data.KeyRepeatCounts[key]);
+            data.KeyRepeatCounts[keycode]++; // 增加重复计数
+            KeyPressedEvent event(keycode, data.KeyRepeatCounts[keycode]);
             data.EventCallback(event);
             break;
         }
         }
     });
+    glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int keycode)
+    {
+        WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        CharInputEvent event(static_cast<KeyCode>(keycode));
+        data.EventCallback(event);
+    });
 
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow *window, int button, int action, int /*mods*/) {
         WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-
+        MouseButtonCode btn = static_cast<MouseButtonCode>(button);
         switch (action)
         {
         case GLFW_PRESS: {
-            MouseButtonPressedEvent event(button);
+            MouseButtonPressedEvent event(btn);
             data.EventCallback(event);
             break;
         }
         case GLFW_RELEASE: {
-            MouseButtonReleasedEvent event(button);
+            MouseButtonReleasedEvent event(btn);
             data.EventCallback(event);
             break;
         }

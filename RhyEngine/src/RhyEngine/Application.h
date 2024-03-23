@@ -28,7 +28,7 @@ public:
     {
         return *m_window;
     }
-    inline static Application& GetInstance() { return *s_Instance; }
+    inline static Application& Get() { return *s_Instance; }
 
 private:
     std::unique_ptr<Window> m_window;

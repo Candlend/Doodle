@@ -8,7 +8,7 @@ class Singleton
 {
 public:
     // 获取单例实例
-    static T &GetInstance(){
+    static T &Get(){
         static T s_Instance;
         return s_Instance;
     }
