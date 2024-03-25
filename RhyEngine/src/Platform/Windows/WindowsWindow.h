@@ -2,8 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
-#include "RhyEngine/KeyCode.h"
-#include "RhyEngine/Window.h"
+#include "KeyCode.h"
+#include "Window.h"
 
 namespace RhyEngine
 {

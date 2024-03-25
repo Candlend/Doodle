@@ -2,7 +2,7 @@
 
 #include "pch.h"
 
-#include "RhyEngine/Core.h"
+#include "Core.h"
 
 namespace RhyEngine
 {

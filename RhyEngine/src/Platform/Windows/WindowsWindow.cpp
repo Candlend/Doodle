@@ -1,10 +1,10 @@
-#include "RhyEngine/KeyCode.h"
-#include "RhyEngine/MouseButtonCode.h"
+#include "KeyCode.h"
+#include "MouseButtonCode.h"
 #include "pch.h"
 
-#include "RhyEngine/Event/ApplicationEvent.h"
-#include "RhyEngine/Event/KeyEvent.h"
-#include "RhyEngine/Event/MouseEvent.h"
+#include "ApplicationEvent.h"
+#include "KeyEvent.h"
+#include "MouseEvent.h"
 #include "WindowsWindow.h"
 #include <glad/glad.h>
 

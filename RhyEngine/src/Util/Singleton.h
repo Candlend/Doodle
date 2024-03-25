@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Log.h"
+#include <mutex>
+#include <typeinfo>
+
 namespace RhyEngine
 {
 
@@ -10,6 +14,10 @@ public:
     // 获取单例实例
     static T &Get(){
         static T s_Instance;
+        static std::once_flag s_Once;
+        std::call_once(s_Once, []() {
+            RHY_CORE_INFO("{0} Init", typeid(T).name());
+        });
         return s_Instance;
     }
 

@@ -2,8 +2,8 @@
 
 #include "pch.h"
 
-#include "RhyEngine/Core.h"
-#include "RhyEngine/Event/EventManager.h"
+#include "Core.h"
+#include "EventManager.h"
 
 namespace RhyEngine
 {

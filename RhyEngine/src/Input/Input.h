@@ -2,9 +2,9 @@
 
 #include "pch.h"
 
-#include "RhyEngine/Core.h"
-#include "RhyEngine/KeyCode.h"
-#include "RhyEngine/MouseButtonCode.h"
+#include "Core.h"
+#include "KeyCode.h"
+#include "MouseButtonCode.h"
 
 namespace RhyEngine
 {

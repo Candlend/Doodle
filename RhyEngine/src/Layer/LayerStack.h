@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Layer.h"
-#include "RhyEngine/Core.h"
+#include "Core.h"
 
 
 namespace RhyEngine

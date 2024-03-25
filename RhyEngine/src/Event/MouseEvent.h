@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Event.h"
-#include "RhyEngine/MouseButtonCode.h"
+#include "MouseButtonCode.h"
 
 namespace RhyEngine {
 

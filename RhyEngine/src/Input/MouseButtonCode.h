@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RhyEngine/MouseButtonCode.h"
+#include "MouseButtonCode.h"
 
 enum MouseButtonCode {
     Mouse1 = 0,

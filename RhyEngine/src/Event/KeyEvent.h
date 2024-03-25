@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Event.h"
-#include "RhyEngine/KeyCode.h"
+#include "KeyCode.h"
 
 namespace RhyEngine
 {

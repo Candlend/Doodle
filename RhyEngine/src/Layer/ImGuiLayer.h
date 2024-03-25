@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Layer.h"
-#include "RhyEngine/Event/KeyEvent.h"
-#include "RhyEngine/Event/MouseEvent.h"
-#include "RhyEngine/Event/ApplicationEvent.h"
+#include "KeyEvent.h"
+#include "MouseEvent.h"
+#include "ApplicationEvent.h"
 #include <unordered_map>
 
 namespace RhyEngine {

@@ -1,8 +1,8 @@
-#include "RhyEngine/KeyCode.h"
+#include "KeyCode.h"
 #include "pch.h"
 #include <GLFW/glfw3.h>
 
-#include "RhyEngine/Application.h"
+#include "Application.h"
 #include "WindowsInput.h"
 
 

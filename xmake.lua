@@ -1,7 +1,7 @@
 set_project("RhyEngine")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
-add_requires("spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
+add_requires("spdlog", "imgui docking", "cereal", "nlohmann_json", "glfw", "glad")
 
 if is_os("windows") then
     add_defines("RHY_PLATFORM_WINDOWS")
@@ -24,14 +24,23 @@ after_build(function (target)
     os.cp("config/", target:targetdir())
 end)
 
+function traverse_directory(path)
+    add_headerfiles(path .. "/**.h")
+    add_includedirs(path)
+    for _, dir in ipairs(os.dirs(path .. "/*")) do
+        add_headerfiles(dir .. "/**.h")
+        add_includedirs(dir)
+    end
+end
+
 target("RhyEngine")
     set_kind("shared")
     add_defines("RHY_BUILD_DLL")
 
     -- 添加源文件
     add_files("RhyEngine/src/**.cpp")
-    add_headerfiles("RhyEngine/src/**.h")
-    add_includedirs("RhyEngine/src")
+    -- 添加所有子目录到包含路径
+    traverse_directory("RhyEngine/src")
     
     -- 添加预编译头
     set_pcxxheader("RhyEngine/src/pch.h")
@@ -51,6 +60,6 @@ target("Sandbox")
 
     -- 添加依赖库
     add_deps("RhyEngine")
-    add_includedirs("RhyEngine/src")
+    traverse_directory("RhyEngine/src")
 
     add_packages("spdlog", "imgui", "cereal")

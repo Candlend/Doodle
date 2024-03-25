@@ -1,18 +1,21 @@
 #pragma once
 
-#include "Common/Singleton.h"
+#include "pch.h"
+
+#include "Singleton.h"
 #include "Core.h"
-#include "Event/EventManager.h"
-#include "Layer/LayerStack.h"
-#include "RhyEngine/Event/ApplicationEvent.h"
+#include "ApplicationRunner.h"
+#include "EventManager.h"
+#include "LayerStack.h"
+#include "ApplicationEvent.h"
 #include "Window.h"
-#include <memory>
 
 namespace RhyEngine
 {
 
-class RHY_API Application : std::enable_shared_from_this<Application>
+class RHY_API Application
 {
+    friend class ApplicationRunner;
 public:
     Application();
     virtual ~Application();
@@ -27,18 +30,18 @@ public:
     inline Window &GetWindow()
     {
         return *m_window;
+    };
+
+    inline static Application &Get()
+    {
+        return ApplicationRunner::Get().GetCurrentApp();
     }
-    inline static Application& Get() { return *s_Instance; }
 
 private:
     std::unique_ptr<Window> m_window;
     bool m_running = true;
     LayerStack m_layerStack;
     EventManager m_eventManager;
-    static Application* s_Instance;
 };
-
-// To be defined in CLIENT
-Application *CreateApplication();
 
 } // namespace RhyEngine

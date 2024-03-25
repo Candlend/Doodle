@@ -1,7 +1,6 @@
 #pragma once
 
-#include "RhyEngine/Application.h"
-#include "RhyEngine/Log.h"
-#include "RhyEngine/Layer/ImGuiLayer.h"
-#include "RhyEngine/EntryPoint.h"
+#include "Application.h"
+#include "Log.h"
+#include "ImGuiLayer.h"
 

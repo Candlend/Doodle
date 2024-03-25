@@ -2,7 +2,7 @@
 
 #include "pch.h"
 
-#include "RhyEngine/Input.h"
+#include "Input.h"
 
 namespace RhyEngine
 {

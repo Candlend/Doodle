@@ -1,22 +1,13 @@
 #include <glad/glad.h>
-#include <memory>
 
 #include "Application.h"
-#include "Event/ApplicationEvent.h"
-#include "Log.h"
-#include "RhyEngine/Event/ApplicationEvent.h"
-#include "RhyEngine/Event/Event.h"
-#include "RhyEngine/Event/EventManager.h"
-#include "Window.h"
 
 namespace RhyEngine
 {
 
-Application *Application::s_Instance = nullptr;
-
 Application::Application()
 {
-    s_Instance = this;
+    RHY_CORE_TRACE("Application Start");
     m_window = std::unique_ptr<Window>(Window::Create());
     m_window->SetEventCallback([this](BaseEvent &e) { OnEvent(e); });
     m_eventManager.AddListener(this, &Application::OnWindowCloseEvent);
@@ -25,6 +16,7 @@ Application::Application()
 Application::~Application()
 {
     m_eventManager.RemoveListener(this, &Application::OnWindowCloseEvent);
+    RHY_CORE_TRACE("Application End");
 }
 
 void Application::Run()
