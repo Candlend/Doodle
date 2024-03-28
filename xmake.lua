@@ -1,7 +1,8 @@
 set_project("RhyEngine")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
-add_requires("spdlog", "imgui docking", "cereal", "nlohmann_json", "glfw", "glad")
+add_requires("spdlog", "cereal", "nlohmann_json", "glfw", "glad")
+add_requires("imgui docking", {configs = {glfw_opengl3 = true}})
 
 if is_os("windows") then
     add_defines("RHY_PLATFORM_WINDOWS")

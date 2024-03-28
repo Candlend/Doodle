@@ -13,8 +13,7 @@
 #include "KeyCode.h"
 #include "KeyEvent.h"
 #include "MouseEvent.h"
-#include "OpenGL/imgui_impl_opengl3.h"
-
+#include "backends/imgui_impl_opengl3.h"
 
 namespace RhyEngine
 {
