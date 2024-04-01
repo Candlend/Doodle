@@ -1,49 +1,59 @@
-#include "KeyCode.h"
+#ifdef RHY_PLATFORM_WINDOWS
+
 #include "pch.h"
 #include <GLFW/glfw3.h>
-
 #include "Application.h"
-#include "WindowsInput.h"
-
+#include "Input.h"
+#include "KeyCode.h"
 
 namespace RhyEngine
 {
 
-Input *Input::s_Instance = new WindowsInput();
-
-bool WindowsInput::IsKeyPressedImpl(KeyCode keycode)
+class WindowsInput : public Input
 {
-    auto *window = static_cast<GLFWwindow *>(Application::Get().GetWindow().GetNativeWindow());
-    auto state = glfwGetKey(window, keycode);
-    return state == GLFW_PRESS || state == GLFW_REPEAT;
-}
+private:
+    GLFWwindow* GetNativeWindow() const
+    {
+        return static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+    }
 
-bool WindowsInput::IsMouseButtonPressedImpl(MouseButtonCode button)
-{
-    auto *window = static_cast<GLFWwindow *>(Application::Get().GetWindow().GetNativeWindow());
-    auto state = glfwGetMouseButton(window, button);
-    return state == GLFW_PRESS;
-}
+protected:
+    virtual bool IsKeyPressedImpl(KeyCode keycode) override
+    {
+        auto *window = GetNativeWindow();
+        auto state = glfwGetKey(window, keycode);
+        return state == GLFW_PRESS || state == GLFW_REPEAT;
+    }
 
-std::pair<float, float> WindowsInput::GetMousePositionImpl()
-{
-    auto *window = static_cast<GLFWwindow *>(Application::Get().GetWindow().GetNativeWindow());
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
+    virtual bool IsMouseButtonPressedImpl(MouseButtonCode button) override
+    {
+        auto *window = GetNativeWindow();
+        auto state = glfwGetMouseButton(window, button);
+        return state == GLFW_PRESS;
+    }
 
-    return {static_cast<float>(xpos), static_cast<float>(ypos)};
-}
+    virtual std::pair<float, float> GetMousePositionImpl() override
+    {
+        auto *window = GetNativeWindow();
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        return {static_cast<float>(xpos), static_cast<float>(ypos)};
+    }
 
-float WindowsInput::GetMouseXImpl()
-{
-    auto [x, y] = GetMousePositionImpl();
-    return x;
-}
+    virtual float GetMouseXImpl() override
+    {
+        return GetMousePositionImpl().first;
+    }
 
-float WindowsInput::GetMouseYImpl()
-{
-    auto [x, y] = GetMousePositionImpl();
-    return y;
-}
+    virtual float GetMouseYImpl() override
+    {
+        return GetMousePositionImpl().second;
+    }
+};
+
+// 静态实例化
+std::unique_ptr<Input> Input::s_Instance = std::make_unique<WindowsInput>();
 
 } // namespace RhyEngine
+
+#endif
