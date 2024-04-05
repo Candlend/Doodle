@@ -6,7 +6,7 @@
 namespace RhyEngine
 {
 
-class RHY_API BaseKeyEvent : public BaseEvent
+class RHY_API KeyEvent : public Event
 {
 public:
     inline KeyCode GetKeyCode() const
@@ -16,17 +16,17 @@ public:
 
     EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 protected:
-    explicit BaseKeyEvent(KeyCode keycode) : m_keyCode(keycode)
+    explicit KeyEvent(KeyCode keycode) : m_keyCode(keycode)
     {
     }
 
     KeyCode m_keyCode;
 };
 
-class RHY_API KeyPressedEvent : public BaseKeyEvent
+class RHY_API KeyPressedEvent : public KeyEvent
 {
 public:
-    KeyPressedEvent(KeyCode keycode, int repeatCount) : BaseKeyEvent(keycode), m_repeatCount(repeatCount)
+    KeyPressedEvent(KeyCode keycode, int repeatCount) : KeyEvent(keycode), m_repeatCount(repeatCount)
     {
     }
 
@@ -47,10 +47,10 @@ private:
     int m_repeatCount;
 };
 
-class RHY_API KeyReleasedEvent : public BaseKeyEvent
+class RHY_API KeyReleasedEvent : public KeyEvent
 {
 public:
-    explicit KeyReleasedEvent(KeyCode keycode) : BaseKeyEvent(keycode)
+    explicit KeyReleasedEvent(KeyCode keycode) : KeyEvent(keycode)
     {
     }
 
@@ -64,7 +64,7 @@ public:
     EVENT_CLASS_TYPE(KeyReleased)
 };
 
-class RHY_API CharInputEvent : public BaseEvent
+class RHY_API CharInputEvent : public Event
 {
 public:
     inline uint16_t GetChar() const

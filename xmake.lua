@@ -50,6 +50,7 @@ target("RhyEngine")
     add_packages("spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
 
     if is_mode("debug") then
+        add_defines("RHY_ENABLE_ASSERTS")
         set_optimize("none")
     end
     

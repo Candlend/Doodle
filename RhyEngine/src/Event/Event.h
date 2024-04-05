@@ -63,7 +63,7 @@ enum EventCategory
 
 class EventManager;
 
-class RHY_API BaseEvent
+class RHY_API Event
 {
     friend class EventManager;
 
@@ -84,7 +84,7 @@ public:
     }
 };
 
-inline std::ostream &operator<<(std::ostream &os, const BaseEvent &e)
+inline std::ostream &operator<<(std::ostream &os, const Event &e)
 {
     return os << e.ToString();
 }

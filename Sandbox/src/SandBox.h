@@ -7,5 +7,5 @@ class Sandbox : public RhyEngine::Application
 public:
     Sandbox();
 
-    ~Sandbox() override = default;
+    ~Sandbox() = default;
 };

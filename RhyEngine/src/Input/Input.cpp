@@ -3,18 +3,19 @@
 #include "pch.h"
 #include <GLFW/glfw3.h>
 #include "Application.h"
+#include "ApplicationRunner.h"
 #include "Input.h"
 #include "KeyCode.h"
 
 namespace RhyEngine
 {
 
-class WindowsInput : public Input
+class InputImpl : public Input
 {
 private:
     GLFWwindow* GetNativeWindow() const
     {
-        return static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+        return static_cast<GLFWwindow*>(ApplicationRunner::GetCurrentWindow().GetNativeWindow());
     }
 
 protected:
@@ -52,7 +53,7 @@ protected:
 };
 
 // 静态实例化
-std::unique_ptr<Input> Input::s_Instance = std::make_unique<WindowsInput>();
+std::unique_ptr<Input> Input::s_Instance = std::make_unique<InputImpl>();
 
 } // namespace RhyEngine
 

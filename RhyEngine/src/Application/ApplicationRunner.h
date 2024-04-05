@@ -1,8 +1,12 @@
 #pragma once
 
+#include "Core.h"
 #include "pch.h"
 
 #include "Singleton.h"
+#include "Window.h"
+#include "Application.h"
+#include <memory>
 
 namespace RhyEngine
 {
@@ -20,17 +24,29 @@ public:
     }
 
     template <typename T>
-    void CreateApp()
+    void CreateApp(WindowProps props = WindowProps()) // 目前仅支持一个应用程序一个窗口
     {
-        m_app = std::move(std::make_unique<T>());
+        m_window = Window::Create(props);
+        m_app = std::make_shared<T>();
+        m_app->m_window = m_window;
+        m_app->Initialize();
     }
 
     void Run();
 
-    Application &GetCurrentApp();
+    static Window &GetCurrentWindow(){
+        RHY_CORE_ASSERT(Get().m_window, "No window created!");
+        return *Get().m_window;
+    }
+
+    static Application &GetCurrentApp(){
+        RHY_CORE_ASSERT(Get().m_app, "No application created!");
+        return *Get().m_app;
+    }
 
 private:
-    std::unique_ptr<Application> m_app;
+    std::shared_ptr<Window> m_window;
+    std::shared_ptr<Application> m_app;
 };
 
 } // namespace RhyEngine

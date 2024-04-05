@@ -1,22 +1,22 @@
 #pragma once
 
-#include "Event.h"
+#include "pch.h"
+
 #include "Core.h"
-#include <algorithm>
-#include <unordered_map>
-#include <vector>
+#include "Event.h"
+#include "Singleton.h"
 
 namespace RhyEngine
 {
 
-template <typename T>
-using EventCallbackFn = std::function<bool(T &)>;
+template <typename T> using EventCallbackFn = std::function<bool(T &)>;
 
 struct EventCallback
 {
     void *Obj;
     void *Func;
-    EventCallbackFn<BaseEvent> Callback;
+    EventCallbackFn<Event> Callback;
+    int Priority; // 新增优先级成员
 };
 
 template <typename T, typename R, typename E> void *void_cast(R (T::*f)(E))
@@ -47,42 +47,43 @@ struct PairEqual
     }
 };
 
-class RHY_API EventManager
+class RHY_API EventManager : public Singleton<EventManager>
 {
 public:
-    template <typename T> void AddListener(EventCallbackFn<T> &callback);
+    template <typename T> void AddListener(EventCallbackFn<T> &callback, int priority = 0);
 
-    template <typename T, typename C> void AddListener(C *obj, bool (C::*func)(T &));
+    template <typename T, typename C> void AddListener(C *obj, bool (C::*func)(T &), int priority = 0);
 
     template <typename T> void RemoveListener(EventCallbackFn<T> &callback);
 
     template <typename T, typename C> void RemoveListener(C *obj, bool (C::*func)(T &));
 
-    void Dispatch(BaseEvent &event);
+    void Dispatch(Event &event);
 
 private:
     std::unordered_map<EventType, std::vector<EventCallback>> m_eventListeners;
 };
 
-template <typename T> void EventManager::AddListener(EventCallbackFn<T> &callback)
+template <typename T> void EventManager::AddListener(EventCallbackFn<T> &callback, int priority)
 {
     EventType eventType = T::GetStaticType();
     auto &listeners = m_eventListeners[eventType];
     RHY_DEBUG("AddListener {0}", typeid(callback).name());
-    EventCallback eventCallback{nullptr, reinterpret_cast<void *>(&callback), [callback](BaseEvent &event) -> bool {
-        return callback(static_cast<T &>(event));
-    }};
+    EventCallback eventCallback{nullptr, reinterpret_cast<void *>(&callback),
+                                [callback](Event &event) -> bool { return callback(static_cast<T &>(event)); },
+                                priority}; // 设置优先级
+
     listeners.push_back(eventCallback);
 }
 
-template <typename T, typename C> void EventManager::AddListener(C *obj, bool (C::*func)(T &))
+template <typename T, typename C> void EventManager::AddListener(C *obj, bool (C::*func)(T &), int priority)
 {
     EventType eventType = T::GetStaticType();
-    auto callback = [obj, func](BaseEvent &event) -> bool { return (obj->*func)(static_cast<T &>(event)); };
+    auto callback = [obj, func](Event &event) -> bool { return (obj->*func)(static_cast<T &>(event)); };
     auto &listeners = m_eventListeners[eventType];
     RHY_DEBUG("AddListener {0}", typeid(callback).name());
     auto a = void_cast(func);
-    EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback};
+    EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback, priority}; // 设置优先级
     listeners.emplace_back(eventCallback);
 }
 

@@ -7,12 +7,9 @@ namespace RhyEngine
 void ApplicationRunner::Run()
 {
     m_app->Run();
+    m_app->Deinitialize();
     m_app.reset();
-}
-
-Application &ApplicationRunner::GetCurrentApp()
-{
-    return *m_app;
+    m_window.reset();
 }
 
 } // namespace RhyEngine

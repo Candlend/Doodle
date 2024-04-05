@@ -1,47 +1,36 @@
 #pragma once
 
+#include "ImGuiManager.h"
 #include "pch.h"
 
-#include "Singleton.h"
-#include "Core.h"
-#include "ApplicationRunner.h"
-#include "EventManager.h"
-#include "LayerStack.h"
 #include "ApplicationEvent.h"
+#include "Core.h"
+#include "EventManager.h"
+#include "Singleton.h"
 #include "Window.h"
+#include <memory>
+
 
 namespace RhyEngine
 {
+class ApplicationRunner;
 
 class RHY_API Application
 {
     friend class ApplicationRunner;
+
 public:
-    Application();
-    virtual ~Application();
+    void Initialize();
+    void Deinitialize();
 
     void Run();
-    void OnEvent(BaseEvent &e);
     bool OnWindowCloseEvent(WindowCloseEvent &e);
+    static Application &Get();
 
-    void PushLayer(BaseLayer *layer);
-    void PushOverlay(BaseLayer *layer);
-
-    inline Window &GetWindow()
-    {
-        return *m_window;
-    };
-
-    inline static Application &Get()
-    {
-        return ApplicationRunner::Get().GetCurrentApp();
-    }
 
 private:
-    std::unique_ptr<Window> m_window;
+    std::weak_ptr<Window> m_window;
     bool m_running = true;
-    LayerStack m_layerStack;
-    EventManager m_eventManager;
 };
 
 } // namespace RhyEngine

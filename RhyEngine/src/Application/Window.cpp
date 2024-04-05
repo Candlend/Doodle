@@ -1,50 +1,47 @@
+#include "Application.h"
+#include "EventManager.h"
 #ifdef RHY_PLATFORM_WINDOWS
 
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
+#include "Window.h"
 #include "ApplicationEvent.h"
 #include "KeyCode.h"
 #include "KeyEvent.h"
 #include "MouseEvent.h"
-#include "Window.h"
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 
 namespace RhyEngine
 {
 
-class WindowsWindow : public Window
+class Window::Impl
 {
 public:
-    explicit WindowsWindow(const WindowProps &props)
+    explicit Impl(const WindowProps &props)
     {
         Init(props);
     }
-    virtual ~WindowsWindow()
+    ~Impl()
     {
         Shutdown();
     }
 
-    void OnUpdate() override
+    void OnUpdate()
     {
         glfwPollEvents();
         glfwSwapBuffers(m_window);
     }
 
-    inline unsigned int GetWidth() const override
+    unsigned int GetWidth() const
     {
         return m_data.Width;
     }
-    inline unsigned int GetHeight() const override
+    unsigned int GetHeight() const
     {
         return m_data.Height;
     }
 
-    void SetEventCallback(const EventCallbackFn &callback) override
-    {
-        m_data.EventCallbackFn = callback;
-    }
-    void SetVSync(bool enabled) override
+    void SetVSync(bool enabled)
     {
         if (enabled)
             glfwSwapInterval(1);
@@ -52,24 +49,24 @@ public:
             glfwSwapInterval(0);
         m_data.VSync = enabled;
     }
-    bool IsVSync() const override
+    bool IsVSync() const
     {
         return m_data.VSync;
     }
-    inline virtual void *GetNativeWindow() const override
+    void *GetNativeWindow() const
     {
         return m_window;
     }
 
 private:
+    EventManager m_eventManager;
+    std::unordered_map<KeyCode, int> m_keyRepeatCounts;
+
     struct WindowData
     {
         std::string Title;
         unsigned int Width, Height;
         bool VSync;
-
-        EventCallbackFn EventCallbackFn;
-        std::unordered_map<KeyCode, int> KeyRepeatCounts;
     };
 
     void Init(const WindowProps &props)
@@ -94,85 +91,78 @@ private:
         glfwMakeContextCurrent(m_window);
         int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
         RHY_CORE_ASSERT(status, "Failed to initialize Glad!");
-        glfwSetWindowUserPointer(m_window, &m_data);
+        glfwSetWindowUserPointer(m_window, this);
         SetVSync(true);
 
         // Set GLFW callbacks
         glfwSetWindowSizeCallback(m_window, [](GLFWwindow *window, int width, int height) {
-            WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-            data.Width = width;
-            data.Height = height;
+            Window::Impl &windowImpl = *static_cast<Window::Impl *>(glfwGetWindowUserPointer(window));
+            windowImpl.m_data.Width = width;
+            windowImpl.m_data.Height = height;
 
             WindowResizeEvent event(width, height);
-            data.EventCallbackFn(event);
         });
 
-        glfwSetWindowCloseCallback(m_window, [](GLFWwindow *window) {
-            WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        glfwSetWindowCloseCallback(m_window, [](GLFWwindow * /*window*/) {
             WindowCloseEvent event;
-            data.EventCallbackFn(event);
+            EventManager::Get().Dispatch(event);
         });
 
         glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int /*scancode*/, int action, int /*mods*/) {
-            WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+            Window::Impl &windowImpl = *static_cast<Window::Impl *>(glfwGetWindowUserPointer(window));
             KeyCode keycode = static_cast<KeyCode>(key);
             switch (action)
             {
             case GLFW_PRESS: {
                 KeyPressedEvent event(keycode, 0);
-                data.EventCallbackFn(event);
-                data.KeyRepeatCounts[keycode] = 0; // 初始化重复计数
+                EventManager::Get().Dispatch(event);// 初始化重复计数
                 break;
             }
             case GLFW_RELEASE: {
                 KeyReleasedEvent event(keycode);
-                data.EventCallbackFn(event);
-                data.KeyRepeatCounts.erase(keycode); // 移除按键的重复计数
+                EventManager::Get().Dispatch(event);
+                windowImpl.m_keyRepeatCounts.erase(keycode); // 移除按键的重复计数
                 break;
             }
             case GLFW_REPEAT: {
-                data.KeyRepeatCounts[keycode]++; // 增加重复计数
-                KeyPressedEvent event(keycode, data.KeyRepeatCounts[keycode]);
-                data.EventCallbackFn(event);
+                windowImpl.m_keyRepeatCounts[keycode]++; // 增加重复计数
+                KeyPressedEvent event(keycode, windowImpl.m_keyRepeatCounts[keycode]);
+                EventManager::Get().Dispatch(event);
                 break;
             }
             }
         });
 
-        glfwSetCharCallback(m_window, [](GLFWwindow *window, unsigned int keycode) {
-            WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        glfwSetCharCallback(m_window, [](GLFWwindow * /*window*/, unsigned int keycode) {
             CharInputEvent event(static_cast<KeyCode>(keycode));
-            data.EventCallbackFn(event);
+            EventManager::Get().Dispatch(event);
         });
 
-        glfwSetMouseButtonCallback(m_window, [](GLFWwindow *window, int button, int action, int /*mods*/) {
-            WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        glfwSetMouseButtonCallback(m_window, [](GLFWwindow * /*window*/, int button, int action, int /*mods*/) {
             MouseButtonCode btn = static_cast<MouseButtonCode>(button);
             switch (action)
             {
             case GLFW_PRESS: {
                 MouseButtonPressedEvent event(btn);
-                data.EventCallbackFn(event);
+                EventManager::Get().Dispatch(event);
                 break;
             }
             case GLFW_RELEASE: {
                 MouseButtonReleasedEvent event(btn);
-                data.EventCallbackFn(event);
+                EventManager::Get().Dispatch(event);
                 break;
             }
             }
         });
 
-        glfwSetScrollCallback(m_window, [](GLFWwindow *window, double xOffset, double yOffset) {
-            WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        glfwSetScrollCallback(m_window, [](GLFWwindow * /*window*/, double xOffset, double yOffset) {
             MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
-            data.EventCallbackFn(event);
+            EventManager::Get().Dispatch(event);
         });
 
-        glfwSetCursorPosCallback(m_window, [](GLFWwindow *window, double xPos, double yPos) {
-            WindowData &data = *static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        glfwSetCursorPosCallback(m_window, [](GLFWwindow * /*window*/, double xPos, double yPos) {
             MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
-            data.EventCallbackFn(event);
+            EventManager::Get().Dispatch(event);
         });
     }
 
@@ -190,9 +180,35 @@ private:
     }
 };
 
-std::unique_ptr<Window> Window::Create(const WindowProps &props)
+Window::Window(const WindowProps &props) : m_impl(std::make_unique<Impl>(props))
 {
-    return std::make_unique<WindowsWindow>(props);
+}
+
+Window::~Window() = default;
+
+void Window::OnUpdate()
+{
+    m_impl->OnUpdate();
+}
+unsigned int Window::GetWidth() const
+{
+    return m_impl->GetWidth();
+}
+unsigned int Window::GetHeight() const
+{
+    return m_impl->GetHeight();
+}
+void Window::SetVSync(bool enabled)
+{
+    m_impl->SetVSync(enabled);
+}
+bool Window::IsVSync() const
+{
+    return m_impl->IsVSync();
+}
+void *Window::GetNativeWindow() const
+{
+    return m_impl->GetNativeWindow();
 }
 
 } // namespace RhyEngine

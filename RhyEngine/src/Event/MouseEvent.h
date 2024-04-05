@@ -5,7 +5,7 @@
 
 namespace RhyEngine {
 
-	class RHY_API MouseMovedEvent : public BaseEvent
+	class RHY_API MouseMovedEvent : public Event
 	{
 	public:
 		MouseMovedEvent(float x, float y)
@@ -27,7 +27,7 @@ namespace RhyEngine {
 		float m_mouseX, m_mouseY;
 	};
 
-	class RHY_API MouseScrolledEvent : public BaseEvent
+	class RHY_API MouseScrolledEvent : public Event
 	{
 	public:
 		MouseScrolledEvent(float xOffset, float yOffset)
@@ -49,24 +49,24 @@ namespace RhyEngine {
 		float m_xOffset, m_yOffset;
 	};
 
-	class RHY_API BaseMouseButtonEvent : public BaseEvent
+	class RHY_API MouseButtonEvent : public Event
 	{
 	public:
 		inline int GetMouseButton() const { return m_button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
-		explicit BaseMouseButtonEvent(MouseButtonCode button)
+		explicit MouseButtonEvent(MouseButtonCode button)
 			: m_button(button) {}
 
 		int m_button;
 	};
 
-	class RHY_API MouseButtonPressedEvent : public BaseMouseButtonEvent
+	class RHY_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
 		explicit MouseButtonPressedEvent(MouseButtonCode button)
-			: BaseMouseButtonEvent(button) {}
+			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{
@@ -78,11 +78,11 @@ namespace RhyEngine {
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class RHY_API MouseButtonReleasedEvent : public BaseMouseButtonEvent
+	class RHY_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
 		explicit MouseButtonReleasedEvent(MouseButtonCode button)
-			: BaseMouseButtonEvent(button) {}
+			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{

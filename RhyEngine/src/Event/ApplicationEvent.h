@@ -4,7 +4,7 @@
 
 namespace RhyEngine
 {
-class RHY_API WindowResizeEvent : public BaseEvent
+class RHY_API WindowResizeEvent : public Event
 {
 public:
     WindowResizeEvent(const unsigned int width, const unsigned int height) : m_width(width), m_height(height)
@@ -34,7 +34,7 @@ private:
     unsigned int m_width, m_height;
 };
 
-class RHY_API WindowCloseEvent : public BaseEvent
+class RHY_API WindowCloseEvent : public Event
 {
 public:
     WindowCloseEvent() = default;
@@ -43,7 +43,7 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
-class RHY_API AppTickEvent : public BaseEvent
+class RHY_API AppTickEvent : public Event
 {
 public:
     AppTickEvent() = default;
@@ -52,7 +52,7 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
-class RHY_API AppUpdateEvent : public BaseEvent
+class RHY_API AppUpdateEvent : public Event
 {
 public:
     AppUpdateEvent() = default;
@@ -61,7 +61,7 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
-class RHY_API AppRenderEvent : public BaseEvent
+class RHY_API AppRenderEvent : public Event
 {
 public:
     AppRenderEvent() = default;
