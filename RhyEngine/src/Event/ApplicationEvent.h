@@ -69,4 +69,13 @@ public:
     EVENT_CLASS_TYPE(AppRender)
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
+
+class RHY_API AppLayoutEvent : public Event
+{
+public:
+    AppLayoutEvent() = default;
+
+    EVENT_CLASS_TYPE(AppLayout)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
 } // namespace RhyEngine

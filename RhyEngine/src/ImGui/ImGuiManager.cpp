@@ -1,4 +1,5 @@
 
+#include "ApplicationEvent.h"
 #include "pch.h"
 #include <GLFW/glfw3.h>
 #include <cstdint>
@@ -53,6 +54,8 @@ void ImGuiManager::Initialize()
     ImGui_ImplOpenGL3_Init(glslVersion);
 }
 
+
+
 void ImGuiManager::Deinitialize()
 {
     ImGui_ImplOpenGL3_Shutdown();
@@ -90,10 +93,8 @@ void ImGuiManager::DrawLayout()
 {
     BeginFrame();
 
-    AppRenderEvent renderEvent;
-    EventManager::Get().Dispatch(renderEvent);
-
-    ImGui::ShowDemoWindow();
+    AppLayoutEvent event;
+    EventManager::Get().Dispatch(event);
 
     EndFrame(); 
 }

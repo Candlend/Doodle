@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Singleton.h"
+#include "ApplicationEvent.h"
 
 namespace RhyEngine
 {
@@ -15,8 +16,6 @@ public:
 protected:
     void BeginFrame();
     void EndFrame();
-
-    float m_time = 0.0f;
 };
 
 } // namespace RhyEngine
