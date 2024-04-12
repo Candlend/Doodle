@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImGuiManager.h"
+#include "imgui.h"
 #include "pch.h"
 
 #include "ApplicationEvent.h"
@@ -8,7 +9,6 @@
 #include "EventManager.h"
 #include "Singleton.h"
 #include "Window.h"
-#include <memory>
 
 
 namespace RhyEngine
@@ -20,17 +20,18 @@ class RHY_API Application
     friend class ApplicationRunner;
 
 public:
-    void Initialize();
-    void Deinitialize();
+    static Application &Get();
+    virtual void Initialize();
+    virtual void Deinitialize();
+    virtual void OnLayout();
 
+protected:
     void Run();
     bool OnWindowCloseEvent(WindowCloseEvent &e);
-    static Application &Get();
-
-
-private:
+    bool OnAppLayoutEvent(AppLayoutEvent &e);
     std::weak_ptr<Window> m_window;
     bool m_running = true;
 };
+
 
 } // namespace RhyEngine

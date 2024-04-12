@@ -1,8 +1,4 @@
-#include "ApplicationRunner.h"
-#include "GLFW/glfw3.h"
-#include "Log.h"
 #include "Sandbox.h"
-#include "Window.h"
 
 
 int main(int /*argc*/, char ** /*argv*/)
