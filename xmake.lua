@@ -2,7 +2,7 @@ set_project("RhyEngine")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
 add_requires("spdlog", "cereal", "nlohmann_json", "glfw", "glad")
-add_requires("imgui docking", {configs = {glfw_opengl3 = true}})
+add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
 
 if is_os("windows") then
     add_defines("RHY_PLATFORM_WINDOWS")
@@ -12,12 +12,9 @@ elseif is_os("macosx") then
     add_defines("RHY_PLATFORM_MACOS")
 end
 
-
-
 set_optimize("fastest")
 set_languages("c++20")
 add_rules("plugin.compile_commands.autoupdate", {outputdir = ".vscode"})
-add_rules("plugin.vsxmake.autoupdate")
 
 -- 在构建后调用创建符号链接的函数
 after_build(function (target)

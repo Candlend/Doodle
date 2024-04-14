@@ -2,25 +2,51 @@
 #include "ApplicationEvent.h"
 #include "pch.h"
 #include <GLFW/glfw3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #include <cstdint>
 #include <glad/glad.h>
 #include <imgui.h>
+#include <filesystem>
 
-#include "Event.h"
 #include "Application.h"
 #include "ApplicationRunner.h"
 #include "Event.h"
+#include "IconsFontAwesome6Pro.h"
+#include "IconsFontAwesome6ProBrands.h"
+#include "ImGuiCustomStyle.h"
 #include "ImGuiManager.h"
 #include "Input.h"
 #include "KeyCode.h"
 #include "KeyEvent.h"
 #include "MouseEvent.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
 
 
 namespace RhyEngine
 {
+
+void ImGuiManager::RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont, std::string iconFont,
+                                std::string brandFont)
+{
+    static const ImWchar ICONS_RANGES[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
+
+    ImGuiIO &io = ImGui::GetIO();
+    ImFontConfig config;
+    std::string path = (std::filesystem::path("assets") / "fonts" / englishFont).string();
+    io.Fonts->AddFontFromFileTTF(path.c_str(), sizeInPixels, &config, io.Fonts->GetGlyphRangesDefault());
+    RHY_CORE_ASSERT(std::filesystem::exists(path), "Font file does not exist: {0}", path);
+    config.MergeMode = true;
+    path = (std::filesystem::path("assets") / "fonts" / chineseFont).string();
+    RHY_CORE_ASSERT(std::filesystem::exists(path), "Font file does not exist: {0}", path);
+    io.Fonts->AddFontFromFileTTF(path.c_str(), sizeInPixels, &config, io.Fonts->GetGlyphRangesChineseFull());
+    path = (std::filesystem::path("assets") / "fonts" / iconFont).string();
+    RHY_CORE_ASSERT(std::filesystem::exists(path), "Font file does not exist: {0}", path);
+    io.Fonts->AddFontFromFileTTF(path.c_str(), sizeInPixels, &config, ICONS_RANGES);
+    path = (std::filesystem::path("assets") / "fonts" / brandFont).string();
+    RHY_CORE_ASSERT(std::filesystem::exists(path), "Font file does not exist: {0}", path);
+    auto *font = io.Fonts->AddFontFromFileTTF(path.c_str(), sizeInPixels, &config, ICONS_RANGES);
+    m_fonts.push_back(font);
+}
 
 void ImGuiManager::Initialize()
 {
@@ -36,25 +62,27 @@ void ImGuiManager::Initialize()
     // io.ConfigViewportsNoTaskBarIcon = true;
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    // ImGui::StyleColorsLight();
+    SetupImGuiStyle();
+    const int SIZE_IN_PIXELS = 20;
+    RegisterFont(SIZE_IN_PIXELS, "MiSans-Light.ttf", "MiSans-Light.ttf", "fa-light-300.ttf", "fa-brands-400.ttf");
+    RegisterFont(SIZE_IN_PIXELS, "MiSans-Regular.ttf", "MiSans-Regular.ttf", "fa-regular-400.ttf", "fa-brands-400.ttf");
+    RegisterFont(SIZE_IN_PIXELS, "MiSans-Bold.ttf", "MiSans-Bold.ttf", "fa-solid-900.ttf", "fa-brands-400.ttf");
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular
     // ones.
     ImGuiStyle &style = ImGui::GetStyle();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        style.WindowRounding = 0.0f;
+        // style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
-    const char* glslVersion = "#version 410";
+    const char *glslVersion = "#version 410";
     auto &window = ApplicationRunner::GetCurrentWindow();
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(window.GetNativeWindow()), true);
     ImGui_ImplOpenGL3_Init(glslVersion);
+
 }
-
-
 
 void ImGuiManager::Deinitialize()
 {
@@ -89,14 +117,20 @@ void ImGuiManager::EndFrame()
     }
 }
 
+void ImGuiManager::ShowDockspace(){
+    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+}
+
 void ImGuiManager::DrawLayout()
 {
     BeginFrame();
 
+    ShowDockspace();
+
     AppLayoutEvent event;
     EventManager::Get().Dispatch(event);
 
-    EndFrame(); 
+    EndFrame();
 }
 
 } // namespace RhyEngine

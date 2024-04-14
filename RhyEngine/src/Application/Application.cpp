@@ -30,7 +30,7 @@ void Application::Run()
 {
     while (m_running)
     {
-        glClearColor(1, 0, 1, 1);
+        glClearColor(0.1f, 0.1f, 0.1f, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGuiManager::Get().DrawLayout();
         m_window.lock()->OnUpdate();
@@ -45,10 +45,6 @@ bool Application::OnWindowCloseEvent(WindowCloseEvent & /*e*/)
 
 void Application::OnLayout()
 {
-    // ImGui::SetCurrentContext(ImGuiManager::Get().GetContext());
-    RHY_DEBUG("OnLayout Start");
-    ImGui::ShowDemoWindow();
-    RHY_DEBUG("OnLayout End");
 }
 
 bool Application::OnAppLayoutEvent(AppLayoutEvent &  /*e*/)

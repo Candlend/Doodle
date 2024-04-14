@@ -20,11 +20,15 @@ public:
         return m_context;
     }
 
+    void RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont, std::string iconFont, std::string brandFont);
+
 protected:
     void BeginFrame();
     void EndFrame();
+    void ShowDockspace();
 
     ImGuiContext *m_context;
+    std::vector<ImFont *> m_fonts;
 };
 
 #ifndef RHY_BUILD_DLL

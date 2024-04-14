@@ -11,8 +11,8 @@
 #endif
 
 #ifdef RHY_ENABLE_ASSERTS
-	#define RHY_ASSERT(x, ...) { if(!(x)) { RHY_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define RHY_CORE_ASSERT(x, ...) { if(!(x)) { RHY_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define RHY_ASSERT(x, ...) { if(!(x)) { RHY_ERROR(__VA_ARGS__); __debugbreak(); } }
+	#define RHY_CORE_ASSERT(x, ...) { if(!(x)) { RHY_CORE_ERROR(+ __VA_ARGS__); __debugbreak(); } }
 #else
 	#define RHY_ASSERT(x, ...)
 	#define RHY_CORE_ASSERT(x, ...)
