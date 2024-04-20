@@ -1,15 +1,15 @@
-set_project("RhyEngine")
+set_project("Doodle")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
-add_requires("spdlog", "cereal", "nlohmann_json", "glfw", "glad")
+add_requires("stb", "spdlog", "cereal", "nlohmann_json", "glfw", "glad")
 add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
 
 if is_os("windows") then
-    add_defines("RHY_PLATFORM_WINDOWS")
+    add_defines("DOO_PLATFORM_WINDOWS")
 elseif is_os("linux") then
-    add_defines("RHY_PLATFORM_LINUX")
+    add_defines("DOO_PLATFORM_LINUX")
 elseif is_os("macosx") then
-    add_defines("RHY_PLATFORM_MACOS")
+    add_defines("DOO_PLATFORM_MACOS")
 end
 
 set_optimize("fastest")
@@ -31,23 +31,24 @@ function traverse_directory(path)
     end
 end
 
-target("RhyEngine")
+target("Doodle")
     set_kind("shared")
-    add_defines("RHY_BUILD_DLL")
+    add_defines("DOO_BUILD_DLL")
+    add_defines("STB_IMAGE_IMPLEMENTATION")
 
     -- 添加源文件
-    add_files("RhyEngine/src/**.cpp")
+    add_files("Doodle/src/**.cpp")
     -- 添加所有子目录到包含路径
-    traverse_directory("RhyEngine/src")
+    traverse_directory("Doodle/src")
     
     -- 添加预编译头
-    set_pcxxheader("RhyEngine/src/pch.h")
+    set_pcxxheader("Doodle/src/pch.h")
 
     -- 添加依赖库
-    add_packages("spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
+    add_packages("stb", "spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
 
     if is_mode("debug") then
-        add_defines("RHY_ENABLE_ASSERTS")
+        add_defines("DOO_ENABLE_ASSERTS")
         set_optimize("none")
     end
     
@@ -58,7 +59,7 @@ target("Sandbox")
     add_files("Sandbox/src/**.cpp")
 
     -- 添加依赖库
-    add_deps("RhyEngine")
-    traverse_directory("RhyEngine/src")
+    add_deps("Doodle")
+    traverse_directory("Doodle/src")
 
     add_packages("spdlog", "imgui", "cereal")
