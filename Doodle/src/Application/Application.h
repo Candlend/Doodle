@@ -10,7 +10,6 @@
 #include "Singleton.h"
 #include "Window.h"
 
-
 namespace Doodle
 {
 class ApplicationRunner;
@@ -24,6 +23,7 @@ public:
     virtual void Initialize();
     virtual void Deinitialize();
     virtual void OnLayout();
+    virtual void OnUpdate();
 
 protected:
     void Run();

@@ -34,7 +34,6 @@ end
 target("Doodle")
     set_kind("shared")
     add_defines("DOO_BUILD_DLL")
-    add_defines("STB_IMAGE_IMPLEMENTATION")
 
     -- 添加源文件
     add_files("Doodle/src/**.cpp")
@@ -49,7 +48,10 @@ target("Doodle")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")
+        -- add_defines("DOO_HIDE_SPLASH")
         set_optimize("none")
+    else 
+        set_optimize("fastest")
     end
     
 target("Sandbox")
@@ -63,3 +65,11 @@ target("Sandbox")
     traverse_directory("Doodle/src")
 
     add_packages("spdlog", "imgui", "cereal")
+
+    if is_mode("debug") then
+        add_defines("DOO_ENABLE_ASSERTS")
+        -- add_defines("DOO_HIDE_SPLASH")
+        set_optimize("none")
+    else 
+        set_optimize("fastest")
+    end

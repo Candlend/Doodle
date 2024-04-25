@@ -14,6 +14,7 @@ namespace Doodle
 void Application::Initialize()
 {
     DOO_CORE_TRACE("Application Start");
+
     ImGuiManager::Get().Initialize();
     EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().AddListener(this, &Application::OnAppLayoutEvent);
@@ -29,14 +30,19 @@ void Application::Deinitialize()
     DOO_CORE_TRACE("Application End");
 }
 
+void Application::OnUpdate()
+{
+    auto window = m_window.lock();
+    window->BeginFrame();
+    ImGuiManager::Get().DrawLayout();
+    window->EndFrame();
+}
+
 void Application::Run()
 {
     while (m_running)
     {
-        auto window = m_window.lock();
-        window->BeginFrame();
-        ImGuiManager::Get().DrawLayout();
-        window->EndFrame();
+        OnUpdate();
     }
 }
 
@@ -50,7 +56,7 @@ void Application::OnLayout()
 {
 }
 
-bool Application::OnWindowResizeEvent(WindowResizeEvent &  e)
+bool Application::OnWindowResizeEvent(WindowResizeEvent &e)
 {
     DOO_CORE_DEBUG(e.ToString());
     auto window = m_window.lock();
@@ -60,7 +66,7 @@ bool Application::OnWindowResizeEvent(WindowResizeEvent &  e)
     return false;
 }
 
-bool Application::OnAppLayoutEvent(AppLayoutEvent &  /*e*/)
+bool Application::OnAppLayoutEvent(AppLayoutEvent & /*e*/)
 {
     OnLayout();
     return false;

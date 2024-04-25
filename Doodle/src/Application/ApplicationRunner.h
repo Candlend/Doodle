@@ -6,7 +6,8 @@
 #include "Singleton.h"
 #include "Window.h"
 #include "Application.h"
-#include <memory>
+#include "SplashScreen.h"
+
 
 namespace Doodle
 {
@@ -26,10 +27,20 @@ public:
     template <typename T>
     void CreateApp(WindowProps props = WindowProps()) // 目前仅支持一个应用程序一个窗口
     {
-        m_window = Window::Create(props);
+#ifndef DOO_HIDE_SPLASH
+        m_window = Window::Create(props, false);
+        if (!m_splashScreen.LoadImage("assets/splash.png")) {
+            DOO_CORE_ERROR("Failed to load splash screen image!");
+        }
+        m_splashScreen.Begin(2.0f);
+#else
+        m_window = Window::Create(props, true);
+#endif
         m_app = std::make_shared<T>();
         m_app->m_window = m_window;
         m_app->Initialize();
+
+        m_splashScreen.End();
     }
 
     void Run();
@@ -47,6 +58,7 @@ public:
 private:
     std::shared_ptr<Window> m_window;
     std::shared_ptr<Application> m_app;
+    SplashScreen m_splashScreen;
 };
 
 } // namespace Doodle

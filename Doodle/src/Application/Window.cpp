@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
 #include <glad/glad.h>
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include "Application.h"
@@ -20,10 +21,11 @@ namespace Doodle
 class Window::Impl
 {
 public:
-    explicit Impl(const WindowProps &props)
+    explicit Impl(const WindowProps &props, bool visible)
     {
-        Init(props);
+        Init(props, visible);
     }
+    
     ~Impl()
     {
         Shutdown();
@@ -76,7 +78,7 @@ private:
         bool VSync;
     };
 
-    void Init(const WindowProps &props)
+    void Init(const WindowProps &props, bool visible)
     {
         m_data.Title = props.Title;
         m_data.Width = props.Width;
@@ -92,7 +94,10 @@ private:
             glfwSetErrorCallback(GLFWErrorCallback);
             s_GLFWInitialized = true;
         }
-
+        if (!visible)
+        {
+            glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        }
         m_window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), m_data.Title.c_str(),
                                     nullptr, nullptr);
         glfwMakeContextCurrent(m_window);
@@ -233,7 +238,7 @@ private:
     }
 };
 
-Window::Window(const WindowProps &props) : m_impl(std::make_unique<Impl>(props))
+Window::Window(const WindowProps &props, bool visible) : m_impl(std::make_unique<Impl>(props, visible))
 {
 }
 

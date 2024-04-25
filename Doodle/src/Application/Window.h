@@ -25,11 +25,11 @@ class DOO_API Window
 public:
     using EventCallbackFn = std::function<void(Event &)>;
 
-    static std::unique_ptr<Window> Create(const WindowProps &props = WindowProps()){
-        return std::make_unique<Window>(props);
+    static std::unique_ptr<Window> Create(const WindowProps &props = WindowProps(), bool visible = true){
+        return std::make_unique<Window>(props, visible);
     }
 
-    explicit Window(const WindowProps &props);
+    explicit Window(const WindowProps &props, bool visible = true);
     ~Window();
     void BeginFrame();
     void EndFrame();
