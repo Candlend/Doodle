@@ -12,15 +12,15 @@ public:
     ~Pimpl() = default;
 
     template<typename fn_t>
-    auto CallImpl(fn_t fn) -> decltype(fn())
+    auto CallImpl(fn_t func) -> decltype(func())
     {
-        if constexpr (std::is_same_v<void, decltype(fn()) >)
+        if constexpr (std::is_same_v<void, decltype(func()) >)
         {
-            fn();
+            func();
         }
         else
         {
-            auto retval = fn();
+            auto retval = func();
             return retval;
         }
     }

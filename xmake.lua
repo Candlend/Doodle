@@ -48,7 +48,7 @@ target("Doodle")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")
-        -- add_defines("DOO_HIDE_SPLASH")
+        add_defines("DOO_HIDE_SPLASH")
         set_optimize("none")
     else 
         set_optimize("fastest")
@@ -68,7 +68,7 @@ target("Sandbox")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")
-        -- add_defines("DOO_HIDE_SPLASH")
+        add_defines("DOO_HIDE_SPLASH")
         set_optimize("none")
     else 
         set_optimize("fastest")

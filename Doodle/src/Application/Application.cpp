@@ -7,6 +7,7 @@
 #include "ImGuiManager.h"
 #include "Log.h"
 #include "imgui.h"
+#include "Renderer.h"
 
 namespace Doodle
 {
@@ -32,9 +33,16 @@ void Application::Deinitialize()
 
 void Application::OnUpdate()
 {
+
+    ImGuiManager::Get().DrawLayout();
+}
+
+void Application::OnRender()
+{
     auto window = m_window.lock();
     window->BeginFrame();
-    ImGuiManager::Get().DrawLayout();
+    Renderer::Get().WaitAndRender();
+    // ImGuiManager::Get().DrawLayout();
     window->EndFrame();
 }
 
@@ -43,6 +51,7 @@ void Application::Run()
     while (m_running)
     {
         OnUpdate();
+        OnRender();
     }
 }
 
@@ -59,10 +68,7 @@ void Application::OnLayout()
 bool Application::OnWindowResizeEvent(WindowResizeEvent &e)
 {
     DOO_CORE_DEBUG(e.ToString());
-    auto window = m_window.lock();
-    window->BeginFrame();
-    ImGuiManager::Get().DrawLayout();
-    window->EndFrame();
+    OnRender();
     return false;
 }
 

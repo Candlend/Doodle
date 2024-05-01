@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "IconsFontAwesome6Pro.h"
 #include "ImGuiUtils.h"
+#include "Renderer.h"
 #include <Doodle.h>
 
 
@@ -27,6 +28,12 @@ public:
     void OnUpdate() override
     {
         Application::OnUpdate();
+    }
+
+    void OnRender() override
+    {
+        Application::OnRender();
+        Renderer::Get().Submit(Renderer::Clear, 0.f, 0.f, 0.f, 1.f);
     }
 
     void OnLayout() override

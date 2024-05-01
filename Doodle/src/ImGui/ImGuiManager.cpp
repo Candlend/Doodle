@@ -108,8 +108,6 @@ void ImGuiManager::EndFrame()
     int displayW, displayH;
     glfwGetFramebufferSize(static_cast<GLFWwindow *>(window.GetNativeWindow()), &displayW, &displayH);
     glViewport(0, 0, displayW, displayH);
-    glClearColor(0.2, 0.2, 0.2, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
