@@ -23,7 +23,7 @@ class Window::Impl
 public:
     explicit Impl(const WindowProps &props, bool visible)
     {
-        Init(props, visible);
+        Initialize(props, visible);
     }
     
     ~Impl()
@@ -78,7 +78,7 @@ private:
         bool VSync;
     };
 
-    void Init(const WindowProps &props, bool visible)
+    void Initialize(const WindowProps &props, bool visible)
     {
         m_data.Title = props.Title;
         m_data.Width = props.Width;

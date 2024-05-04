@@ -20,10 +20,10 @@ public:
     }
 
     static void Clear();
+    void Initialize();
     static void Clear(float r, float g, float b, float a = 1.0f);
     static void SetClearColor(float r, float g, float b, float a);
     static void ClearMagenta();
-    void Init();
     void WaitAndRender();
 
 private:

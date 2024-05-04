@@ -16,7 +16,7 @@ public:
         static T s_Instance;
         static std::once_flag s_Once;
         std::call_once(s_Once, []() {
-            DOO_CORE_INFO("{0} Init", typeid(T).name());
+            DOO_CORE_INFO("{0} Initialize", typeid(T).name());
         });
         return s_Instance;
     }

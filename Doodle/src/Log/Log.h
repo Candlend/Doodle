@@ -10,7 +10,7 @@ namespace Doodle
 class DOO_API Log
 {
 public:
-    static void Init();
+    static void Initialize();
     static void LoadConfig(const std::string &configFile);
     static std::shared_ptr<spdlog::logger> &GetCoreLogger();
     static std::shared_ptr<spdlog::logger> &GetClientLogger();

@@ -4,7 +4,7 @@
 namespace Doodle
 {
 
-void Renderer::Init()
+void Renderer::Initialize()
 {
     // Initialization logic
 }
