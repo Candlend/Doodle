@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Application.h"
-#include "IconsFontAwesome6Pro.h"
-#include "ImGuiUtils.h"
-#include "Renderer.h"
 #include <Doodle.h>
+#include <memory>
 
 
 using namespace Doodle;
@@ -17,6 +14,25 @@ public:
         Application::Initialize();
         ActivateImGuiContext();
         DOO_INFO("Sandbox initialized");
+
+        static float s_Vertices[] = {
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.0f,  0.5f, 0.0f
+		};
+
+		static unsigned int s_Indices[] = {
+			0, 1, 2
+		};
+
+        Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
+
+        m_vb = std::unique_ptr<VertexBuffer>(VertexBuffer::Create());
+		m_vb->SetData(s_Vertices, sizeof(s_Vertices));
+
+		m_ib = std::unique_ptr<IndexBuffer>(IndexBuffer::Create());
+		m_ib->SetData(s_Indices, sizeof(s_Indices));
+
     }
 
     void Deinitialize() override
@@ -30,10 +46,15 @@ public:
         Application::OnUpdate();
     }
 
+
     void OnRender() override
     {
         Application::OnRender();
-        Renderer::Get().Submit(Renderer::Clear, 0.f, 0.f, 0.f, 1.f);
+        Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
+
+        m_vb->Bind();
+		m_ib->Bind();
+		Renderer::DrawIndexed(3);
     }
 
     void OnLayout() override
@@ -52,4 +73,8 @@ public:
             }
         }
     }
+
+private:
+	std::unique_ptr<VertexBuffer> m_vb;
+	std::unique_ptr<IndexBuffer> m_ib;
 };

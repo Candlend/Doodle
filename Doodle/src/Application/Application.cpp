@@ -20,6 +20,8 @@ void Application::Initialize()
     EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().AddListener(this, &Application::OnAppLayoutEvent);
     EventManager::Get().AddListener(this, &Application::OnWindowResizeEvent);
+
+    Renderer::Initialize();
 }
 
 void Application::Deinitialize()
@@ -33,8 +35,6 @@ void Application::Deinitialize()
 
 void Application::OnUpdate()
 {
-
-    ImGuiManager::Get().DrawLayout();
 }
 
 void Application::OnRender()
@@ -42,7 +42,7 @@ void Application::OnRender()
     auto window = m_window.lock();
     window->BeginFrame();
     Renderer::Get().WaitAndRender();
-    // ImGuiManager::Get().DrawLayout();
+    ImGuiManager::Get().DrawLayout();
     window->EndFrame();
 }
 

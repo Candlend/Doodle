@@ -1,32 +1,23 @@
 #include "Renderer.h"
 #include "pch.h"
+#include <functional>
 
 namespace Doodle
 {
 
 void Renderer::Initialize()
 {
-    // Initialization logic
-}
-
-void Renderer::Clear()
-{
-    // Clear logic
+    Renderer::Get().Submit(std::function(RendererAPI::Initialize));
 }
 
 void Renderer::Clear(float r, float g, float b, float a)
 {
-    RendererAPI::Clear(r, g, b, a);
+    Renderer::Get().Submit(std::function(RendererAPI::Clear), r, g, b, a);
 }
 
-void Renderer::ClearMagenta()
+void Renderer::DrawIndexed(unsigned int count)
 {
-    Clear(1, 0, 1);
-}
-
-void Renderer::SetClearColor(float r, float g, float b, float a)
-{
-    // Set clear color logic
+    Renderer::Get().Submit(std::function(RendererAPI::DrawIndexed), count);
 }
 
 void Renderer::WaitAndRender()

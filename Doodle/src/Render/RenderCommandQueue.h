@@ -21,7 +21,7 @@ public:
 private:
     static constexpr std::size_t BUFFER_SIZE = 10 * 1024 * 1024;
     std::byte m_commandBuffer[BUFFER_SIZE] = {};
-    std::byte *m_currentBufferPosition;
+    std::byte *m_currentBufferPtr;
     unsigned int m_commandCount = 0;
 
     void Reset();

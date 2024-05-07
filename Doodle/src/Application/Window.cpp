@@ -25,7 +25,7 @@ public:
     {
         Initialize(props, visible);
     }
-    
+
     ~Impl()
     {
         Shutdown();
@@ -237,6 +237,11 @@ private:
         DOO_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 };
+
+std::unique_ptr<Window> Window::Create(const WindowProps &props, bool visible)
+{
+    return std::make_unique<Window>(props, visible);
+}
 
 Window::Window(const WindowProps &props, bool visible) : m_impl(std::make_unique<Impl>(props, visible))
 {

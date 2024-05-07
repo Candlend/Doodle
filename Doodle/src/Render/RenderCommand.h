@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <functional>
 
 namespace Doodle
 {
@@ -8,7 +9,7 @@ namespace Doodle
 template <typename... Args> class RenderCommand
 {
 public:
-    using ExecuteFn = void (*)(Args...);
+    using ExecuteFn = std::function<void(Args...)>;
 
     explicit RenderCommand(ExecuteFn func, Args... args) : m_func(func), m_args(std::make_tuple(args...))
     {

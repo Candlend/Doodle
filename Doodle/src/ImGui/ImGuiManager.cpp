@@ -123,7 +123,7 @@ void ImGuiManager::EndFrame()
 }
 
 void ImGuiManager::ShowDockspace(){
-    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 }
 
 void ImGuiManager::DrawLayout()
