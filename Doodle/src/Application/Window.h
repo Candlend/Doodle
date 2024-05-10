@@ -27,20 +27,14 @@ public:
 
     static std::unique_ptr<Window> Create(const WindowProps &props = WindowProps(), bool visible = true);
 
-    explicit Window(const WindowProps &props, bool visible = true);
-    ~Window();
-    void BeginFrame();
-    void EndFrame();
-    unsigned int GetWidth() const;
-    unsigned int GetHeight() const;
-    void SetVSync(bool enabled);
-    bool IsVSync() const;
-    void *GetNativeWindow() const;
-
-    static Window &GetCurrentWindow();
-private:
-    class Impl;
-    std::unique_ptr<Impl> m_impl; // 使用 PImpl
+    ~Window() = default;
+    virtual void BeginFrame() = 0;
+    virtual void EndFrame() = 0;
+    virtual unsigned int GetWidth() const = 0;
+    virtual unsigned int GetHeight() const = 0;
+    virtual void SetVSync(bool enabled) = 0;
+    virtual bool IsVSync() const = 0;
+    virtual void *GetNativeWindow() const = 0;
 };
 
 } // namespace Doodle

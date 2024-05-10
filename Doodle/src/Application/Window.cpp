@@ -18,39 +18,39 @@
 namespace Doodle
 {
 
-class Window::Impl
+class WindowsWindow : public Window
 {
 public:
-    explicit Impl(const WindowProps &props, bool visible)
+    explicit WindowsWindow(const WindowProps &props, bool visible)
     {
         Initialize(props, visible);
     }
 
-    ~Impl()
+    ~WindowsWindow()
     {
         Shutdown();
     }
 
-    void BeginFrame()
+    void BeginFrame() override
     {
         glfwPollEvents();
     }
 
-    void EndFrame()
+    void EndFrame() override
     {
         glfwSwapBuffers(m_window);
     }
 
-    unsigned int GetWidth() const
+    unsigned int GetWidth() const override
     {
         return m_data.Width;
     }
-    unsigned int GetHeight() const
+    unsigned int GetHeight() const override
     {
         return m_data.Height;
     }
 
-    void SetVSync(bool enabled)
+    void SetVSync(bool enabled) override
     {
         if (enabled)
             glfwSwapInterval(1);
@@ -58,11 +58,11 @@ public:
             glfwSwapInterval(0);
         m_data.VSync = enabled;
     }
-    bool IsVSync() const
+    bool IsVSync() const override
     {
         return m_data.VSync;
     }
-    void *GetNativeWindow() const
+    void *GetNativeWindow() const override
     {
         return m_window;
     }
@@ -153,9 +153,9 @@ private:
 
         // Set GLFW callbacks
         glfwSetWindowSizeCallback(m_window, [](GLFWwindow *window, int width, int height) {
-            Window::Impl &windowImpl = *static_cast<Window::Impl *>(glfwGetWindowUserPointer(window));
-            windowImpl.m_data.Width = width;
-            windowImpl.m_data.Height = height;
+            WindowsWindow &appWindow = *static_cast<WindowsWindow *>(glfwGetWindowUserPointer(window));
+            appWindow.m_data.Width = width;
+            appWindow.m_data.Height = height;
 
             WindowResizeEvent event(width, height);
             EventManager::Get().Dispatch(event);
@@ -167,7 +167,7 @@ private:
         });
 
         glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int /*scancode*/, int action, int /*mods*/) {
-            Window::Impl &windowImpl = *static_cast<Window::Impl *>(glfwGetWindowUserPointer(window));
+            WindowsWindow &appWindow = *static_cast<WindowsWindow *>(glfwGetWindowUserPointer(window));
             KeyCode keycode = static_cast<KeyCode>(key);
             switch (action)
             {
@@ -179,12 +179,12 @@ private:
             case GLFW_RELEASE: {
                 KeyReleasedEvent event(keycode);
                 EventManager::Get().Dispatch(event);
-                windowImpl.m_keyRepeatCounts.erase(keycode); // 移除按键的重复计数
+                appWindow.m_keyRepeatCounts.erase(keycode); // 移除按键的重复计数
                 break;
             }
             case GLFW_REPEAT: {
-                windowImpl.m_keyRepeatCounts[keycode]++; // 增加重复计数
-                KeyPressedEvent event(keycode, windowImpl.m_keyRepeatCounts[keycode]);
+                appWindow.m_keyRepeatCounts[keycode]++; // 增加重复计数
+                KeyPressedEvent event(keycode, appWindow.m_keyRepeatCounts[keycode]);
                 EventManager::Get().Dispatch(event);
                 break;
             }
@@ -240,42 +240,7 @@ private:
 
 std::unique_ptr<Window> Window::Create(const WindowProps &props, bool visible)
 {
-    return std::make_unique<Window>(props, visible);
-}
-
-Window::Window(const WindowProps &props, bool visible) : m_impl(std::make_unique<Impl>(props, visible))
-{
-}
-
-Window::~Window() = default;
-
-void Window::BeginFrame()
-{
-    m_impl->BeginFrame();
-}
-void Window::EndFrame()
-{
-    m_impl->EndFrame();
-}
-unsigned int Window::GetWidth() const
-{
-    return m_impl->GetWidth();
-}
-unsigned int Window::GetHeight() const
-{
-    return m_impl->GetHeight();
-}
-void Window::SetVSync(bool enabled)
-{
-    m_impl->SetVSync(enabled);
-}
-bool Window::IsVSync() const
-{
-    return m_impl->IsVSync();
-}
-void *Window::GetNativeWindow() const
-{
-    return m_impl->GetNativeWindow();
+    return std::make_unique<WindowsWindow>(props, visible);
 }
 
 } // namespace Doodle
