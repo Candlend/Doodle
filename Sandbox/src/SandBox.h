@@ -32,7 +32,7 @@ public:
 
 		m_ib = std::unique_ptr<IndexBuffer>(IndexBuffer::Create());
 		m_ib->SetData(s_Indices, sizeof(s_Indices));
-
+        m_shader = Shader::Create("assets/shaders/shader.glsl");
     }
 
     void Deinitialize() override
@@ -52,6 +52,7 @@ public:
         Application::OnRender();
         Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
 
+        m_shader->Bind();
         m_vb->Bind();
 		m_ib->Bind();
 		Renderer::DrawIndexed(3);
@@ -77,4 +78,5 @@ public:
 private:
 	std::unique_ptr<VertexBuffer> m_vb;
 	std::unique_ptr<IndexBuffer> m_ib;
+	std::unique_ptr<Shader> m_shader;
 };

@@ -15,7 +15,6 @@ public:
     template <typename... Args>
     static void Submit(std::function<void(Args...)> func, Args... args)
     {
-        DOO_CORE_TRACE("Renderer::Submit -- {0}", func.target_type().name());
         using CommandType = RenderCommand<Args...>;
         auto command = new CommandType(func, args...);
         void *mem = Get().m_commandQueue.Allocate([](void *cmd) { static_cast<CommandType *>(cmd)->Execute(); },

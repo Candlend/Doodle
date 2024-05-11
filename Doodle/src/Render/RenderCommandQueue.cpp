@@ -44,13 +44,6 @@ void *RenderCommandQueue::Allocate(RenderCommandFn func, std::size_t size)
 
 void RenderCommandQueue::Execute()
 {
-    if (m_commandCount == 0) {
-        DOO_CORE_TRACE("RenderCommandQueue::Execute -- No commands to execute");
-        return;
-    }
-
-    DOO_CORE_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_commandCount, (m_currentBufferPtr - m_commandBuffer));
-
     std::byte *buffer = m_commandBuffer;
 
     for (unsigned int i = 0; i < m_commandCount; i++)

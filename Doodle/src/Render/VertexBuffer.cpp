@@ -1,6 +1,6 @@
 #include "VertexBuffer.h"
 #include "Renderer.h"
-#include <Glad/glad.h>
+#include <glad/glad.h>
 
 namespace Doodle
 {

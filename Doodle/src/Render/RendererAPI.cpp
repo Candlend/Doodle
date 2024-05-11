@@ -1,5 +1,5 @@
 
-#include <Glad/glad.h>
+#include <glad/glad.h>
 
 #include "RendererAPI.h"
 
