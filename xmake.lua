@@ -1,7 +1,7 @@
 set_project("Doodle")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
-add_requires("boost", "stb", "spdlog", "cereal", "nlohmann_json", "glfw", "glad")
+add_requires("boost", "stb", "spdlog", "cereal", "nlohmann_json", "glfw", "glad", "glm")
 add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
 
 if is_os("windows") then
@@ -44,7 +44,7 @@ target("Doodle")
     set_pcxxheader("Doodle/src/pch.h")
 
     -- 添加依赖库
-    add_packages("boost", "stb", "spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad")
+    add_packages("boost", "stb", "spdlog", "imgui", "cereal", "nlohmann_json", "glfw", "glad", "glm")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")
@@ -64,7 +64,7 @@ target("Sandbox")
     add_deps("Doodle")
     traverse_directory("Doodle/src")
 
-    add_packages("spdlog", "imgui")
+    add_packages("spdlog", "imgui", "glm")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")

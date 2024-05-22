@@ -51,7 +51,7 @@ public:
     {
         Application::OnRender();
         Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
-
+        m_shader->SetUniform4f("u_Color", 0.8f, 0.3f, 0.2f, 1.0f);
         m_shader->Bind();
         m_vb->Bind();
 		m_ib->Bind();

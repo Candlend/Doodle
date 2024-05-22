@@ -1,3 +1,4 @@
+#include "Core.h"
 #include "pch.h"
 #include <glad/glad.h>
 #include <memory>
@@ -7,6 +8,14 @@
 
 namespace Doodle
 {
+
+#define IMPLEMENT_UNIFORM(suffix, input, glInput)                                                                      \
+    void SetUniform##suffix##input override                                                                            \
+    {                                                                                                                  \
+        GLint location = GetUniformLocation(name);                                                                     \
+        if (location != -1)                                                                                            \
+            glUniform##suffix(glInput);                                                                                \
+    }
 
 class OpenGLShader : public Shader
 {
@@ -138,6 +147,30 @@ private:
             return;
         }
 
+        GLint numUniforms = 0;
+        glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &numUniforms);
+
+        GLint uniformMaxLength = 0;
+        glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniformMaxLength);
+
+        GLint count = -1;
+		GLenum type = 0;
+		GLsizei length;
+		GLint location;
+		std::vector<GLchar> uniformName(uniformMaxLength);
+		for(GLint i = 0; i < numUniforms; i++) {
+			glGetActiveUniform(program, i, uniformMaxLength, &length, &count, &type, uniformName.data());
+			std::string name(uniformName.begin(), uniformName.begin()+length);
+			location = glGetUniformLocation(program, name.c_str());
+			if (location == -1) continue; 
+			m_uniformsCache[name] = location;
+			auto arrayPos = name.find('[');
+			if(arrayPos!=std::string::npos){
+				name = name.substr(0, arrayPos);
+				m_uniformsCache[name] = location;
+			}
+		}
+
         for (auto id : shaderRendererIDs)
             glDetachShader(program, id);
     }
@@ -160,6 +193,153 @@ private:
         return GL_NONE;
     }
 
+    GLint GetUniformLocation(const std::string &name)
+    {
+        auto it = m_uniformsCache.find(name);
+        if (it == m_uniformsCache.end())
+        {
+            return -1;
+        }
+        else
+        {
+            return it->second;
+        }
+    }
+
+    void SetUniform1i(const std::string &name, int v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform1i(location, v);
+    }
+
+    void SetUniform2i(const std::string &name, int v1, int v2) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform2i(location, v1, v2);
+    }
+
+    void SetUniform3i(const std::string &name, int v1, int v2, int v3) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform3i(location, v1, v2, v3);
+    }
+
+    void SetUniform4i(const std::string &name, int v1, int v2, int v3, int v4) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform4i(location, v1, v2, v3, v4);
+    }
+
+    void SetUniform1f(const std::string &name, float v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform1f(location, v);
+    }
+
+    void SetUniform2f(const std::string &name, float v1, float v2) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform2f(location, v1, v2);
+    }
+
+    void SetUniform3f(const std::string &name, float v1, float v2, float v3) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform3f(location, v1, v2, v3);
+    }
+
+    void SetUniform4f(const std::string &name, float v1, float v2, float v3, float v4) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform4f(location, v1, v2, v3, v4);
+    }
+
+    void SetUniform1iv(const std::string &name, int count, int *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform1iv(location, count, v);
+    }
+
+    void SetUniform2iv(const std::string &name, int count, int *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform2iv(location, count, v);
+    }
+
+    void SetUniform3iv(const std::string &name, int count, int *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform3iv(location, count, v);
+    }
+
+    void SetUniform4iv(const std::string &name, int count, int *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform4iv(location, count, v);
+    }
+
+    void SetUniform1fv(const std::string &name, int count, float *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform1fv(location, count, v);
+    }
+
+    void SetUniform2fv(const std::string &name, int count, float *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform2fv(location, count, v);
+    }
+
+    void SetUniform3fv(const std::string &name, int count, float *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform3fv(location, count, v);
+    }
+
+    void SetUniform4fv(const std::string &name, int count, float *v) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniform4fv(location, count, v);
+    }
+
+    void SetUniformMatrix2f(const std::string &name, const glm::mat2 &mat) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniformMatrix2fv(location, 1, GL_FALSE, &mat[0][0]);
+    }
+
+    void SetUniformMatrix3f(const std::string &name, const glm::mat3 &mat) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniformMatrix3fv(location, 1, GL_FALSE, &mat[0][0]);
+    }
+
+    void SetUniformMatrix4f(const std::string &name, const glm::mat4 &mat) override
+    {
+        GLint location = GetUniformLocation(name);
+        if (location != -1)
+            glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
+    }
+
+    std::unordered_map<std::string, GLint> m_uniformsCache;
     RendererID m_rendererID;
     std::string m_shaderSource;
 };
