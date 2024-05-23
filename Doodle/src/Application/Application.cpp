@@ -6,41 +6,56 @@
 #include "EventManager.h"
 #include "ImGuiManager.h"
 #include "Log.h"
-#include "imgui.h"
+#include "Module.h"
 #include "Renderer.h"
+#include "imgui.h"
+
 
 namespace Doodle
 {
+
 
 void Application::Initialize()
 {
     DOO_CORE_TRACE("Application Start");
 
-    ImGuiManager::Get().Initialize();
     EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().AddListener(this, &Application::OnAppLayoutEvent);
     EventManager::Get().AddListener(this, &Application::OnWindowResizeEvent);
-
-    Renderer::Initialize();
+    
+    Renderer::Get().Initialize();
+    ImGuiManager::Get().Initialize();
+    
+    for (auto *module : Module::GetModules())
+    {
+        module->Initialize();
+    }
 }
 
 void Application::Deinitialize()
 {
+    for (auto *module : Module::GetModules())
+    {
+        module->Deinitialize();
+    }
+
+    Renderer::Get().Deinitialize();
+    ImGuiManager::Get().Deinitialize();
+
     EventManager::Get().RemoveListener(this, &Application::OnAppLayoutEvent);
     EventManager::Get().RemoveListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().RemoveListener(this, &Application::OnWindowResizeEvent);
-    ImGuiManager::Get().Deinitialize();
     DOO_CORE_TRACE("Application End");
 }
 
 void Application::OnUpdate()
 {
-}
-
-void Application::OnRender()
-{
     auto window = m_window.lock();
     window->BeginFrame();
+    for (auto *module : Module::GetModules())
+    {
+        module->OnUpdate();
+    }
     Renderer::Get().WaitAndRender();
     ImGuiManager::Get().DrawLayout();
     window->EndFrame();
@@ -51,7 +66,6 @@ void Application::Run()
     while (m_running)
     {
         OnUpdate();
-        OnRender();
     }
 }
 
@@ -63,12 +77,15 @@ bool Application::OnWindowCloseEvent(WindowCloseEvent & /*e*/)
 
 void Application::OnLayout()
 {
+    for (auto *module : Module::GetModules())
+    {
+        module->OnLayout();
+    }
 }
 
-bool Application::OnWindowResizeEvent(WindowResizeEvent &e)
+bool Application::OnWindowResizeEvent(WindowResizeEvent & /*e*/)
 {
-    DOO_CORE_DEBUG(e.ToString());
-    OnRender();
+    OnUpdate();
     return false;
 }
 

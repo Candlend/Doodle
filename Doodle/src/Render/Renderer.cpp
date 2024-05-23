@@ -10,6 +10,10 @@ void Renderer::Initialize()
     Renderer::Get().Submit(std::function(RendererAPI::Initialize));
 }
 
+void Renderer::Deinitialize()
+{
+}
+
 void Renderer::Clear(float r, float g, float b, float a)
 {
     Renderer::Get().Submit(std::function(RendererAPI::Clear), r, g, b, a);

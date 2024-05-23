@@ -24,7 +24,6 @@ public:
     virtual void Deinitialize();
     virtual void OnLayout();
     virtual void OnUpdate();
-    virtual void OnRender();
 
 protected:
     void Run();
