@@ -19,9 +19,9 @@ void Renderer::Clear(float r, float g, float b, float a)
     Renderer::Get().Submit(std::function(RendererAPI::Clear), r, g, b, a);
 }
 
-void Renderer::DrawIndexed(unsigned int count)
+void Renderer::DrawIndexed(unsigned int count, bool depthTest)
 {
-    Renderer::Get().Submit(std::function(RendererAPI::DrawIndexed), count);
+    Renderer::Get().Submit(std::function(RendererAPI::DrawIndexed), count, depthTest);
 }
 
 void Renderer::WaitAndRender()

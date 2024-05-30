@@ -8,7 +8,7 @@ namespace Doodle
 class OpenGLIndexBuffer : public IndexBuffer
 {
 public:
-    explicit OpenGLIndexBuffer(unsigned int size = 0) : m_rendererId(0), m_size(size)
+    explicit OpenGLIndexBuffer(uint32_t size = 0) : m_rendererId(0), m_size(size)
     {
         std::function func = [this]() { glGenBuffers(1, &m_rendererId); };
         Renderer::Get().Submit(func);
@@ -20,7 +20,7 @@ public:
         Renderer::Get().Submit(func);
     }
 
-    void SetData(void *buffer, unsigned int size, unsigned int offset) override
+    void SetData(void *buffer, uint32_t size, uint32_t offset) override
     {
         std::function func = [this, buffer, size, offset]() {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererId);
@@ -35,21 +35,26 @@ public:
         Renderer::Get().Submit(func);
     }
 
-    unsigned int GetSize() const override
+    uint32_t GetCount() const override
+    {
+        return m_size / sizeof(uint32_t);
+    }
+
+    uint32_t GetSize() const override
     {
         return m_size;
     }
-    RendererID GetRendererID() const override
+    uint32_t GetRendererID() const override
     {
         return m_rendererId;
     }
 
 private:
-    unsigned int m_rendererId; // OpenGL buffer ID
-    unsigned int m_size;       // Size of the buffer
+    uint32_t m_rendererId; // OpenGL buffer ID
+    uint32_t m_size;       // Size of the buffer
 };
 
-std::unique_ptr<IndexBuffer> IndexBuffer::Create(unsigned int size)
+std::unique_ptr<IndexBuffer> IndexBuffer::Create(uint32_t size)
 {
     return std::make_unique<OpenGLIndexBuffer>(size);
 }

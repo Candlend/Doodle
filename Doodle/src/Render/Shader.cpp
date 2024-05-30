@@ -1,5 +1,6 @@
 #include "Core.h"
 #include "pch.h"
+#include <cstdint>
 #include <glad/glad.h>
 #include <memory>
 
@@ -340,7 +341,7 @@ private:
     }
 
     std::unordered_map<std::string, GLint> m_uniformsCache;
-    RendererID m_rendererID;
+    uint32_t m_rendererID;
     std::string m_shaderSource;
 };
 
