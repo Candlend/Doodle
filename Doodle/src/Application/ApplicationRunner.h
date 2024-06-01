@@ -40,7 +40,6 @@ public:
         m_app = std::make_shared<T>();
         m_app->m_window = m_window;
         m_app->Initialize();
-
         m_splashScreen.End();
     }
 

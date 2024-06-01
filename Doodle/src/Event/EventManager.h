@@ -18,7 +18,7 @@ struct EventCallback
     EventCallbackFn<Event> Callback;
     int Priority; // 新增优先级成员
 };
-
+// NOLINTBEGIN
 template <typename T, typename R, typename E> void *void_cast(R (T::*f)(E))
 {
     union {
@@ -28,7 +28,7 @@ template <typename T, typename R, typename E> void *void_cast(R (T::*f)(E))
     pf = f;
     return p;
 }
-
+// NOLINTEND
 struct PairHash
 {
     template <class T1, class T2> std::size_t operator()(const std::pair<T1, T2> &pair) const

@@ -22,6 +22,7 @@ public:
 
     void SetData(void *buffer, uint32_t size, uint32_t offset) override
     {
+        m_size = size;
         std::function func = [this, buffer, size, offset]() {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererId);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
