@@ -1,5 +1,6 @@
 #pragma once
 
+#include "imgui.h"
 #include <Doodle.h>
 
 using namespace Doodle;
@@ -32,7 +33,9 @@ public:
     void OnUpdate() override
     {
         Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
-        m_shader->SetUniform4f("u_Color", 0.8f, 0.3f, 0.2f, 1.0f);
+        float timeValue = Application::Time::GetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        m_shader->SetUniform4f("u_Color", 0.8f, greenValue, 0.2f, 1.0f);
         m_shader->Bind();
         m_vb->Bind();
 		m_ib->Bind();
@@ -43,15 +46,11 @@ public:
     {
         ImGui::ShowDemoWindow();
 
-        ImGuiUtils::WindowScope scope("测试");
+        ImGuiUtils::WindowScope scope("调试");
         if (scope.IsOpened())
         {
-            ImGui::Text("%s 你好，世界！", ICON_FA_WINDOW);
-            ImGuiUtils::ChildWindowScope childWindow("childWindow", ImVec2(200, 200), ImGuiChildFlags_Border);
-            if (childWindow.IsOpened())
-            {
-                ImGui::Text("Hello, child window!");
-            }
+            ImGui::LabelText("时间", "%f", Application::Time::GetTime());
+            ImGui::LabelText("帧率", "%f", Application::Time::GetFPS());
         }
     }
 

@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <glfw/glfw3.h>
 
 #include "Application.h"
 #include "ApplicationEvent.h"
@@ -14,6 +15,31 @@
 namespace Doodle
 {
 
+float Application::Time::s_Time = 0.0f;
+float Application::Time::s_DeltaTime = 0.0f;
+float Application::Time::s_LastFrameTime = 0.0f;
+
+float Application::Time::GetTime()
+{
+    return s_Time;
+}
+
+float Application::Time::GetDeltaTime()
+{
+    return s_DeltaTime;
+}
+
+void Application::Time::Update()
+{
+    s_Time = static_cast<float>(glfwGetTime());
+    s_DeltaTime = GetTime() - s_LastFrameTime;
+    s_LastFrameTime = GetTime();
+}
+
+float Application::Time::GetFPS()
+{
+    return 1.0f / s_DeltaTime;
+}
 
 void Application::Initialize()
 {
@@ -65,6 +91,7 @@ void Application::Run()
 {
     while (m_running)
     {
+        Time::Update();
         OnUpdate();
     }
 }
