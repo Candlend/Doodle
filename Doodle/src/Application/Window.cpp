@@ -10,6 +10,7 @@
 #include "Application.h"
 #include "ApplicationEvent.h"
 #include "EventManager.h"
+#include "GraphicsContext.h" // Add this line to include the header file for GraphicsContext
 #include "KeyCode.h"
 #include "KeyEvent.h"
 #include "MouseEvent.h"
@@ -38,7 +39,7 @@ public:
 
     void EndFrame() override
     {
-        glfwSwapBuffers(m_window);
+        m_context->SwapBuffers();
     }
 
     unsigned int GetWidth() const override
@@ -68,7 +69,6 @@ public:
     }
 
 private:
-    EventManager m_eventManager;
     std::unordered_map<KeyCode, int> m_keyRepeatCounts;
 
     struct WindowData
@@ -100,9 +100,9 @@ private:
         }
         m_window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), m_data.Title.c_str(),
                                     nullptr, nullptr);
-        glfwMakeContextCurrent(m_window);
-        int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-        DOO_CORE_ASSERT(status, "Failed to initialize Glad!");
+        m_context = GraphicsContext::Create(m_window);
+        m_context->Initialize();
+
         glfwSetWindowUserPointer(m_window, this);
         SetVSync(true);
 
@@ -230,6 +230,7 @@ private:
     }
 
     GLFWwindow *m_window;
+    GraphicsContext *m_context;
     WindowData m_data;
 
     static void GLFWErrorCallback(int error, const char *description)
