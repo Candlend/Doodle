@@ -25,7 +25,7 @@ class DOO_API Window
 public:
     using EventCallbackFn = std::function<void(Event &)>;
 
-    static std::unique_ptr<Window> Create(const WindowProps &props = WindowProps(), bool visible = true);
+    static std::shared_ptr<Window> Create(const WindowProps &props = WindowProps(), bool visible = true);
 
     ~Window() = default;
     virtual void BeginFrame() = 0;

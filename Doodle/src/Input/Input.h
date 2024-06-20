@@ -45,7 +45,7 @@ protected:
     virtual float GetMouseYImpl() = 0;
 
 private:
-    static std::unique_ptr<Input> s_Instance; // 使用智能指针
+    static std::shared_ptr<Input> s_Instance; // 使用智能指针
 };
 
 } // namespace Doodle

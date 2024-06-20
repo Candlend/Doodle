@@ -239,9 +239,9 @@ private:
     }
 };
 
-std::unique_ptr<Window> Window::Create(const WindowProps &props, bool visible)
+std::shared_ptr<Window> Window::Create(const WindowProps &props, bool visible)
 {
-    return std::make_unique<WindowsWindow>(props, visible);
+    return std::make_shared<WindowsWindow>(props, visible);
 }
 
 } // namespace Doodle

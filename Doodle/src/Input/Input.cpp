@@ -53,7 +53,7 @@ protected:
 };
 
 // 静态实例化
-std::unique_ptr<Input> Input::s_Instance = std::make_unique<InputImpl>();
+std::shared_ptr<Input> Input::s_Instance = std::make_shared<InputImpl>();
 
 } // namespace Doodle
 

@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include <Doodle.h>
+#include <memory>
 
 using namespace Doodle;
 
@@ -22,11 +23,11 @@ public:
 
         Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
 
-        m_vb = std::unique_ptr<VertexBuffer>(VertexBuffer::Create());
-		m_vb->SetData(s_Vertices, sizeof(s_Vertices));
+        m_vb = VertexBuffer::Create();
+        m_vb->SetData(s_Vertices, sizeof(s_Vertices));
 
-		m_ib = std::unique_ptr<IndexBuffer>(IndexBuffer::Create());
-		m_ib->SetData(s_Indices, sizeof(s_Indices));
+        m_ib = IndexBuffer::Create();
+        m_ib->SetData(s_Indices, sizeof(s_Indices));
         m_shader = Shader::Create("assets/shaders/shader.glsl");
     }
 
@@ -59,7 +60,7 @@ public:
     {
     }
 private:
-	std::unique_ptr<VertexBuffer> m_vb;
-	std::unique_ptr<IndexBuffer> m_ib;
-	std::unique_ptr<Shader> m_shader;
+    std::shared_ptr<VertexBuffer> m_vb;
+    std::shared_ptr<IndexBuffer> m_ib;
+    std::shared_ptr<Shader> m_shader;
 };

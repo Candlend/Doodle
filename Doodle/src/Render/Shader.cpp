@@ -345,9 +345,9 @@ private:
     std::string m_shaderSource;
 };
 
-std::unique_ptr<Shader> Shader::Create(const std::string &filepath)
+std::shared_ptr<Shader> Shader::Create(const std::string &filepath)
 {
-    return std::make_unique<OpenGLShader>(filepath);
+    return std::make_shared<OpenGLShader>(filepath);
 }
 
 } // namespace Doodle

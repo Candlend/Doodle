@@ -3,6 +3,7 @@
 #include "pch.h"
 
 #include "Renderer.h"
+#include <memory>
 
 namespace Doodle
 {
@@ -10,7 +11,7 @@ namespace Doodle
 class DOO_API IndexBuffer
 {
 public:
-    static std::unique_ptr<IndexBuffer> Create(uint32_t size = 0);
+    static std::shared_ptr<IndexBuffer> Create(uint32_t size = 0);
     ~IndexBuffer() = default;
     void SetData(void *buffer, uint32_t size)
     {

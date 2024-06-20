@@ -9,7 +9,7 @@ namespace Doodle
 class DOO_API Shader
 {
 public:
-    static std::unique_ptr<Shader> Create(const std::string &filepath);
+    static std::shared_ptr<Shader> Create(const std::string &filepath);
     virtual void Bind() = 0;
 
     virtual void SetUniform1i(const std::string &name, int v) = 0;

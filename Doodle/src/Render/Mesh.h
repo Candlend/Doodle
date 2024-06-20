@@ -43,8 +43,8 @@ private:
     std::vector<Vertex> m_vertices;
     std::vector<Index> m_indices;
 
-    std::unique_ptr<VertexBuffer> m_vertexBuffer;
-    std::unique_ptr<IndexBuffer> m_indexBuffer;
+    std::shared_ptr<VertexBuffer> m_vertexBuffer;
+    std::shared_ptr<IndexBuffer> m_indexBuffer;
 
     std::string m_filePath;
 };

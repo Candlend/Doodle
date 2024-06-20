@@ -55,9 +55,9 @@ private:
     uint32_t m_size;       // Size of the buffer
 };
 
-std::unique_ptr<IndexBuffer> IndexBuffer::Create(uint32_t size)
+std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t size)
 {
-    return std::make_unique<OpenGLIndexBuffer>(size);
+    return std::make_shared<OpenGLIndexBuffer>(size);
 }
 
 } // namespace Doodle
