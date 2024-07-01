@@ -4,7 +4,9 @@
 #include <glm/glm.hpp>
 
 #include "IndexBuffer.h"
+#include "Renderer.h"
 #include "VertexBuffer.h"
+
 
 namespace Doodle
 {

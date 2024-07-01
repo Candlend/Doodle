@@ -1,6 +1,7 @@
 #include "VertexBuffer.h"
 #include "Renderer.h"
 #include <glad/glad.h>
+#include <memory>
 
 namespace Doodle
 {
@@ -52,9 +53,9 @@ private:
     uint32_t m_size;       // Size of the buffer
 };
 
-std::unique_ptr<VertexBuffer> VertexBuffer::Create(uint32_t size)
+std::shared_ptr<VertexBuffer> VertexBuffer::Create(uint32_t size)
 {
-    return std::make_unique<OpenGLVertexBuffer>(size);
+    return std::make_shared<OpenGLVertexBuffer>(size);
 }
 
 } // namespace Doodle

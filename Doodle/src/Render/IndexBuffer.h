@@ -2,9 +2,6 @@
 
 #include "pch.h"
 
-#include "Renderer.h"
-#include <memory>
-
 namespace Doodle
 {
 
@@ -24,5 +21,5 @@ public:
     virtual uint32_t GetSize() const = 0;
     virtual uint32_t GetRendererID() const = 0;
 };
-
+using IBO = IndexBuffer;
 } // namespace Doodle

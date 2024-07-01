@@ -23,11 +23,11 @@ public:
 
         Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
 
-        m_vb = VertexBuffer::Create();
-        m_vb->SetData(s_Vertices, sizeof(s_Vertices));
+        m_vbo = VBO::Create();
+        m_vbo->SetData(s_Vertices, sizeof(s_Vertices));
 
-        m_ib = IndexBuffer::Create();
-        m_ib->SetData(s_Indices, sizeof(s_Indices));
+        m_ibo = IBO::Create();
+        m_ibo->SetData(s_Indices, sizeof(s_Indices));
         m_shader = Shader::Create("assets/shaders/shader.glsl");
     }
 
@@ -38,8 +38,8 @@ public:
         float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         m_shader->SetUniform4f("u_Color", 0.8f, greenValue, 0.2f, 1.0f);
         m_shader->Bind();
-        m_vb->Bind();
-		m_ib->Bind();
+        m_vbo->Bind();
+		m_ibo->Bind();
 		Renderer::DrawIndexed(3);
     }
 
@@ -60,7 +60,7 @@ public:
     {
     }
 private:
-    std::shared_ptr<VertexBuffer> m_vb;
-    std::shared_ptr<IndexBuffer> m_ib;
+    std::shared_ptr<VBO> m_vbo;
+    std::shared_ptr<IBO> m_ibo;
     std::shared_ptr<Shader> m_shader;
 };
