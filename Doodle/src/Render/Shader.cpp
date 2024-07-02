@@ -25,14 +25,12 @@ public:
     explicit OpenGLShader(const std::string &filepath)
     {
         ReadShaderFromFile(filepath);
-        std::function func = [this]() { CompileAndUploadShader(); };
-        Renderer::Get().Submit(func);
+        Renderer::Submit([this]() { CompileAndUploadShader(); });
     }
 
     virtual void Bind() override
     {
-        std::function func = [this]() { glUseProgram(m_rendererID); };
-        Renderer::Get().Submit(func);
+        Renderer::Submit([this]() { glUseProgram(m_rendererID); });
     }
 
 private:

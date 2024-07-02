@@ -22,7 +22,10 @@ public:
                                                 sizeof(CommandType));
         new (mem) CommandType(*command);
     }
-
+    static void Submit(std::function<void()> func)
+    {
+        Submit<>(func);
+    }
     static void Initialize();
     static void Deinitialize();
     static void Clear(float r, float g, float b, float a = 1.0f);

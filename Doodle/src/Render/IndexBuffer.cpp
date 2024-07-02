@@ -10,30 +10,26 @@ class OpenGLIndexBuffer : public IndexBuffer
 public:
     explicit OpenGLIndexBuffer(uint32_t size = 0) : m_rendererId(0), m_size(size)
     {
-        std::function func = [this]() { glGenBuffers(1, &m_rendererId); };
-        Renderer::Get().Submit(func);
+        Renderer::Submit([this]() { glGenBuffers(1, &m_rendererId); });
     }
 
     ~OpenGLIndexBuffer()
     {
-        std::function func = [this]() { glDeleteBuffers(1, &m_rendererId); };
-        Renderer::Get().Submit(func);
+        Renderer::Submit([this]() { glDeleteBuffers(1, &m_rendererId); });
     }
 
     void SetData(void *buffer, uint32_t size, uint32_t offset) override
     {
         m_size = size;
-        std::function func = [this, buffer, size, offset]() {
+        Renderer::Submit([this, buffer, size, offset]() {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererId);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
-        };
-        Renderer::Get().Submit(func);
+        });
     }
 
     void Bind() const override
     {
-        std::function func = [this]() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererId); };
-        Renderer::Get().Submit(func);
+        Renderer::Submit([this]() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererId); });
     }
 
     uint32_t GetCount() const override

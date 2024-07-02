@@ -48,8 +48,8 @@ void Application::Initialize()
     EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().AddListener(this, &Application::OnAppLayoutEvent);
     EventManager::Get().AddListener(this, &Application::OnWindowResizeEvent);
-    
-    Renderer::Get().Initialize();
+
+    Renderer::Initialize();
     ImGuiManager::Get().Initialize();
     
     for (auto *module : Module::GetModules())
@@ -65,7 +65,7 @@ void Application::Deinitialize()
         module->Deinitialize();
     }
 
-    Renderer::Get().Deinitialize();
+    Renderer::Deinitialize();
     ImGuiManager::Get().Deinitialize();
 
     EventManager::Get().RemoveListener(this, &Application::OnAppLayoutEvent);

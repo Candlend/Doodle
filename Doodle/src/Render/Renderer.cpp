@@ -7,7 +7,7 @@ namespace Doodle
 
 void Renderer::Initialize()
 {
-    Renderer::Get().Submit(std::function(RendererAPI::Initialize));
+    Renderer::Submit(std::function(RendererAPI::Initialize));
 }
 
 void Renderer::Deinitialize()
@@ -16,12 +16,12 @@ void Renderer::Deinitialize()
 
 void Renderer::Clear(float r, float g, float b, float a)
 {
-    Renderer::Get().Submit(std::function(RendererAPI::Clear), r, g, b, a);
+    Renderer::Submit(std::function(RendererAPI::Clear), r, g, b, a);
 }
 
 void Renderer::DrawIndexed(unsigned int count, bool depthTest)
 {
-    Renderer::Get().Submit(std::function(RendererAPI::DrawIndexed), count, depthTest);
+    Renderer::Submit(std::function(RendererAPI::DrawIndexed), count, depthTest);
 }
 
 void Renderer::WaitAndRender()

@@ -44,6 +44,7 @@ void *RenderCommandQueue::Allocate(RenderCommandFn func, std::size_t size)
 
 void RenderCommandQueue::Execute()
 {
+    DOO_CORE_DEBUG("RenderCommandQueue::Execute {0} commands", m_commandCount);
     std::byte *buffer = m_commandBuffer;
 
     for (unsigned int i = 0; i < m_commandCount; i++)
