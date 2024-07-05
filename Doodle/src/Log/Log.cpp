@@ -1,13 +1,14 @@
 #include "pch.h"
-#include "Log.h"
-
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <boost/stacktrace.hpp>
 #include <nlohmann/json.hpp>
+#include <queue>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <unordered_map>
 
-#include "Utils.h"
 #include "Log.h"
+#include "Utils.h"
+#include "spdlog/fmt/bundled/format.h"
 
 using json = nlohmann::json;
 
@@ -16,6 +17,68 @@ namespace Doodle
 
 std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
 std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
+std::deque<LogInfo> Log::s_LogInfos;
+std::unordered_map<LogType, int> Log::s_LogInfoCount;
+
+int Log::GetLogCount(LogType type)
+{
+    return Log::s_LogInfoCount[type];
+}
+
+class Log::ImGuiLogSink : public spdlog::sinks::base_sink<std::mutex>
+{
+public:
+    void sink_it_(const spdlog::details::log_msg &msg) override
+    {
+        spdlog::memory_buf_t formatted;
+        formatter_->format(msg, formatted);
+        LogType logType = LogType::Log; // 默认日志类型
+        if (msg.level == spdlog::level::warn)
+        {
+            logType = LogType::Warning;
+            Log::s_LogInfoCount[LogType::Warning]++;
+        }
+        else if (msg.level == spdlog::level::err)
+        {
+            logType = LogType::Error;
+            Log::s_LogInfoCount[LogType::Error]++;
+        }
+        else
+        {
+            Log::s_LogInfoCount[LogType::Log]++;
+        }
+        std::string formattedStr = fmt::to_string(formatted);
+        // 将日志消息添加到日志列表
+        boost::stacktrace::stacktrace st;
+        std::ostringstream oss;
+        oss << st;
+        Log::s_LogInfos.push_back(LogInfo{formattedStr, oss.str(), logType});
+        // 限制日志数量
+        while (Log::s_LogInfos.size() > Log::MAX_LOG_COUNT)
+        {
+            Log::s_LogInfos.pop_front();
+        }
+    }
+
+    void flush_() override
+    {
+        // 此处可以实现 flush 逻辑（如写入文件），但在 ImGui 中通常不需要
+    }
+};
+
+void Log::Clear()
+{
+    Log::s_LogInfos.clear();
+    for (auto &[type, count] : Log::s_LogInfoCount)
+    {
+        count = 0;
+    }
+}
+
+const std::deque<LogInfo> &Log::GetLogs()
+{
+    return Log::s_LogInfos;
+}
 
 void Log::Initialize()
 {
@@ -82,6 +145,9 @@ void Log::LoadConfig(const std::string &configFile)
             std::make_shared<spdlog::sinks::rotating_file_sink_mt>(coreLogFile, coreLogFileSize, coreLogFileCount);
         s_CoreLogger->sinks().push_back(coreRotatingSink);
 
+        auto coreImGuiSink = std::make_shared<ImGuiLogSink>();
+        s_CoreLogger->sinks().push_back(coreImGuiSink);
+
         // 读取日志格式
         std::string coreLogPattern = coreConfig.value("log_pattern", "%^[%Y-%m-%d %H:%M:%S] %n: %v%$");
         s_CoreLogger->set_pattern(coreLogPattern);
@@ -115,6 +181,8 @@ void Log::LoadConfig(const std::string &configFile)
         auto clientRotatingSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             clientLogFile, clientLogFileSize, clientLogFileCount);
         s_ClientLogger->sinks().push_back(clientRotatingSink);
+        auto clientImGuiSink = std::make_shared<ImGuiLogSink>();
+        s_ClientLogger->sinks().push_back(clientImGuiSink);
 
         // 读取日志格式
         std::string clientLogPattern = clientConfig.value("log_pattern", "%^[%Y-%m-%d %H:%M:%S] %n: %v%$");

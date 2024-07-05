@@ -1,11 +1,30 @@
 #pragma once
 
 #include "Core.h"
-#include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
+#include <queue>
+#include <spdlog/spdlog.h>
+#include <unordered_map>
+
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/base_sink.h>
 
 namespace Doodle
 {
+
+enum class LogType
+{
+    Log,
+    Warning,
+    Error,
+};
+
+// 日志结构
+struct LogInfo
+{
+    std::string Message;
+    std::string Stacktrace;
+    LogType Type;
+};
 
 class DOO_API Log
 {
@@ -14,11 +33,18 @@ public:
     static void LoadConfig(const std::string &configFile);
     static std::shared_ptr<spdlog::logger> &GetCoreLogger();
     static std::shared_ptr<spdlog::logger> &GetClientLogger();
+    static const std::deque<LogInfo> &GetLogs();
+    static int GetLogCount(LogType type);
+    static void Clear();
 
 private:
+    class ImGuiLogSink;
     static void SetLogLevel(const std::string &levelStr, std::shared_ptr<spdlog::logger> &logger);
     static std::shared_ptr<spdlog::logger> s_CoreLogger;
     static std::shared_ptr<spdlog::logger> s_ClientLogger;
+    static std::deque<LogInfo> s_LogInfos;
+    static std::unordered_map<LogType, int> s_LogInfoCount;
+    static const int MAX_LOG_COUNT = 100;
 };
 
 } // namespace Doodle
