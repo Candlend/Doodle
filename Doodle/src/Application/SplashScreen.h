@@ -19,6 +19,11 @@ public:
 
     void End();
 
+    void *GetNativeWindow() const
+    {
+        return m_splashScreenWindow;
+    }
+
 private:
     void *m_appWindow;
     void *m_splashScreenWindow;

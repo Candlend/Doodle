@@ -2,7 +2,8 @@
 
 #include "pch.h"
 
-inline std::string NormalizePath(const std::string &path) {
+inline std::string NormalizePath(const std::string &path)
+{
     std::string normalized = path;
     for (char &c : normalized) {
 #ifdef DOO_PLATFORM_WINDOWS

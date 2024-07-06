@@ -16,7 +16,7 @@ public:
     }
     virtual void SetData(void *buffer, uint32_t size, uint32_t offset) = 0;
     virtual void Bind() const = 0;
-
+    
     virtual uint32_t GetSize() const = 0;
     virtual uint32_t GetRendererID() const = 0;
 };
