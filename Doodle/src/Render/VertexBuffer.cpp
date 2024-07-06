@@ -1,4 +1,5 @@
 #include "VertexBuffer.h"
+#include "Log.h"
 #include "Renderer.h"
 #include <glad/glad.h>
 #include <memory>
@@ -11,12 +12,18 @@ class OpenGLVertexBuffer : public VertexBuffer
 public:
     explicit OpenGLVertexBuffer(uint32_t size = 0) : m_rendererId(0), m_size(size)
     {
-        Renderer::Submit([this]() { glGenBuffers(1, &m_rendererId); });
+        Renderer::Submit([this]() {
+            glGenBuffers(1, &m_rendererId);
+            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> created", m_rendererId);
+        });
     }
 
     ~OpenGLVertexBuffer()
     {
-        Renderer::Submit([this]() { glDeleteBuffers(1, &m_rendererId); });
+        Renderer::Submit([this]() {
+            glDeleteBuffers(1, &m_rendererId);
+            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> destroyed", m_rendererId);
+        });
     }
 
     void SetData(void *buffer, uint32_t size, uint32_t offset) override
@@ -27,12 +34,17 @@ public:
 
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);
         });
     }
 
     void Bind() const override
     {
-        Renderer::Submit([this]() { glBindBuffer(GL_ARRAY_BUFFER, m_rendererId); });
+        Renderer::Submit([this]() {
+            glBindBuffer(GL_ARRAY_BUFFER, m_rendererId);
+            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> bound", m_rendererId);
+        });
     }
 
     uint32_t GetSize() const override

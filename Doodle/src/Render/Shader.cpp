@@ -25,12 +25,18 @@ public:
     explicit OpenGLShader(const std::string &filepath)
     {
         ReadShaderFromFile(filepath);
-        Renderer::Submit([this]() { CompileAndUploadShader(); });
+        Renderer::Submit([this, filepath]() {
+            CompileAndUploadShader();
+            DOO_CORE_TRACE("OpenGLShader <{0}> created: {1}", m_rendererID, filepath);
+        });
     }
 
     virtual void Bind() override
     {
-        Renderer::Submit([this]() { glUseProgram(m_rendererID); });
+        Renderer::Submit([this]() {
+            glUseProgram(m_rendererID);
+            DOO_CORE_TRACE("OpenGLShader <{0}> bound", m_rendererID);
+        });
     }
 
 private:

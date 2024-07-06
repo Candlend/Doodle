@@ -1,6 +1,6 @@
 {
     "core":{
-        "log_level": "trace",
+        "log_level": "debug",
         "log_pattern": "%^[%Y-%m-%d %H:%M:%S] (%s:%#) %n: %v%$",
         "log_file": "logs/core.log",
         "log_file_size": "5MB",

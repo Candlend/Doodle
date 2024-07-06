@@ -68,12 +68,12 @@ public:
         std::vector<boost::stacktrace::frame> frames(st.begin(), st.end());
         std::ostringstream oss;
 
-        for (size_t i = 5; i < frames.size() - 3; i++)
+        for (size_t i = 5; i < frames.size(); i++)
         {
             std::string sourceFile = frames[i].source_file();
             std::string functionName = frames[i].name();
             std::string line = std::to_string(frames[i].source_line());
-            if (functionName.find("spdlog::") != std::string::npos)
+            if (sourceFile.find("Doodle") == std::string::npos)
             {
                 continue;
             }
@@ -84,7 +84,7 @@ public:
         Log::s_LogInfos.push_back(LogInfo{msgTime, message, stStr, source, logType});
         if (Log::s_CollapsedLogInfos.contains(source))
         {
-            Log::s_CollapsedLogInfos[source].Message = message;
+            Log::s_CollapsedLogInfos[source].Time = msgTime;
             Log::s_CollapsedLogInfos[source].Count++;
         }
         else
@@ -166,7 +166,6 @@ void Log::LoadConfig(const std::string &configFile)
     {
         auto coreConfig = config["core"];
         std::string coreLogLevel = coreConfig.value("log_level", "info");
-        SetLogLevel(coreLogLevel, s_CoreLogger);
 
         // 读取日志文件输出设置
         std::string coreLogFile = coreConfig.value("log_file", "logs/core.log");
@@ -189,12 +188,17 @@ void Log::LoadConfig(const std::string &configFile)
             std::make_shared<spdlog::sinks::rotating_file_sink_mt>(coreLogFile, coreLogFileSize, coreLogFileCount);
         s_CoreLogger->sinks().push_back(coreRotatingSink);
 
+        SetLogLevel(coreLogLevel, s_CoreLogger);
+
+        // 创建 ImGui 日志输出
         auto coreImGuiSink = std::make_shared<ImGuiLogSink>();
+        coreImGuiSink->set_level(spdlog::level::trace);
         s_CoreLogger->sinks().push_back(coreImGuiSink);
 
         // 读取日志格式
         std::string coreLogPattern = coreConfig.value("log_pattern", "%^[%Y-%m-%d %H:%M:%S] %n: %v%$");
         s_CoreLogger->set_pattern(coreLogPattern);
+        s_CoreLogger->set_level(spdlog::level::trace);
     }
 
     // 读取客户端日志配置
@@ -202,7 +206,6 @@ void Log::LoadConfig(const std::string &configFile)
     {
         auto clientConfig = config["client"];
         std::string clientLogLevel = clientConfig.value("log_level", "info");
-        SetLogLevel(clientLogLevel, s_ClientLogger);
 
         // 读取日志文件输出设置
         std::string clientLogFile = clientConfig.value("log_file", "logs/client.log");
@@ -225,33 +228,42 @@ void Log::LoadConfig(const std::string &configFile)
         auto clientRotatingSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             clientLogFile, clientLogFileSize, clientLogFileCount);
         s_ClientLogger->sinks().push_back(clientRotatingSink);
+
+        SetLogLevel(clientLogLevel, s_ClientLogger);
+
+        // 创建 ImGui 日志输出
         auto clientImGuiSink = std::make_shared<ImGuiLogSink>();
+        clientImGuiSink->set_level(spdlog::level::trace);
         s_ClientLogger->sinks().push_back(clientImGuiSink);
 
         // 读取日志格式
         std::string clientLogPattern = clientConfig.value("log_pattern", "%^[%Y-%m-%d %H:%M:%S] %n: %v%$");
         s_ClientLogger->set_pattern(clientLogPattern);
+        s_ClientLogger->set_level(spdlog::level::trace);
     }
 }
 
 void Log::SetLogLevel(const std::string &levelStr, std::shared_ptr<spdlog::logger> &logger)
 {
-    if (levelStr == "trace")
-        logger->set_level(spdlog::level::trace);
-    else if (levelStr == "debug")
-        logger->set_level(spdlog::level::debug);
-    else if (levelStr == "info")
-        logger->set_level(spdlog::level::info);
-    else if (levelStr == "warn")
-        logger->set_level(spdlog::level::warn);
-    else if (levelStr == "error")
-        logger->set_level(spdlog::level::err);
-    else if (levelStr == "critical")
-        logger->set_level(spdlog::level::critical);
-    else
+    for (auto &sink : logger->sinks())
     {
-        std::cerr << "Unknown log level: " << levelStr << ", using default 'info'" << std::endl;
-        logger->set_level(spdlog::level::info);
+        if (levelStr == "trace")
+            sink->set_level(spdlog::level::trace);
+        else if (levelStr == "debug")
+            sink->set_level(spdlog::level::debug);
+        else if (levelStr == "info")
+            sink->set_level(spdlog::level::info);
+        else if (levelStr == "warn")
+            sink->set_level(spdlog::level::warn);
+        else if (levelStr == "error")
+            sink->set_level(spdlog::level::err);
+        else if (levelStr == "critical")
+            sink->set_level(spdlog::level::critical);
+        else
+        {
+            std::cerr << "Unknown log level: " << levelStr << ", using default 'info'" << std::endl;
+            sink->set_level(spdlog::level::info);
+        }
     }
 }
 
