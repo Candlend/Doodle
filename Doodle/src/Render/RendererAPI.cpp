@@ -17,7 +17,6 @@ static void OpenGLLogMessage(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, 
     }
     else
     {
-        // DOO_CORE_TRACE("{0}", message);
     }
 }
 

@@ -43,8 +43,6 @@ float Application::Time::GetFPS()
 
 void Application::Initialize()
 {
-    DOO_CORE_TRACE("Application Start");
-
     EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().AddListener(this, &Application::OnAppLayoutEvent);
     EventManager::Get().AddListener(this, &Application::OnWindowResizeEvent);
@@ -71,7 +69,6 @@ void Application::Deinitialize()
     EventManager::Get().RemoveListener(this, &Application::OnAppLayoutEvent);
     EventManager::Get().RemoveListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().RemoveListener(this, &Application::OnWindowResizeEvent);
-    DOO_CORE_TRACE("Application End");
 }
 
 void Application::OnUpdate()

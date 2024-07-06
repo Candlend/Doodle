@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "spdlog/common.h"
 #include <queue>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
@@ -13,7 +14,9 @@ namespace Doodle
 
 enum class LogType
 {
-    Log,
+    Trace,
+    Debug,
+    Info,
     Warning,
     Error,
 };
@@ -21,9 +24,16 @@ enum class LogType
 // 日志结构
 struct LogInfo
 {
+    std::time_t Time;
     std::string Message;
     std::string Stacktrace;
+    std::string Source;
     LogType Type;
+};
+
+struct CollapsedLogInfo : LogInfo
+{
+    int Count;
 };
 
 class DOO_API Log
@@ -33,7 +43,8 @@ public:
     static void LoadConfig(const std::string &configFile);
     static std::shared_ptr<spdlog::logger> &GetCoreLogger();
     static std::shared_ptr<spdlog::logger> &GetClientLogger();
-    static const std::deque<LogInfo> &GetLogs();
+    static const std::deque<LogInfo> &GetLogInfos();
+    static const std::unordered_map<std::string, CollapsedLogInfo> &GetCollapsedLogInfos();
     static int GetLogCount(LogType type);
     static void Clear();
 
@@ -44,7 +55,8 @@ private:
     static std::shared_ptr<spdlog::logger> s_ClientLogger;
     static std::deque<LogInfo> s_LogInfos;
     static std::unordered_map<LogType, int> s_LogInfoCount;
-    static const int MAX_LOG_COUNT = 100;
+    static std::unordered_map<std::string, CollapsedLogInfo> s_CollapsedLogInfos;
+    static const int MAX_LOG_COUNT = 1000;
 };
 
 } // namespace Doodle

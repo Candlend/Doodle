@@ -18,11 +18,8 @@ class Application;
 class DOO_API ApplicationRunner : public Singleton<ApplicationRunner>
 {
 public:
-    ApplicationRunner() {
-        DOO_CORE_TRACE("ApplicationRunner Start");
-    }
-    ~ApplicationRunner() {
-        DOO_CORE_TRACE("ApplicationRunner End");
+    ~ApplicationRunner()
+    {
     }
 
     template <typename T>

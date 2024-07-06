@@ -4,6 +4,7 @@
 #include <queue>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <string>
 #include <unordered_map>
 
 #include "Log.h"
@@ -19,6 +20,7 @@ std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
 std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
 std::deque<LogInfo> Log::s_LogInfos;
 std::unordered_map<LogType, int> Log::s_LogInfoCount;
+std::unordered_map<std::string, CollapsedLogInfo> Log::s_CollapsedLogInfos;
 
 int Log::GetLogCount(LogType type)
 {
@@ -30,29 +32,65 @@ class Log::ImGuiLogSink : public spdlog::sinks::base_sink<std::mutex>
 public:
     void sink_it_(const spdlog::details::log_msg &msg) override
     {
-        spdlog::memory_buf_t formatted;
-        formatter_->format(msg, formatted);
-        LogType logType = LogType::Log; // 默认日志类型
-        if (msg.level == spdlog::level::warn)
+        spdlog::source_loc loc = msg.source;
+        LogType logType = LogType::Info;
+        switch (msg.level)
         {
+        case spdlog::level::trace:
+            logType = LogType::Trace;
+            break;
+        case spdlog::level::debug:
+            logType = LogType::Debug;
+            break;
+        case spdlog::level::info:
+            logType = LogType::Info;
+            break;
+        case spdlog::level::warn:
             logType = LogType::Warning;
-            Log::s_LogInfoCount[LogType::Warning]++;
-        }
-        else if (msg.level == spdlog::level::err)
-        {
+            break;
+        case spdlog::level::err:
             logType = LogType::Error;
-            Log::s_LogInfoCount[LogType::Error]++;
+            break;
+        case spdlog::level::critical:
+            logType = LogType::Error;
+        case spdlog::level::off:
+            break;
+        case spdlog::level::n_levels:
+            break;
+        }
+        Log::s_LogInfoCount[logType]++;
+        std::string message = fmt::to_string(msg.payload);
+        std::string source = fmt::format("{}:{}:{}", loc.filename, loc.line, message);
+        std::time_t msgTime = std::chrono::system_clock::to_time_t(msg.time);
+        // 将日志消息添加到日志列表
+        boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
+        // 将 stacktrace 的条目存储到 vector 中
+        std::vector<boost::stacktrace::frame> frames(st.begin(), st.end());
+        std::ostringstream oss;
+
+        for (size_t i = 5; i < frames.size() - 3; i++)
+        {
+            std::string sourceFile = frames[i].source_file();
+            std::string functionName = frames[i].name();
+            std::string line = std::to_string(frames[i].source_line());
+            if (functionName.find("spdlog::") != std::string::npos)
+            {
+                continue;
+            }
+            std::string frameStr = fmt::format("({}:{}) {}", sourceFile, line, functionName);
+            oss << frameStr << std::endl;
+        }
+        std::string stStr = oss.str();
+        Log::s_LogInfos.push_back(LogInfo{msgTime, message, stStr, source, logType});
+        if (Log::s_CollapsedLogInfos.contains(source))
+        {
+            Log::s_CollapsedLogInfos[source].Message = message;
+            Log::s_CollapsedLogInfos[source].Count++;
         }
         else
         {
-            Log::s_LogInfoCount[LogType::Log]++;
+            Log::s_CollapsedLogInfos[source] = CollapsedLogInfo{Log::s_LogInfos.back(), 1};
         }
-        std::string formattedStr = fmt::to_string(formatted);
-        // 将日志消息添加到日志列表
-        boost::stacktrace::stacktrace st;
-        std::ostringstream oss;
-        oss << st;
-        Log::s_LogInfos.push_back(LogInfo{formattedStr, oss.str(), logType});
         // 限制日志数量
         while (Log::s_LogInfos.size() > Log::MAX_LOG_COUNT)
         {
@@ -69,15 +107,21 @@ public:
 void Log::Clear()
 {
     Log::s_LogInfos.clear();
+    Log::s_CollapsedLogInfos.clear();
     for (auto &[type, count] : Log::s_LogInfoCount)
     {
         count = 0;
     }
 }
 
-const std::deque<LogInfo> &Log::GetLogs()
+const std::deque<LogInfo> &Log::GetLogInfos()
 {
     return Log::s_LogInfos;
+}
+
+const std::unordered_map<std::string, CollapsedLogInfo> &Log::GetCollapsedLogInfos()
+{
+    return Log::s_CollapsedLogInfos;
 }
 
 void Log::Initialize()
