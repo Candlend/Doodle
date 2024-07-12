@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <chrono>
 
 inline std::string NormalizePath(const std::string &path)
 {
@@ -20,8 +21,9 @@ inline std::string NormalizePath(const std::string &path)
     return normalized;
 }
 
-inline std::string FormatTime(const std::time_t &t)
+inline std::string FormatTimePoint(const std::chrono::time_point<std::chrono::system_clock> &tp)
 {
+    std::time_t t = std::chrono::system_clock::to_time_t(tp);
     // 将 time_t 转换为 tm 结构
     tm ltm;
     localtime_s(&ltm, &t); // Windows

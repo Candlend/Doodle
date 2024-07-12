@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <boost/stacktrace.hpp>
+#include <chrono>
 #include <nlohmann/json.hpp>
 #include <queue>
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -61,7 +62,7 @@ public:
         Log::s_LogInfoCount[logType]++;
         std::string message = fmt::to_string(msg.payload);
         std::string source = fmt::format("{}:{}:{}", loc.filename, loc.line, message);
-        std::time_t msgTime = std::chrono::system_clock::to_time_t(msg.time);
+        time_point msgTime = msg.time;
         // 将日志消息添加到日志列表
         boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
         // 将 stacktrace 的条目存储到 vector 中

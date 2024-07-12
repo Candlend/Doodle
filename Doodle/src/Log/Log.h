@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "spdlog/common.h"
+#include <chrono>
 #include <queue>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
@@ -21,10 +22,12 @@ enum class LogType
     Error,
 };
 
+using time_point = std::chrono::time_point<std::chrono::system_clock>;
+
 // 日志结构
 struct LogInfo
 {
-    std::time_t Time;
+    time_point Time;
     std::string Message;
     std::string Stacktrace;
     std::string Source;
