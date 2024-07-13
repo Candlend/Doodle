@@ -49,9 +49,19 @@ public:
         m_vertexBuffers.push_back(vertexBuffer);
 
         Renderer::Submit([this, vertexBuffer]() {
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void *>(0));
-            DOO_CORE_TRACE("VAO <{0}> added vertex buffer <{1}>", m_rendererId, vertexBuffer->GetRendererID());
+            const auto &elements = vertexBuffer->GetElements();
+            intptr_t offset = 0;
+            for (size_t i = 0; i < elements.size(); i++)
+            {
+                const auto &element = elements[i];
+                glEnableVertexAttribArray(i);
+                glVertexAttribPointer(i,
+                                      element.Size / sizeof(float), // 计算属性的数量
+                                      GL_FLOAT, element.Normalized ? GL_TRUE : GL_FALSE, vertexBuffer->GetStride(),
+                                      reinterpret_cast<void *>(offset));
+                DOO_CORE_TRACE("VAO <{0}> added vertex buffer <{1}>", m_rendererId, vertexBuffer->GetRendererID());
+                offset += element.Size; // 更新偏移量
+            }
         });
     }
 

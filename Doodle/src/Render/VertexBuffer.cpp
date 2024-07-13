@@ -10,8 +10,9 @@ namespace Doodle
 class OpenGLVertexBuffer : public VertexBuffer
 {
 public:
-    explicit OpenGLVertexBuffer(uint32_t size = 0) : m_rendererId(0), m_size(size)
+    explicit OpenGLVertexBuffer(uint32_t size = 0)
     {
+        m_size = size;
         Renderer::Submit([this]() {
             glGenBuffers(1, &m_rendererId);
             DOO_CORE_TRACE("VBO <{0}> created", m_rendererId);
@@ -43,19 +44,6 @@ public:
             DOO_CORE_TRACE("VBO <{0}> bound", m_rendererId);
         });
     }
-
-    uint32_t GetSize() const override
-    {
-        return m_size;
-    }
-    uint32_t GetRendererID() const override
-    {
-        return m_rendererId;
-    }
-
-private:
-    uint32_t m_rendererId; // OpenGL buffer ID
-    uint32_t m_size;       // Size of the buffer
 };
 
 std::shared_ptr<VertexBuffer> VertexBuffer::Create(uint32_t size)

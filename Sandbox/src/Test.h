@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glm/fwd.hpp"
 #include "imgui.h"
 #include <Doodle.h>
 #include <memory>
@@ -25,6 +26,7 @@ public:
 
         auto vbo = VertexBuffer::Create();
         vbo->SetData(s_Vertices, sizeof(s_Vertices));
+        vbo->PushElement<glm::vec3>("a_Position", false);
 
         auto ibo = IndexBuffer::Create();
         ibo->SetData(s_Indices, sizeof(s_Indices));

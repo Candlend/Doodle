@@ -5,7 +5,6 @@
 #include "RenderCommandQueue.h"
 #include "RendererAPI.h"
 #include "Singleton.h"
-#include "VertexArray.h"
 
 namespace Doodle
 {
