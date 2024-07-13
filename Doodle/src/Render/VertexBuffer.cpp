@@ -14,7 +14,7 @@ public:
     {
         Renderer::Submit([this]() {
             glGenBuffers(1, &m_rendererId);
-            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> created", m_rendererId);
+            DOO_CORE_TRACE("VBO <{0}> created", m_rendererId);
         });
     }
 
@@ -22,7 +22,7 @@ public:
     {
         Renderer::Submit([this]() {
             glDeleteBuffers(1, &m_rendererId);
-            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> destroyed", m_rendererId);
+            DOO_CORE_TRACE("VBO <{0}> destroyed", m_rendererId);
         });
     }
 
@@ -32,10 +32,7 @@ public:
             glBindBuffer(GL_ARRAY_BUFFER, m_rendererId);
             glBufferData(GL_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
 
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
-            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);
+            DOO_CORE_TRACE("VBO <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);
         });
     }
 
@@ -43,7 +40,7 @@ public:
     {
         Renderer::Submit([this]() {
             glBindBuffer(GL_ARRAY_BUFFER, m_rendererId);
-            DOO_CORE_TRACE("OpenGLVertexBuffer <{0}> bound", m_rendererId);
+            DOO_CORE_TRACE("VBO <{0}> bound", m_rendererId);
         });
     }
 

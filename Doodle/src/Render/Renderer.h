@@ -6,6 +6,7 @@
 #include "RendererAPI.h"
 #include "Shader.h"
 #include "Singleton.h"
+#include "VertexArray.h"
 
 namespace Doodle
 {
