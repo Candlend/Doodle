@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <boost/stacktrace.hpp>
 #include <chrono>
+#include <cstddef>
 #include <nlohmann/json.hpp>
 #include <queue>
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -21,7 +22,7 @@ std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
 std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
 std::deque<LogInfo> Log::s_LogInfos;
 std::unordered_map<LogType, int> Log::s_LogInfoCount;
-std::unordered_map<std::string, CollapsedLogInfo> Log::s_CollapsedLogInfos;
+std::unordered_map<size_t, CollapsedLogInfo> Log::s_CollapsedLogInfos;
 
 int Log::GetLogCount(LogType type)
 {
@@ -61,7 +62,6 @@ public:
         }
         Log::s_LogInfoCount[logType]++;
         std::string message = fmt::to_string(msg.payload);
-        std::string source = fmt::format("{}:{}:{}", loc.filename, loc.line, message);
         time_point msgTime = msg.time;
         // 将日志消息添加到日志列表
         boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
@@ -82,15 +82,18 @@ public:
             oss << frameStr << std::endl;
         }
         std::string stStr = oss.str();
-        Log::s_LogInfos.push_back(LogInfo{msgTime, message, stStr, source, logType});
-        if (Log::s_CollapsedLogInfos.contains(source))
+        std::hash<std::string> hashFunc;
+        size_t hashValue = hashFunc(stStr);
+        Log::s_LogInfos.push_back(LogInfo{msgTime, message, stStr, hashValue, logType});
+        if (Log::s_CollapsedLogInfos.contains(hashValue))
         {
-            Log::s_CollapsedLogInfos[source].Time = msgTime;
-            Log::s_CollapsedLogInfos[source].Count++;
+            Log::s_CollapsedLogInfos[hashValue].Time = msgTime;
+            Log::s_CollapsedLogInfos[hashValue].Message = message;
+            Log::s_CollapsedLogInfos[hashValue].Count++;
         }
         else
         {
-            Log::s_CollapsedLogInfos[source] = CollapsedLogInfo{Log::s_LogInfos.back(), 1};
+            Log::s_CollapsedLogInfos[hashValue] = CollapsedLogInfo{Log::s_LogInfos.back(), 1};
         }
         // 限制日志数量
         while (Log::s_LogInfos.size() > Log::MAX_LOG_COUNT)
@@ -120,7 +123,7 @@ const std::deque<LogInfo> &Log::GetLogInfos()
     return Log::s_LogInfos;
 }
 
-const std::unordered_map<std::string, CollapsedLogInfo> &Log::GetCollapsedLogInfos()
+const std::unordered_map<size_t, CollapsedLogInfo> &Log::GetCollapsedLogInfos()
 {
     return Log::s_CollapsedLogInfos;
 }

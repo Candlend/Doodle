@@ -4,7 +4,6 @@
 
 #include "RenderCommandQueue.h"
 #include "RendererAPI.h"
-#include "Shader.h"
 #include "Singleton.h"
 #include "VertexArray.h"
 

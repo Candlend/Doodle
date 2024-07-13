@@ -114,7 +114,7 @@ void LogWindow::OnLayout()
 
                 // 将日志信息提取到一个可排序的容器中
                 std::vector<CollapsedLogInfo> logInfoList;
-                for (const auto &[source, logInfo] : logInfos)
+                for (const auto &[hash, logInfo] : logInfos)
                 {
                     if (!ShouldSkip(logInfo))
                     {

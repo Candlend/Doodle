@@ -3,6 +3,7 @@
 #include "Core.h"
 #include "spdlog/common.h"
 #include <chrono>
+#include <cstddef>
 #include <queue>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
@@ -30,7 +31,7 @@ struct LogInfo
     time_point Time;
     std::string Message;
     std::string Stacktrace;
-    std::string Source;
+    size_t Hash;
     LogType Type;
 };
 
@@ -47,7 +48,7 @@ public:
     static std::shared_ptr<spdlog::logger> &GetCoreLogger();
     static std::shared_ptr<spdlog::logger> &GetClientLogger();
     static const std::deque<LogInfo> &GetLogInfos();
-    static const std::unordered_map<std::string, CollapsedLogInfo> &GetCollapsedLogInfos();
+    static const std::unordered_map<size_t, CollapsedLogInfo> &GetCollapsedLogInfos();
     static int GetLogCount(LogType type);
     static void Clear();
 
@@ -58,7 +59,7 @@ private:
     static std::shared_ptr<spdlog::logger> s_ClientLogger;
     static std::deque<LogInfo> s_LogInfos;
     static std::unordered_map<LogType, int> s_LogInfoCount;
-    static std::unordered_map<std::string, CollapsedLogInfo> s_CollapsedLogInfos;
+    static std::unordered_map<size_t, CollapsedLogInfo> s_CollapsedLogInfos;
     static const int MAX_LOG_COUNT = 1000;
 };
 
