@@ -1,4 +1,5 @@
 #include "Log.h"
+#include "RenderScope.h"
 #include "Renderer.h"
 #include "glad/glad.h"
 
@@ -80,6 +81,12 @@ public:
     const std::shared_ptr<IndexBuffer> &GetIndexBuffer() const override
     {
         return m_indexBuffer;
+    }
+
+    void Render(bool depthTest) const override
+    {
+        Bind();
+        Renderer::DrawIndexed(m_indexBuffer->GetSize(), depthTest);
     }
 
 private:

@@ -53,7 +53,12 @@ void RendererAPI::Initialize()
 
 void RendererAPI::Clear(float r, float g, float b, float a)
 {
-    glClearColor(r, g, b, a);
+    SetClearColor(r, g, b, a);
+    Clear();
+}
+
+void RendererAPI::Clear()
+{
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

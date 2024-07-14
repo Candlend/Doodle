@@ -21,6 +21,7 @@ public:
     static void Initialize();
 
     static void Clear(float r, float g, float b, float a);
+    static void Clear();
     static void SetClearColor(float r, float g, float b, float a);
 
     static void DrawIndexed(unsigned int count, bool depthTest = true);

@@ -43,6 +43,14 @@ public:
             DOO_CORE_TRACE("IBO <{0}> bound", m_rendererId);
         });
     }
+
+    void Unbind() const override
+    {
+        Renderer::Submit([this]() {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            DOO_CORE_TRACE("IBO <{0}> unbound", m_rendererId);
+        });
+    }
 };
 
 std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t size)
