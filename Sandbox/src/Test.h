@@ -22,7 +22,7 @@ public:
 			0, 1, 2
 		};
 
-        Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
+        Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
 
         auto vbo = VertexBuffer::Create();
         vbo->SetData(s_Vertices, sizeof(s_Vertices));
@@ -39,7 +39,7 @@ public:
 
     void OnUpdate() override
     {
-        Renderer::Clear(0.2f, 0.2f, 0.2f, 1.f);
+        Renderer::Clear();
         float timeValue = Application::Time::GetTime();
         float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         m_shader->SetUniform4f("u_Color", 0.8f, greenValue, 0.2f, 1.0f);

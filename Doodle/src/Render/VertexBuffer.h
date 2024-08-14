@@ -32,7 +32,7 @@ public:
     }
     virtual void SetData(void *buffer, size_t size, size_t offset) = 0;
     virtual void Bind() const = 0;
-    // BufferLayout methods
+    virtual void Unbind() const = 0;
     template <typename T> void PushElement(const std::string &name, bool normalized = false)
     {
         static_assert(std::is_trivial<T>::value, "Type must be trivial");

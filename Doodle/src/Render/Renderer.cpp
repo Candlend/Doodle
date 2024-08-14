@@ -26,6 +26,22 @@ void Renderer::Clear(float r, float g, float b, float a)
     });
 }
 
+void Renderer::Clear()
+{
+    Renderer::Submit([]() {
+        RendererAPI::Clear();
+        DOO_CORE_TRACE("Renderer cleared");
+    });
+}
+
+void Renderer::SetClearColor(float r, float g, float b, float a)
+{
+    Renderer::Submit([r, g, b, a]() {
+        RendererAPI::SetClearColor(r, g, b, a);
+        DOO_CORE_TRACE("Renderer set clear color: {0}, {1}, {2}, {3}", r, g, b, a);
+    });
+}
+
 void Renderer::DrawIndexed(unsigned int count, bool depthTest)
 {
     Renderer::Submit([count, depthTest]() {

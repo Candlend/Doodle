@@ -28,6 +28,8 @@ public:
     static void Initialize();
     static void Deinitialize();
     static void Clear(float r, float g, float b, float a = 1.0f);
+    static void Clear();
+    static void SetClearColor(float r, float g, float b, float a = 1.0f);
     static void DrawIndexed(unsigned int count, bool depthTest = true);
 
     void WaitAndRender();
