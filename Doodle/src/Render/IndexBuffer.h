@@ -8,7 +8,7 @@ namespace Doodle
 class DOO_API IndexBuffer
 {
 public:
-    static std::shared_ptr<IndexBuffer> Create(uint32_t size = 0);
+    static std::shared_ptr<IndexBuffer> Create(void *data, size_t size);
     ~IndexBuffer() = default;
     void SetData(void *buffer, uint32_t size)
     {

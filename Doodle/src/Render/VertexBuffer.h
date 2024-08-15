@@ -24,7 +24,7 @@ struct BufferElement
 class DOO_API VertexBuffer
 {
 public:
-    static std::shared_ptr<VertexBuffer> Create(size_t size = 0);
+    static std::shared_ptr<VertexBuffer> Create(void *data, size_t size, bool dynamic = false);
     ~VertexBuffer() = default;
     void SetData(void *buffer, size_t size)
     {
@@ -67,6 +67,7 @@ protected:
     size_t m_size;
     std::vector<BufferElement> m_elements;
     size_t m_stride = 0;
+    bool m_dynamic;
 };
 using VBO = VertexBuffer;
 } // namespace Doodle

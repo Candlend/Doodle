@@ -10,14 +10,7 @@ namespace Doodle
 static void OpenGLLogMessage(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity, GLsizei /*length*/,
                              const GLchar *message, const void * /*userParam*/)
 {
-    if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
-    {
-        DOO_CORE_ERROR("{0}", message);
-        DOO_CORE_ASSERT(false, "");
-    }
-    else
-    {
-    }
+    DOO_CORE_ASSERT(severity == GL_DEBUG_SEVERITY_NOTIFICATION, message);
 }
 
 void RendererAPI::Initialize()

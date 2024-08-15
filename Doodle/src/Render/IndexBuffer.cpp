@@ -9,11 +9,12 @@ namespace Doodle
 class OpenGLIndexBuffer : public IndexBuffer
 {
 public:
-    explicit OpenGLIndexBuffer(uint32_t size = 0)
+    explicit OpenGLIndexBuffer(void *data, size_t size)
     {
         m_size = size;
-        Renderer::Submit([this]() {
-            glGenBuffers(1, &m_rendererId);
+        Renderer::Submit([this, data]() {
+            glCreateBuffers(1, &m_rendererId);
+            glNamedBufferData(m_rendererId, m_size, data, GL_STATIC_DRAW);
             DOO_CORE_TRACE("IBO <{0}> created", m_rendererId);
         });
     }
@@ -28,10 +29,9 @@ public:
 
     void SetData(void *buffer, uint32_t size, uint32_t offset) override
     {
-        m_size = size;
+        m_size = std::max(m_size, size + offset);
         Renderer::Submit([this, buffer, size, offset]() {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererId);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
+            glNamedBufferSubData(m_rendererId, offset, size, buffer);
             DOO_CORE_TRACE("IBO <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);
         });
     }
@@ -53,9 +53,9 @@ public:
     }
 };
 
-std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t size)
+std::shared_ptr<IndexBuffer> IndexBuffer::Create(void *data, size_t size)
 {
-    return std::make_shared<OpenGLIndexBuffer>(size);
+    return std::make_shared<OpenGLIndexBuffer>(data, size);
 }
 
 } // namespace Doodle

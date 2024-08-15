@@ -24,12 +24,10 @@ public:
 
         Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
 
-        auto vbo = VertexBuffer::Create();
-        vbo->SetData(s_Vertices, sizeof(s_Vertices));
+        auto vbo = VertexBuffer::Create(s_Vertices, sizeof(s_Vertices));
         vbo->PushElement<glm::vec3>("a_Position", false);
 
-        auto ibo = IndexBuffer::Create();
-        ibo->SetData(s_Indices, sizeof(s_Indices));
+        auto ibo = IndexBuffer::Create(s_Indices, sizeof(s_Indices));
 
         m_vao = VAO::Create();
         m_vao->AddVertexBuffer(vbo);

@@ -11,11 +11,13 @@ namespace Doodle
 class OpenGLVertexBuffer : public VertexBuffer
 {
 public:
-    explicit OpenGLVertexBuffer(size_t size = 0)
+    explicit OpenGLVertexBuffer(void *data, size_t size, bool dynamic)
     {
+        m_dynamic = dynamic;
         m_size = size;
-        Renderer::Submit([this]() {
-            glGenBuffers(1, &m_rendererId);
+        Renderer::Submit([this, data]() {
+            glCreateBuffers(1, &m_rendererId);
+            glNamedBufferData(m_rendererId, m_size, data, m_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
             DOO_CORE_TRACE("VBO <{0}> created", m_rendererId);
         });
     }
@@ -30,10 +32,9 @@ public:
 
     void SetData(void *buffer, size_t size, size_t offset) override
     {
+        m_size = std::max(m_size, size + offset);
         Renderer::Submit([this, buffer, size, offset]() {
-            glBindBuffer(GL_ARRAY_BUFFER, m_rendererId);
-            glBufferData(GL_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
-
+            glNamedBufferSubData(m_rendererId, offset, size, buffer);
             DOO_CORE_TRACE("VBO <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);
         });
     }
@@ -55,9 +56,9 @@ public:
     }
 };
 
-std::shared_ptr<VertexBuffer> VertexBuffer::Create(size_t size)
+std::shared_ptr<VertexBuffer> VertexBuffer::Create(void *data, size_t size, bool dynamic)
 {
-    return std::make_shared<OpenGLVertexBuffer>(size);
+    return std::make_shared<OpenGLVertexBuffer>(data, size, dynamic);
 }
 
 } // namespace Doodle

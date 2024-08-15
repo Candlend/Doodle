@@ -73,8 +73,7 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
         m_vertices.push_back(vertex);
     }
 
-    m_vertexBuffer = VertexBuffer::Create();
-    m_vertexBuffer->SetData(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
+    m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
 
     // Extract indices from model
     m_indices.reserve(mesh->mNumFaces);
@@ -84,8 +83,7 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
         m_indices.push_back({mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]});
     }
 
-    m_indexBuffer = IndexBuffer::Create();
-    m_indexBuffer->SetData(m_indices.data(), m_indices.size() * sizeof(Index));
+    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size() * sizeof(Index));
 }
 
 Mesh::~Mesh()
