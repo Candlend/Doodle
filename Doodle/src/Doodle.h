@@ -8,6 +8,7 @@
 #include "ImGuiUtils.h"
 #include "IndexBuffer.h"
 #include "Log.h"
+#include "Mesh.h"
 #include "Module.h"
 #include "Renderer.h"
 #include "Shader.h"

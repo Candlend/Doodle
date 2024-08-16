@@ -4,50 +4,39 @@
 #include <glm/glm.hpp>
 
 #include "IndexBuffer.h"
-#include "Renderer.h"
+#include "VertexArray.h"
 #include "VertexBuffer.h"
 
 
 namespace Doodle
 {
 
+struct Vertex
+{
+    glm::vec3 Position;
+    glm::vec3 Normal;
+    glm::vec3 Tangent;
+    glm::vec3 Binormal;
+    glm::vec2 Texcoord;
+};
+
 class DOO_API Mesh
 {
 public:
-    struct Vertex
-    {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec3 Tangent;
-        glm::vec3 Binormal;
-        glm::vec2 Texcoord;
-    };
-    static_assert(sizeof(Vertex) == 14 * sizeof(float));
-    static const int NUM_ATTRIBUTES = 5;
-
-    struct Index
-    {
-        uint32_t V1, V2, V3;
-    };
-    static_assert(sizeof(Index) == 3 * sizeof(uint32_t));
-
+    static std::shared_ptr<Mesh> Create(const std::string &filename);
     explicit Mesh(const std::string &filename);
     ~Mesh();
 
     void Render();
 
-    inline const std::string &GetFilePath() const
-    {
-        return m_filePath;
-    }
-
 private:
+    std::string m_filePath;
     std::vector<Vertex> m_vertices;
-    std::vector<Index> m_indices;
+    std::vector<uint32_t> m_indices;
 
     std::shared_ptr<VertexBuffer> m_vertexBuffer;
     std::shared_ptr<IndexBuffer> m_indexBuffer;
-
-    std::string m_filePath;
+    std::shared_ptr<VertexArray> m_vertexArray; // 新增：VAO
 };
+
 } // namespace Doodle

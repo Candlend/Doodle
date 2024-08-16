@@ -7,7 +7,7 @@
 #include <glad/glad.h>
 
 #include "Mesh.h"
-
+#include "VertexArray.h"
 
 namespace Doodle
 {
@@ -56,7 +56,7 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
     m_vertices.reserve(mesh->mNumVertices);
 
     // Extract vertices from model
-    for (size_t i = 0; i < m_vertices.capacity(); i++)
+    for (size_t i = 0; i < mesh->mNumVertices; i++)
     {
         Vertex vertex;
         vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
@@ -70,20 +70,36 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
 
         if (mesh->HasTextureCoords(0))
             vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+
         m_vertices.push_back(vertex);
     }
 
+    // Create Vertex Buffer Object
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
+    m_vertexBuffer->PushElement<glm::vec3>("a_Position");
+    m_vertexBuffer->PushElement<glm::vec3>("a_Normal");
+    m_vertexBuffer->PushElement<glm::vec3>("a_Tangent");
+    m_vertexBuffer->PushElement<glm::vec3>("a_Binormal");
+    m_vertexBuffer->PushElement<glm::vec2>("a_Texcoord");
 
     // Extract indices from model
-    m_indices.reserve(mesh->mNumFaces);
-    for (size_t i = 0; i < m_indices.capacity(); i++)
+    m_indices.reserve(mesh->mNumFaces * 3); // Each face has 3 indices
+    for (size_t i = 0; i < mesh->mNumFaces; i++)
     {
         DOO_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
-        m_indices.push_back({mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]});
+        for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
+        {
+            m_indices.push_back(mesh->mFaces[i].mIndices[j]);
+        }
     }
 
-    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size() * sizeof(Index));
+    // Create Index Buffer Object
+    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size() * sizeof(uint32_t));
+
+    // Create Vertex Array Object
+    m_vertexArray = VertexArray::Create();
+    m_vertexArray->AddVertexBuffer(m_vertexBuffer);
+    m_vertexArray->SetIndexBuffer(m_indexBuffer);
 }
 
 Mesh::~Mesh()
@@ -92,27 +108,12 @@ Mesh::~Mesh()
 
 void Mesh::Render()
 {
-    // TODO: Sort this out
-    m_vertexBuffer->Bind();
-    m_indexBuffer->Bind();
-    std::function func = []()
-    {
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void *>(offsetof(Vertex, Position)));
+    m_vertexArray->Render();
+}
 
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void *>(offsetof(Vertex, Normal)));
-
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void *>(offsetof(Vertex, Tangent)));
-
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void *>(offsetof(Vertex, Binormal)));
-
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void *>(offsetof(Vertex, Texcoord)));
-    };
-    Renderer::DrawIndexed(m_indexBuffer->GetCount());
+std::shared_ptr<Mesh> Mesh::Create(const std::string &filename)
+{
+    return std::make_shared<Mesh>(filename);
 }
 
 } // namespace Doodle
