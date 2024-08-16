@@ -50,6 +50,14 @@ void Renderer::DrawIndexed(unsigned int count, bool depthTest)
     });
 }
 
+void Renderer::UseWireframe(bool useWireframe)
+{
+    Renderer::Submit([useWireframe]() {
+        RendererAPI::UseWireframe(useWireframe);
+        DOO_CORE_TRACE("Renderer use wireframe: {0}", useWireframe);
+    });
+}
+
 void Renderer::WaitAndRender()
 {
     Get().m_commandQueue.Execute();

@@ -78,4 +78,12 @@ void RendererAPI::DrawIndexed(unsigned int count, bool depthTest)
         glEnable(GL_DEPTH_TEST);
 }
 
+void RendererAPI::UseWireframe(bool useWireframe)
+{
+    if (useWireframe)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 } // namespace Doodle
