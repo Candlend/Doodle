@@ -1,12 +1,34 @@
-#include "Log.h"
+
+#include <cstddef>
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+
 #include "RenderScope.h"
 #include "Renderer.h"
-#include "glad/glad.h"
-
 #include "VertexArray.h"
 
 namespace Doodle
 {
+
+std::pair<GLenum, size_t> GetGLType(std::string typeName)
+{
+    // 创建一个映射表
+    static const std::unordered_map<std::string, std::pair<GLenum, size_t>> TYPE_MAP = {
+        {"int", {GL_INT, sizeof(int)}},           {"unsigned int", {GL_UNSIGNED_INT, sizeof(uint32_t)}},
+        {"short", {GL_SHORT, sizeof(int16_t)}},   {"unsigned short", {GL_UNSIGNED_SHORT, sizeof(uint16_t)}},
+        {"char", {GL_BYTE, sizeof(char)}},        {"unsigned char", {GL_UNSIGNED_BYTE, sizeof(unsigned char)}},
+        {"float", {GL_FLOAT, sizeof(float)}},     {"double", {GL_DOUBLE, sizeof(double)}},
+        {"bool", {GL_BOOL, sizeof(bool)}},        {"glm::vec2", {GL_FLOAT, sizeof(float)}},
+        {"glm::vec3", {GL_FLOAT, sizeof(float)}}, {"glm::vec4", {GL_FLOAT, sizeof(float)}},
+        {"glm::mat3", {GL_FLOAT, sizeof(float)}}, {"glm::mat4", {GL_FLOAT, sizeof(float)}},
+    };
+    auto it = TYPE_MAP.find(typeName);
+    if (it != TYPE_MAP.end())
+    {
+        return it->second;
+    }
+    throw std::runtime_error("Unsupported type for OpenGL");
+}
 
 class OpenGLVertexArray : public VertexArray
 {
@@ -55,10 +77,11 @@ public:
             for (size_t i = 0; i < elements.size(); i++)
             {
                 const auto &element = elements[i];
+                auto [glType, glSize] = GetGLType(element.Type);
                 glEnableVertexAttribArray(i);
                 glVertexAttribPointer(i,
-                                      element.Size / sizeof(float), // 计算属性的数量
-                                      GL_FLOAT, element.Normalized ? GL_TRUE : GL_FALSE, vertexBuffer->GetStride(),
+                                      element.Size / glSize, // 计算属性的数量
+                                      glType, element.Normalized ? GL_TRUE : GL_FALSE, vertexBuffer->GetStride(),
                                       reinterpret_cast<void *>(offset));
                 DOO_CORE_TRACE("VAO <{0}> added vertex buffer <{1}>", m_rendererId, vertexBuffer->GetRendererID());
                 offset += element.Size; // 更新偏移量

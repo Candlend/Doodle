@@ -1,9 +1,10 @@
 #pragma once
 
 #include "pch.h"
+#include <typeinfo>
+#include <vcruntime_typeinfo.h>
 
 #include "Renderer.h"
-#include <cstdint>
 
 namespace Doodle
 {
@@ -11,14 +12,10 @@ namespace Doodle
 struct BufferElement
 {
     std::string Name;
+    std::string Type;
     size_t Size;
     size_t Offset;
     bool Normalized;
-
-    BufferElement(uint32_t size, const std::string &name, bool normalized = false)
-        : Name(name), Size(size), Offset(0), Normalized(normalized)
-    {
-    }
 };
 
 class DOO_API VertexBuffer
@@ -33,12 +30,12 @@ public:
     virtual void SetData(void *buffer, size_t size, size_t offset) = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
-    template <typename T> void PushElement(const std::string &name, bool normalized = false)
+    template <typename T, uint32_t N = 1> void PushElement(const std::string &name, bool normalized = false)
     {
-        static_assert(std::is_trivial<T>::value, "Type must be trivial");
         Renderer::Submit([this, name, normalized]() {
-            BufferElement element(sizeof(T), name, normalized);
+            BufferElement element{name, typeid(T).name(), sizeof(T) * N, m_stride, normalized};
             m_elements.emplace_back(element);
+            m_stride += element.Size;
         });
     }
 

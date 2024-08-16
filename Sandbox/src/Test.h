@@ -13,19 +13,16 @@ public:
     void Initialize() override
     {
         static float s_Vertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
-		};
-
-		static unsigned int s_Indices[] = {
-			0, 1, 2
-		};
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.5f, -0.5f, 0.0f, 0.0f,
+            1.0f,  0.0f,  1.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  1.0f,
+        };
+        static unsigned int s_Indices[] = {0, 1, 2};
 
         Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
 
         auto vbo = VertexBuffer::Create(s_Vertices, sizeof(s_Vertices));
-        vbo->PushElement<glm::vec3>("a_Position", false);
+        vbo->PushElement<float, 3>("a_Position", false);
+        vbo->PushElement<float, 4>("a_Color", false);
 
         auto ibo = IndexBuffer::Create(s_Indices, sizeof(s_Indices));
 
@@ -57,10 +54,10 @@ public:
         }
     }
 
-
     void Deinitialize() override
     {
     }
+
 private:
     std::shared_ptr<VAO> m_vao;
     std::shared_ptr<Shader> m_shader;
