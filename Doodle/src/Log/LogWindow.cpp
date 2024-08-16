@@ -92,7 +92,7 @@ void LogWindow::OnLayout()
                 {
                     if (ShouldSkip(logInfo))
                         continue;
-                    std::string label = FormatTimePoint(logInfo.Time) + " -";
+                    std::string label = FormatTimePoint(logInfo.Time) + " -" + "###" + std::to_string(logInfo.Hash);
                     if (ImGui::Selectable(label.c_str(), false))
                     {
                         ImGui::SetClipboardText((logInfo.Message + "\n" + logInfo.Stacktrace).c_str());
@@ -130,7 +130,7 @@ void LogWindow::OnLayout()
                 {
                     if (ShouldSkip(logInfo))
                         continue;
-                    std::string label = FormatTimePoint(logInfo.Time) + " -";
+                    std::string label = FormatTimePoint(logInfo.Time) + " -" + "###" + std::to_string(logInfo.Hash);
                     if (ImGui::Selectable(label.c_str(), false))
                     {
                         ImGui::SetClipboardText((logInfo.Message + "\n" + logInfo.Stacktrace).c_str());
