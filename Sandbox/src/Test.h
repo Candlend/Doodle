@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TextureParams.h"
 #include "glm/fwd.hpp"
 #include "imgui.h"
 #include <Doodle.h>
@@ -34,7 +35,9 @@ public:
         m_vao->AddVertexBuffer(vbo);
         m_vao->SetIndexBuffer(ibo);
         m_shader = Shader::Create("assets/shaders/shader.glsl");
-        m_texture2D = Texture2D::Create("assets/icons/icon_large.png");
+        TextureParams params;
+        params.Format = TextureFormat::RGB8;
+        m_texture2D = Texture2D::Create("assets/icons/icon_large.png", params);
         uint32_t textureUnit = m_texture2D->Bind();
         m_shader->SetUniform1i("u_Texture", textureUnit);
     }

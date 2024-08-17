@@ -60,12 +60,10 @@ static std::tuple<GLenum, GLenum> GetFormatAndType(GLenum internalFormat)
         return std::make_tuple(GL_RGB, GL_UNSIGNED_BYTE);
     case GL_SRGB8_ALPHA8:
         return std::make_tuple(GL_RGBA, GL_UNSIGNED_BYTE);
-    case GL_DEPTH_COMPONENT:
+    case GL_DEPTH_COMPONENT32F:
         return std::make_tuple(GL_DEPTH_COMPONENT, GL_FLOAT);
-    case GL_RED:
-        return std::make_tuple(GL_RED, GL_UNSIGNED_BYTE);
-    case GL_RG:
-        return std::make_tuple(GL_RG, GL_UNSIGNED_BYTE);
+    case GL_DEPTH24_STENCIL8:
+        return std::make_tuple(GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
     default:
         // Handle unsupported formats
         DOO_CORE_ERROR("Unsupported internal format: {0}", internalFormat);
@@ -136,8 +134,30 @@ private:
         stbi_set_flip_vertically_on_load(true);
         m_hdr = stbi_is_hdr(m_filepath.c_str());
 
-        int width, height, channels;
-        int desiredChannels = m_hdr ? STBI_rgb : STBI_rgb_alpha;
+        int width, height, channels, desiredChannels = 0;
+        switch (m_params.Format)
+        {
+        case TextureFormat::RGB8:
+        case TextureFormat::RGB16F:
+        case TextureFormat::RGB32F:
+        case TextureFormat::SRGB8:
+            desiredChannels = STBI_rgb;
+            break;
+        case TextureFormat::RGBA8:
+        case TextureFormat::RGBA16F:
+        case TextureFormat::RGBA32F:
+        case TextureFormat::SRGB8ALPHA8:
+            desiredChannels = STBI_rgb_alpha;
+            break;
+        case TextureFormat::DEPTH32F:
+        case TextureFormat::DEPTH24STENCIL8:
+            desiredChannels = STBI_grey;
+            break;
+        default:
+            DOO_CORE_WARN("Texture format not specified");
+            break;
+        }
+
         m_data =
             reinterpret_cast<std::byte *>(stbi_load(m_filepath.c_str(), &width, &height, &channels, desiredChannels));
 
