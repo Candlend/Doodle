@@ -29,7 +29,11 @@ public:
 
     void SetData(void *buffer, uint32_t size, uint32_t offset) override
     {
-        m_size = std::max(m_size, size + offset);
+        if (offset + size > m_size)
+        {
+            DOO_CORE_ERROR("IBO <{0}> size exceeded", m_rendererId);
+            return;
+        }
         Renderer::Submit([this, buffer, size, offset]() {
             glNamedBufferSubData(m_rendererId, offset, size, buffer);
             DOO_CORE_TRACE("IBO <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);

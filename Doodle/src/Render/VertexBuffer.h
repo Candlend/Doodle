@@ -59,6 +59,11 @@ public:
         return m_stride;
     }
 
+    inline bool IsDynamic() const
+    {
+        return m_dynamic;
+    }
+
 protected:
     uint32_t m_rendererId;
     size_t m_size;

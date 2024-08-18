@@ -98,19 +98,19 @@ public:
         });
     }
 
-    uint32_t Bind(uint32_t slot) const override
+    void Bind(uint32_t slot) override
     {
+        m_binding = GL_TEXTURE0 + slot;
         Renderer::Submit([this, slot]() {
             glBindTextureUnit(slot, m_rendererId);
             DOO_CORE_TRACE("Texture <{0}> bound to slot {1}", m_rendererId, slot);
         });
-        return GL_TEXTURE0 + slot;
     }
 
     void Unbind() const override
     {
         Renderer::Submit([this]() {
-            glBindTexture(GL_TEXTURE_2D, 0);
+            glBindTextureUnit(m_binding - GL_TEXTURE0, 0);
             DOO_CORE_TRACE("Texture <{0}> unbound", m_rendererId);
         });
     }
@@ -126,6 +126,10 @@ public:
     uint32_t GetRendererID() const override
     {
         return m_rendererId;
+    }
+    uint32_t GetBinding() const override
+    {
+        return m_binding;
     }
 
 private:
@@ -236,6 +240,7 @@ private:
     std::byte *m_data;
     bool m_hdr;
     bool m_sRgb;
+    uint32_t m_binding;
 };
 
 std::shared_ptr<Texture2D> Texture2D::Create(const std::string &filepath, const TextureParams &params)

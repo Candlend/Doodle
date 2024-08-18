@@ -38,8 +38,8 @@ public:
         TextureParams params;
         params.Format = TextureFormat::RGB8;
         m_texture2D = Texture2D::Create("assets/icons/icon_large.png", params);
-        uint32_t textureUnit = m_texture2D->Bind();
-        m_shader->SetUniform1i("u_Texture", textureUnit);
+        m_texture2D->Bind();
+        m_shader->SetUniform1i("u_Texture", m_texture2D->GetBinding());
     }
 
     void OnUpdate() override
