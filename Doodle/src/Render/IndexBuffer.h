@@ -10,11 +10,11 @@ class DOO_API IndexBuffer
 public:
     static std::shared_ptr<IndexBuffer> Create(void *data, size_t size);
     ~IndexBuffer() = default;
-    void SetData(void *buffer, uint32_t size)
+    void SetSubData(void *buffer, uint32_t size)
     {
-        SetData(buffer, size, 0);
+        SetSubData(buffer, size, 0);
     }
-    virtual void SetData(void *buffer, uint32_t size, uint32_t offset) = 0;
+    virtual void SetSubData(void *buffer, uint32_t size, uint32_t offset) = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
 

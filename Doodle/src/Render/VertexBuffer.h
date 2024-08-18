@@ -23,11 +23,11 @@ class DOO_API VertexBuffer
 public:
     static std::shared_ptr<VertexBuffer> Create(void *data, size_t size, bool dynamic = false);
     ~VertexBuffer() = default;
-    void SetData(void *buffer, size_t size)
+    void SetSubData(void *buffer, size_t size)
     {
-        SetData(buffer, size, 0);
+        SetSubData(buffer, size, 0);
     }
-    virtual void SetData(void *buffer, size_t size, size_t offset) = 0;
+    virtual void SetSubData(void *buffer, size_t size, size_t offset) = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
     template <typename T, uint32_t N = 1> void PushElement(const std::string &name, bool normalized = false)

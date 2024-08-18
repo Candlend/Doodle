@@ -15,10 +15,10 @@ public:
     static std::shared_ptr<UniformBuffer> Create(void *data, size_t size, bool dynamic = false);
     virtual ~UniformBuffer() = default;
 
-    virtual void SetData(const void *data, size_t size, size_t offset) = 0;
-    void SetData(const void *data, size_t size)
+    virtual void SetSubData(const void *data, size_t size, size_t offset) = 0;
+    void SetSubData(const void *data, size_t size)
     {
-        SetData(data, size, 0);
+        SetSubData(data, size, 0);
     }
     virtual void Bind(uint32_t slot) = 0;
     void Bind()

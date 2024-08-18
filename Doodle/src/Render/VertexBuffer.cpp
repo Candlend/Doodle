@@ -30,7 +30,7 @@ public:
         });
     }
 
-    void SetData(void *buffer, size_t size, size_t offset) override
+    void SetSubData(void *buffer, size_t size, size_t offset) override
     {
         if (offset + size > m_size)
         {

@@ -29,7 +29,7 @@ public:
         });
     }
 
-    void SetData(const void *data, size_t size, size_t offset) override
+    void SetSubData(const void *data, size_t size, size_t offset) override
     {
         if (offset + size > m_size)
         {
