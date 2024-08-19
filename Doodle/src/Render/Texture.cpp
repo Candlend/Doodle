@@ -100,10 +100,10 @@ public:
 
     void Bind(uint32_t slot) override
     {
-        m_binding = GL_TEXTURE0 + slot;
-        Renderer::Submit([this, slot]() {
-            glBindTextureUnit(slot, m_rendererId);
-            DOO_CORE_TRACE("Texture <{0}> bound to slot {1}", m_rendererId, slot);
+        m_binding = slot;
+        Renderer::Submit([this]() {
+            glBindTextureUnit(m_binding, m_rendererId);
+            DOO_CORE_TRACE("Texture <{0}> bound to slot {1}", m_rendererId, m_binding);
         });
     }
 

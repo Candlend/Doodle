@@ -21,9 +21,9 @@ public:
 
     template <typename Func, typename... Args> void SetUniform(const std::string &name, Func func, Args... args)
     {
-        int location = GetUniformLocation(name);
         Bind();
-        Renderer::Submit([location, name, func, args...]() {
+        Renderer::Submit([=, this]() {
+            int location = GetUniformLocation(name);
             func(location, args...);
             std::ostringstream oss;
             (void)std::initializer_list<int>{(oss << args << ", ", 0)...};
