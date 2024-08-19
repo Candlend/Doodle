@@ -1,10 +1,7 @@
 #pragma once
 
-#include "TextureParams.h"
-#include "glm/fwd.hpp"
-#include "imgui.h"
 #include <Doodle.h>
-#include <memory>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace Doodle;
 
@@ -39,7 +36,18 @@ public:
         params.Format = TextureFormat::RGB8;
         m_texture2D = Texture2D::Create("assets/icons/icon_large.png", params);
         m_texture2D->Bind(1);
+
+        static glm::mat4 s_Model(1.0f);
+        s_Model = glm::rotate(s_Model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        static glm::mat4 s_View(1.0f);
+        s_View = glm::translate(s_View, glm::vec3(0.0f, 0.0f, -3.0f));
+        static glm::mat4 s_Projection(1.0f);
+        s_Projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
         m_shader->SetUniform1i("u_Texture", m_texture2D->GetBinding());
+        m_shader->SetUniformMatrix4f("u_Model", s_Model);
+        m_shader->SetUniformMatrix4f("u_View", s_View);
+        m_shader->SetUniformMatrix4f("u_Projection", s_Projection);
     }
 
     void OnUpdate() override
