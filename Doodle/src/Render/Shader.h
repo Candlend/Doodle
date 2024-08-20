@@ -27,10 +27,7 @@ public:
             func(location, args...);
             std::ostringstream oss;
             (void)std::initializer_list<int>{(oss << args << ", ", 0)...};
-            std::string argsStr = oss.str();
-            // 去掉最后一个逗号
-            argsStr = argsStr.substr(0, argsStr.size() - 2);
-            DOO_CORE_TRACE("Shader uniform set: <{0}> {1} ({2})", location, name, argsStr);
+            DOO_CORE_TRACE("Shader uniform set: <{0}> {1}", location, name);
         });
     }
 

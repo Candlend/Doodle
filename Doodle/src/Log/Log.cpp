@@ -83,7 +83,7 @@ public:
         }
         std::string stStr = oss.str();
         std::hash<std::string> hashFunc;
-        size_t hashValue = hashFunc(stStr);
+        size_t hashValue = hashFunc(message);
         Log::s_LogInfos.push_back(LogInfo{msgTime, message, stStr, hashValue, logType});
         if (Log::s_CollapsedLogInfos.contains(hashValue))
         {
