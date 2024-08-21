@@ -1,23 +1,11 @@
-#include "Core.h"
 #include "pch.h"
-#include <cstdint>
-#include <functional>
 #include <glad/glad.h>
-#include <memory>
 
 #include "Shader.h"
 #include <boost/algorithm/string.hpp>
 
 namespace Doodle
 {
-
-#define IMPLEMENT_UNIFORM(suffix, input, glInput)                                                                      \
-    void SetUniform##suffix##input override                                                                            \
-    {                                                                                                                  \
-        int location = GetUniformLocation(name);                                                                       \
-        if (location != -1)                                                                                            \
-            glUniform##suffix(glInput);                                                                                \
-    }
 
 class OpenGLShader : public Shader
 {
@@ -308,6 +296,12 @@ private:
     void SetUniformMatrix4f(const std::string &name, const glm::mat4 &mat) override
     {
         SetUniform(name, glUniformMatrix4fv, 1, GL_FALSE, &mat[0][0]);
+    }
+
+    void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> texture, uint32_t slot) override
+    {
+        texture->Bind(slot);
+        SetUniform1i(name, slot);
     }
 
     std::unordered_map<std::string, int> m_uniformsCache;

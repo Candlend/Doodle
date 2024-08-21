@@ -5,7 +5,6 @@
 #include "Log.h"
 #include "Renderer.h"
 #include "Texture.h"
-#include "TextureParams.h"
 
 namespace Doodle
 {
@@ -110,7 +109,7 @@ public:
     void Unbind() const override
     {
         Renderer::Submit([this]() {
-            glBindTextureUnit(m_binding - GL_TEXTURE0, 0);
+            glBindTextureUnit(m_binding, 0);
             DOO_CORE_TRACE("Texture <{0}> unbound", m_rendererId);
         });
     }
@@ -130,6 +129,10 @@ public:
     uint32_t GetBinding() const override
     {
         return m_binding;
+    }
+    uint32_t GetTarget() const override
+    {
+        return GL_TEXTURE_2D;
     }
 
 private:

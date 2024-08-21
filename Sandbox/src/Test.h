@@ -35,7 +35,6 @@ public:
         TextureParams params;
         params.Format = TextureFormat::RGB8;
         m_texture2D = Texture2D::Create("assets/icons/icon_large.png", params);
-        m_texture2D->Bind(1);
 
         static glm::mat4 s_Model(1.0f);
         s_Model = glm::rotate(s_Model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -44,7 +43,7 @@ public:
         static glm::mat4 s_Projection(1.0f);
         s_Projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-        m_shader->SetUniform1i("u_Texture", m_texture2D->GetBinding());
+        m_shader->SetUniformTexture("u_Texture", m_texture2D, 1);
         m_shader->SetUniformMatrix4f("u_Model", s_Model);
         m_shader->SetUniformMatrix4f("u_View", s_View);
         m_shader->SetUniformMatrix4f("u_Projection", s_Projection);

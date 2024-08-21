@@ -24,6 +24,7 @@ public:
     virtual uint32_t GetHeight() const = 0;
     virtual uint32_t GetRendererID() const = 0;
     virtual uint32_t GetBinding() const = 0;
+    virtual uint32_t GetTarget() const = 0;
 };
 
 class DOO_API Texture2D : public Texture

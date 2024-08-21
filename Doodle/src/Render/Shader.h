@@ -7,6 +7,7 @@
 
 #include "Log.h"
 #include "Renderer.h"
+#include "Texture.h"
 #include "glm/fwd.hpp"
 
 namespace Doodle
@@ -82,6 +83,8 @@ public:
     virtual void SetUniformMatrix2f(const std::string &name, const glm::mat2 &mat) = 0;
     virtual void SetUniformMatrix3f(const std::string &name, const glm::mat3 &mat) = 0;
     virtual void SetUniformMatrix4f(const std::string &name, const glm::mat4 &mat) = 0;
+
+    virtual void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> texture, uint32_t slot) = 0;
 };
 
 } // namespace Doodle
