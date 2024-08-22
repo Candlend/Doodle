@@ -10,9 +10,23 @@
 namespace Doodle
 {
 
+class MaterialInstance;
+
 class DOO_API Material
 {
+    friend class MaterialInstance;
+
 public:
+    static std::shared_ptr<Material> Create(const std::string &shaderName)
+    {
+        return std::make_shared<Material>(shaderName);
+    }
+
+    static std::shared_ptr<Material> Create(std::shared_ptr<Shader> shader)
+    {
+        return std::make_shared<Material>(shader);
+    }
+
     explicit Material(std::shared_ptr<Shader> shader) : m_shader(shader)
     {
     }
@@ -32,8 +46,8 @@ public:
     void SetUniform2i(const std::string &name, glm::ivec2 value);
     void SetUniform3i(const std::string &name, glm::ivec3 value);
     void SetUniform4i(const std::string &name, glm::ivec4 value);
-    void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformMatrix3f(const std::string &name, glm::mat3 value);
+    void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
 
 private:

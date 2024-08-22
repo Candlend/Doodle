@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Material.h"
 #include <Doodle.h>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -31,9 +32,9 @@ public:
         m_vao = VAO::Create();
         m_vao->AddVertexBuffer(vbo);
         m_vao->SetIndexBuffer(ibo);
-        m_shader = Shader::Create("assets/shaders/shader.glsl");
+        ShaderLibrary::Get().LoadShader("Test", "assets/shaders/shader.glsl");
         TextureParams params;
-        params.Format = TextureFormat::RGB8;
+        params.Format = TextureFormat::SRGB8ALPHA8;
         m_texture2D = Texture2D::Create("assets/icons/icon_large.png", params);
 
         static glm::mat4 s_Model(1.0f);
@@ -43,10 +44,14 @@ public:
         static glm::mat4 s_Projection(1.0f);
         s_Projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-        m_shader->SetUniformTexture("u_Texture", m_texture2D, 1);
-        m_shader->SetUniformMatrix4f("u_Model", s_Model);
-        m_shader->SetUniformMatrix4f("u_View", s_View);
-        m_shader->SetUniformMatrix4f("u_Projection", s_Projection);
+        auto material = Material::Create("Test");
+        material->SetUniform4f("u_Color", glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+        m_materialInstance = MaterialInstance::Create(material);
+        m_materialInstance->SetUniformTexture("u_Texture", m_texture2D);
+        m_materialInstance->SetUniformMatrix4f("u_Model", s_Model);
+        m_materialInstance->SetUniformMatrix4f("u_View", s_View);
+        m_materialInstance->SetUniformMatrix4f("u_Projection", s_Projection);
     }
 
     void OnUpdate() override
@@ -55,9 +60,9 @@ public:
         Renderer::Clear();
         float timeValue = Application::Time::GetTime();
         float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        m_shader->SetUniform4f("u_Color", 0.8f, greenValue, 0.2f, 1.0f);
-        m_shader->SetUniform1i("u_Debug", m_debug);
-        m_shader->Bind();
+        m_materialInstance->SetUniform4f("u_Color", glm::vec4(0.8f, greenValue, 0.2f, 1.0f));
+        m_materialInstance->SetUniform1i("u_Debug", m_useWireframe);
+        m_materialInstance->Bind();
         m_vao->Render();
     }
 
@@ -71,7 +76,6 @@ public:
             ImGui::LabelText("时间", "%f", Application::Time::GetTime());
             ImGui::LabelText("帧率", "%f", Application::Time::GetFPS());
             ImGui::Checkbox("线框模式", &m_useWireframe);
-            ImGui::Checkbox("调试模式", &m_debug);
         }
     }
 
@@ -80,9 +84,9 @@ public:
     }
 
 private:
-    bool m_debug = false;
     bool m_useWireframe = false;
-    std::shared_ptr<VAO> m_vao;
+    std::shared_ptr<MaterialInstance> m_materialInstance;
     std::shared_ptr<Shader> m_shader;
+    std::shared_ptr<VAO> m_vao;
     std::shared_ptr<Texture2D> m_texture2D;
 };
