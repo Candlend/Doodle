@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "Shader.h"
+#include "ShaderLibrary.h"
 #include "Texture.h"
 
 namespace Doodle
@@ -14,6 +15,11 @@ class DOO_API Material
 public:
     explicit Material(std::shared_ptr<Shader> shader) : m_shader(shader)
     {
+    }
+
+    explicit Material(const std::string &shaderName)
+    {
+        m_shader = ShaderLibrary::Get().GetShader(shaderName);
     }
 
     void Bind();

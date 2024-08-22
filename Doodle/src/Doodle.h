@@ -12,6 +12,7 @@
 #include "Module.h"
 #include "Renderer.h"
 #include "Shader.h"
+#include "ShaderLibrary.h"
 #include "Texture.h"
 #include "UniformBuffer.h"
 #include "VertexArray.h"
