@@ -13,6 +13,7 @@
 #include "Mesh.h"
 #include "Module.h"
 #include "Renderer.h"
+#include "Scene.h"
 #include "Shader.h"
 #include "ShaderLibrary.h"
 #include "Texture.h"

@@ -3,6 +3,7 @@
 #include "Material.h"
 #include <Doodle.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <memory>
 
 using namespace Doodle;
 
@@ -52,6 +53,11 @@ public:
         m_materialInstance->SetUniformMatrix4f("u_Model", s_Model);
         m_materialInstance->SetUniformMatrix4f("u_View", s_View);
         m_materialInstance->SetUniformMatrix4f("u_Projection", s_Projection);
+
+        m_activeScene = Scene::Create();
+        auto entity = m_activeScene->CreateEntity();
+        entity.AddComponent<VAOComponent>(m_vao);
+        entity.AddComponent<MaterialComponent>(m_materialInstance);
     }
 
     void OnUpdate() override
@@ -62,8 +68,8 @@ public:
         float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         m_materialInstance->SetUniform4f("u_Color", glm::vec4(0.8f, greenValue, 0.2f, 1.0f));
         m_materialInstance->SetUniform1i("u_Debug", m_useWireframe);
-        m_materialInstance->Bind();
-        m_vao->Render();
+
+        m_activeScene->Render();
     }
 
     void OnLayout() override
@@ -85,6 +91,7 @@ public:
 
 private:
     bool m_useWireframe = false;
+    std::shared_ptr<Scene> m_activeScene;
     std::shared_ptr<MaterialInstance> m_materialInstance;
     std::shared_ptr<Shader> m_shader;
     std::shared_ptr<VAO> m_vao;

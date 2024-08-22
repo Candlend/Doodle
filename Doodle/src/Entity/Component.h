@@ -3,7 +3,10 @@
 #include "pch.h"
 #include <glm/glm.hpp>
 
+#include "MaterialInstance.h"
+#include "Mesh.h"
 #include "VertexArray.h"
+
 
 namespace Doodle
 {
@@ -24,6 +27,14 @@ struct VAOComponent
     std::shared_ptr<VertexArray> VAO;
 };
 
+struct MeshComponent
+{
+    std::shared_ptr<Mesh> Mesh;
+};
 
+struct MaterialComponent
+{
+    std::shared_ptr<MaterialInstance> MaterialInstance;
+};
 
 } // namespace Doodle
