@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Material.h"
+#include "VertexBuffer.h"
 #include <Doodle.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
@@ -24,9 +25,9 @@ public:
         Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
 
         auto vbo = VertexBuffer::Create(s_Vertices, sizeof(s_Vertices));
-        vbo->PushElement<float, 3>("a_Position", false);
-        vbo->PushElement<float, 3>("a_Color", false);
-        vbo->PushElement<float, 2>("a_TexCoord", false);
+        vbo->PushElement("a_Position", VertexDataType::Vec3);
+        vbo->PushElement("a_Color", VertexDataType::Vec3);
+        vbo->PushElement("a_TexCoord", VertexDataType::Vec2);
 
         auto ibo = IndexBuffer::Create(s_Indices, sizeof(s_Indices));
 

@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include <glm/glm.hpp>
+#include <string>
 
 #include "MaterialInstance.h"
 #include "Mesh.h"
@@ -30,11 +31,25 @@ struct VAOComponent
 struct MeshComponent
 {
     std::shared_ptr<Mesh> Mesh;
+
+    explicit MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
+    {
+    }
 };
 
 struct MaterialComponent
 {
     std::shared_ptr<MaterialInstance> MaterialInstance;
+
+    explicit MaterialComponent(const std::shared_ptr<Doodle::MaterialInstance> &materialInstance)
+        : MaterialInstance(materialInstance)
+    {
+    }
+
+    explicit MaterialComponent(const std::shared_ptr<Material> &material)
+        : MaterialInstance(MaterialInstance::Create(material))
+    {
+    }
 };
 
 } // namespace Doodle

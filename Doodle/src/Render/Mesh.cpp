@@ -1,3 +1,4 @@
+#include "VertexBuffer.h"
 #include "pch.h"
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/Importer.hpp>
@@ -76,11 +77,11 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
 
     // Create Vertex Buffer Object
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
-    m_vertexBuffer->PushElement<glm::vec3>("a_Position");
-    m_vertexBuffer->PushElement<glm::vec3>("a_Normal");
-    m_vertexBuffer->PushElement<glm::vec3>("a_Tangent");
-    m_vertexBuffer->PushElement<glm::vec3>("a_Binormal");
-    m_vertexBuffer->PushElement<glm::vec2>("a_Texcoord");
+    m_vertexBuffer->PushElement("a_Position", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_Normal", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_Tangent", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_Binormal", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_Texcoord", VertexDataType::Vec2);
 
     // Extract indices from model
     m_indices.reserve(mesh->mNumFaces * 3); // Each face has 3 indices

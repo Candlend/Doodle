@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include "Core.h"
 #include "RenderScope.h"
 #include "Renderer.h"
 #include "VertexArray.h"
@@ -10,24 +11,27 @@
 namespace Doodle
 {
 
-std::pair<GLenum, size_t> GetGLType(std::string typeName)
+std::pair<GLenum, size_t> GetGLType(VertexDataType type)
 {
-    // 创建一个映射表
-    static const std::unordered_map<std::string, std::pair<GLenum, size_t>> TYPE_MAP = {
-        {"int", {GL_INT, sizeof(int)}},           {"unsigned int", {GL_UNSIGNED_INT, sizeof(uint32_t)}},
-        {"short", {GL_SHORT, sizeof(int16_t)}},   {"unsigned short", {GL_UNSIGNED_SHORT, sizeof(uint16_t)}},
-        {"char", {GL_BYTE, sizeof(char)}},        {"unsigned char", {GL_UNSIGNED_BYTE, sizeof(unsigned char)}},
-        {"float", {GL_FLOAT, sizeof(float)}},     {"double", {GL_DOUBLE, sizeof(double)}},
-        {"bool", {GL_BOOL, sizeof(bool)}},        {"glm::vec2", {GL_FLOAT, sizeof(float)}},
-        {"glm::vec3", {GL_FLOAT, sizeof(float)}}, {"glm::vec4", {GL_FLOAT, sizeof(float)}},
-        {"glm::mat3", {GL_FLOAT, sizeof(float)}}, {"glm::mat4", {GL_FLOAT, sizeof(float)}},
+    static const std::unordered_map<VertexDataType, std::pair<GLenum, size_t>> TYPE_MAP = {
+        {VertexDataType::Int, {GL_INT, sizeof(int)}},
+        {VertexDataType::UnsignedInt, {GL_UNSIGNED_INT, sizeof(uint32_t)}},
+        {VertexDataType::Short, {GL_SHORT, sizeof(int16_t)}},
+        {VertexDataType::UnsignedShort, {GL_UNSIGNED_SHORT, sizeof(uint16_t)}},
+        {VertexDataType::Char, {GL_BYTE, sizeof(char)}},
+        {VertexDataType::UnsignedChar, {GL_UNSIGNED_BYTE, sizeof(unsigned char)}},
+        {VertexDataType::Float, {GL_FLOAT, sizeof(float)}},
+        {VertexDataType::Double, {GL_DOUBLE, sizeof(double)}},
+        {VertexDataType::Bool, {GL_BOOL, sizeof(bool)}},
+        {VertexDataType::Vec2, {GL_FLOAT, sizeof(float)}},
+        {VertexDataType::Vec3, {GL_FLOAT, sizeof(float)}},
+        {VertexDataType::Vec4, {GL_FLOAT, sizeof(float)}},
+        {VertexDataType::Mat3, {GL_FLOAT, sizeof(float)}},
+        {VertexDataType::Mat4, {GL_FLOAT, sizeof(float)}},
     };
-    auto it = TYPE_MAP.find(typeName);
-    if (it != TYPE_MAP.end())
-    {
-        return it->second;
-    }
-    throw std::runtime_error("Unsupported type for OpenGL");
+    auto it = TYPE_MAP.find(type);
+    DOO_CORE_ASSERT(it != TYPE_MAP.end(), "Unknown vertex data type");
+    return it->second;
 }
 
 class OpenGLVertexArray : public VertexArray

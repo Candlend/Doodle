@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <cstddef>
 #include <typeinfo>
 #include <vcruntime_typeinfo.h>
 
@@ -9,10 +10,28 @@
 namespace Doodle
 {
 
+enum class VertexDataType
+{
+    Int,
+    UnsignedInt,
+    Short,
+    UnsignedShort,
+    Char,
+    UnsignedChar,
+    Float,
+    Double,
+    Bool,
+    Vec2,
+    Vec3,
+    Vec4,
+    Mat3,
+    Mat4
+};
+
 struct BufferElement
 {
     std::string Name;
-    std::string Type;
+    VertexDataType Type;
     size_t Size;
     size_t Offset;
     bool Normalized;
@@ -30,13 +49,10 @@ public:
     virtual void SetSubData(void *buffer, size_t size, size_t offset) = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
-    template <typename T, uint32_t N = 1> void PushElement(const std::string &name, bool normalized = false)
+    virtual void PushElement(const std::string &name, VertexDataType type, bool normalized) = 0;
+    void PushElement(const std::string &name, VertexDataType type)
     {
-        Renderer::Submit([this, name, normalized]() {
-            BufferElement element{name, typeid(T).name(), sizeof(T) * N, m_stride, normalized};
-            m_elements.emplace_back(element);
-            m_stride += element.Size;
-        });
+        PushElement(name, type, false);
     }
 
     inline const std::vector<BufferElement> &GetElements() const

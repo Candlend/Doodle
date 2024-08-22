@@ -8,6 +8,44 @@
 namespace Doodle
 {
 
+size_t GetSize(VertexDataType type)
+{
+    switch (type)
+    {
+    case VertexDataType::Int:
+        return sizeof(int);
+    case VertexDataType::UnsignedInt:
+        return sizeof(uint32_t);
+    case VertexDataType::Short:
+        return sizeof(int16_t);
+    case VertexDataType::UnsignedShort:
+        return sizeof(uint16_t);
+    case VertexDataType::Char:
+        return sizeof(char);
+    case VertexDataType::UnsignedChar:
+        return sizeof(unsigned char);
+    case VertexDataType::Float:
+        return sizeof(float);
+    case VertexDataType::Double:
+        return sizeof(double);
+    case VertexDataType::Bool:
+        return sizeof(bool);
+    case VertexDataType::Vec2:
+        return sizeof(float) * 2;
+    case VertexDataType::Vec3:
+        return sizeof(float) * 3;
+    case VertexDataType::Vec4:
+        return sizeof(float) * 4;
+    case VertexDataType::Mat3:
+        return sizeof(float) * 9;
+    case VertexDataType::Mat4:
+        return sizeof(float) * 16;
+    default:
+        DOO_CORE_ASSERT(false, "Unknown vertex data type");
+        return 0;
+    }
+}
+
 class OpenGLVertexBuffer : public VertexBuffer
 {
 public:
@@ -56,6 +94,15 @@ public:
         Renderer::Submit([this]() {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             DOO_CORE_TRACE("VBO <{0}> unbound", m_rendererId);
+        });
+    }
+
+    void PushElement(const std::string &name, VertexDataType type, bool normalized) override
+    {
+        Renderer::Submit([this, name, normalized, type]() {
+            BufferElement element{name, type, ::Doodle::GetSize(type), m_stride, normalized};
+            m_elements.emplace_back(element);
+            m_stride += element.Size;
         });
     }
 };
