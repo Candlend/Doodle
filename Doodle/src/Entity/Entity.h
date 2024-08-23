@@ -3,12 +3,15 @@
 #include "pch.h"
 #include <entt/entt.hpp>
 
+#include "Component.h"
+
 namespace Doodle
 {
 
 class DOO_API Entity
 {
 public:
+    static std::shared_ptr<Entity> Create(entt::registry &registry);
     explicit Entity(entt::registry &registry);
     template <typename T, typename... Args> T &AddComponent(Args &&...args)
     {

@@ -11,6 +11,7 @@
 namespace Doodle
 {
 
+#pragma pack(push, 1)
 struct Vertex
 {
     glm::vec3 Position;
@@ -19,6 +20,7 @@ struct Vertex
     glm::vec3 Binormal;
     glm::vec2 Texcoord;
 };
+#pragma pack(pop)
 
 class DOO_API Mesh
 {
