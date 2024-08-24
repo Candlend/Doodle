@@ -4,6 +4,46 @@
 
 namespace Doodle
 {
+
+class DOO_API WindowRefreshEvent : public Event
+{
+public:
+    WindowRefreshEvent() = default;
+
+    EVENT_CLASS_TYPE(WindowRefresh)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
+
+class DOO_API WindowMoveEvent : public Event
+{
+public:
+    WindowMoveEvent(const int x, const int y) : m_x(x), m_y(y)
+    {
+    }
+
+    inline int GetX() const
+    {
+        return m_x;
+    }
+    inline int GetY() const
+    {
+        return m_y;
+    }
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "WindowMoveEvent: " << m_x << ", " << m_y;
+        return ss.str();
+    }
+
+    EVENT_CLASS_TYPE(WindowMove)
+    EVENT_CLASS_CATEGORY(EventCategoryApplication)
+
+private:
+    unsigned int m_x, m_y;
+};
+
 class DOO_API WindowResizeEvent : public Event
 {
 public:

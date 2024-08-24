@@ -11,6 +11,8 @@ enum class EventType
 {
     None = 0,
     WindowClose,
+    WindowRefresh,
+    WindowMove,
     WindowResize,
     WindowFocus,
     WindowLostFocus,

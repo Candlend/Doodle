@@ -28,8 +28,8 @@ public:
     static std::shared_ptr<Window> Create(const WindowProps &props = WindowProps(), bool visible = true);
 
     ~Window() = default;
-    virtual void BeginFrame() = 0;
-    virtual void EndFrame() = 0;
+    virtual void PollEvents() = 0;
+    virtual void SwapBuffers() = 0;
     virtual unsigned int GetWidth() const = 0;
     virtual unsigned int GetHeight() const = 0;
     virtual void SetVSync(bool enabled) = 0;

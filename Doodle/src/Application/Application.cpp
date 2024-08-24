@@ -15,6 +15,7 @@
 namespace Doodle
 {
 
+float Application::Time::s_FPS = 0.0f;
 float Application::Time::s_Time = 0.0f;
 float Application::Time::s_DeltaTime = 0.0f;
 float Application::Time::s_LastFrameTime = 0.0f;
@@ -33,19 +34,28 @@ void Application::Time::Update()
 {
     s_Time = static_cast<float>(glfwGetTime());
     s_DeltaTime = GetTime() - s_LastFrameTime;
+    DOO_CORE_DEBUG("DeltaTime: {0}", s_DeltaTime);
+    s_FPS = 1.0f / s_DeltaTime;
+    s_LastFrameTime = GetTime();
+}
+
+void Application::Time::Freeze()
+{
+    s_DeltaTime = 0.0f;
     s_LastFrameTime = GetTime();
 }
 
 float Application::Time::GetFPS()
 {
-    return 1.0f / s_DeltaTime;
+    return s_FPS;
 }
 
 void Application::Initialize()
 {
     EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get().AddListener(this, &Application::OnAppLayoutEvent);
-    EventManager::Get().AddListener(this, &Application::OnWindowResizeEvent);
+    EventManager::Get().AddListener(this, &Application::OnWindowRefreshEvent);
+    EventManager::Get().AddListener(this, &Application::OnWindowMoveEvent);
 
     Renderer::Initialize();
     ImGuiManager::Get().Initialize();
@@ -68,20 +78,19 @@ void Application::Deinitialize()
 
     EventManager::Get().RemoveListener(this, &Application::OnAppLayoutEvent);
     EventManager::Get().RemoveListener(this, &Application::OnWindowCloseEvent);
-    EventManager::Get().RemoveListener(this, &Application::OnWindowResizeEvent);
+    EventManager::Get().RemoveListener(this, &Application::OnWindowRefreshEvent);
+    EventManager::Get().RemoveListener(this, &Application::OnWindowMoveEvent);
 }
 
 void Application::OnUpdate()
 {
     auto window = m_window.lock();
-    window->BeginFrame();
     for (auto *module : Module::GetModules())
     {
         module->OnUpdate();
     }
     Renderer::Get().WaitAndRender();
     ImGuiManager::Get().DrawLayout();
-    window->EndFrame();
 }
 
 void Application::Run()
@@ -89,7 +98,10 @@ void Application::Run()
     while (m_running)
     {
         Time::Update();
+        auto window = m_window.lock();
+        window->PollEvents();
         OnUpdate();
+        window->SwapBuffers();
     }
 }
 
@@ -107,9 +119,18 @@ void Application::OnLayout()
     }
 }
 
-bool Application::OnWindowResizeEvent(WindowResizeEvent & /*e*/)
+bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
 {
+    Time::Freeze();
+    auto window = m_window.lock();
     OnUpdate();
+    window->SwapBuffers();
+    return false;
+}
+
+bool Application::OnWindowMoveEvent(WindowMoveEvent & /*e*/)
+{
+    Time::Freeze();
     return false;
 }
 

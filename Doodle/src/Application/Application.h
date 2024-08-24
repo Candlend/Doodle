@@ -25,10 +25,12 @@ public:
         static float GetFPS();
 
     private:
+        static float s_FPS;
         static float s_Time;
         static float s_DeltaTime;
         static float s_LastFrameTime;
         static void Update();
+        static void Freeze();
         friend class Application;
     };
 
@@ -42,9 +44,10 @@ public:
 
 protected:
     void Run();
+    bool OnWindowRefreshEvent(WindowRefreshEvent &e);
+    bool OnWindowMoveEvent(WindowMoveEvent &e);
     bool OnWindowCloseEvent(WindowCloseEvent &e);
     bool OnAppLayoutEvent(AppLayoutEvent &e);
-    bool OnWindowResizeEvent(WindowResizeEvent &e);
     std::weak_ptr<Window> m_window;
     bool m_running = true;
 };

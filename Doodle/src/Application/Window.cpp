@@ -30,12 +30,12 @@ public:
         Shutdown();
     }
 
-    void BeginFrame() override
+    void PollEvents() override
     {
         glfwPollEvents();
     }
 
-    void EndFrame() override
+    void SwapBuffers() override
     {
         m_context->SwapBuffers();
     }
@@ -111,6 +111,20 @@ private:
             appWindow.m_data.Height = height;
 
             WindowResizeEvent event(width, height);
+            EventManager::Get().Dispatch(event);
+        });
+
+        glfwSetWindowRefreshCallback(m_window, [](GLFWwindow *window) {
+            WindowsWindow &appWindow = *static_cast<WindowsWindow *>(glfwGetWindowUserPointer(window));
+
+            WindowRefreshEvent event;
+            EventManager::Get().Dispatch(event);
+        });
+
+        glfwSetWindowPosCallback(m_window, [](GLFWwindow *window, int xPos, int yPos) {
+            WindowsWindow &appWindow = *static_cast<WindowsWindow *>(glfwGetWindowUserPointer(window));
+
+            WindowMoveEvent event(xPos, yPos);
             EventManager::Get().Dispatch(event);
         });
 
