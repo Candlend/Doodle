@@ -28,12 +28,12 @@ public:
     void SetPerspectiveProjectionMatrix(const float radFov, const float width, const float height, const float nearP,
                                         const float farP)
     {
-        m_projectionMatrix = glm::perspectiveFov(radFov, width, height, farP, nearP);
+        m_projectionMatrix = glm::perspectiveFov(radFov, width, height, nearP, farP);
     }
 
     void SetOrthoProjectionMatrix(const float width, const float height, const float nearP, const float farP)
     {
-        m_projectionMatrix = glm::ortho(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f, farP, nearP);
+        m_projectionMatrix = glm::ortho(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f, nearP, farP);
     }
 
     float GetExposure() const

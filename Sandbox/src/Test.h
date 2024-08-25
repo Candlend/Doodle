@@ -38,6 +38,7 @@ public:
 
         auto mainCamera = m_activeScene->CreateEntity("MainCamera");
         mainCamera->AddComponent<CameraComponent>();
+        mainCamera->GetComponent<Transform>().Position = glm::vec3(0.f, 0.f, 3.f);
     }
 
     void OnUpdate() override

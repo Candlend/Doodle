@@ -81,13 +81,11 @@ struct MaterialComponent
 
 struct CameraComponent
 {
-    ProjectionType ProjectionType;
-
     std::shared_ptr<SceneCamera> Camera;
     bool Primary = true;
 
-    CameraComponent()
-        : Camera(std::make_shared<SceneCamera>())
+    explicit CameraComponent(ProjectionType type = ProjectionType::Perspective)
+        : Camera(std::make_shared<SceneCamera>(type))
     {
     }
     
