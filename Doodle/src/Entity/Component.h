@@ -6,6 +6,7 @@
 
 #include "MaterialInstance.h"
 #include "Mesh.h"
+#include "SceneCamera.h"
 #include "VertexArray.h"
 
 
@@ -34,17 +35,32 @@ struct Transform
     }
 };
 
-struct VAOComponent
+struct IRenderable
 {
-    std::shared_ptr<VertexArray> VAO;
+    virtual void Render() const = 0;
 };
 
-struct MeshComponent
+struct VAOComponent : public IRenderable
+{
+    std::shared_ptr<VertexArray> VAO;
+
+    void Render() const override
+    {
+        VAO->Render();
+    }
+};
+
+struct MeshComponent : public IRenderable
 {
     std::shared_ptr<Mesh> Mesh;
 
     explicit MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
     {
+    }
+
+    void Render() const override
+    {
+        Mesh->Render();
     }
 };
 
@@ -60,6 +76,24 @@ struct MaterialComponent
     explicit MaterialComponent(const std::shared_ptr<Material> &material)
         : MaterialInstance(MaterialInstance::Create(material))
     {
+    }
+};
+
+struct CameraComponent
+{
+    ProjectionType ProjectionType;
+
+    std::shared_ptr<SceneCamera> Camera;
+    bool Primary = true;
+
+    CameraComponent()
+        : Camera(std::make_shared<SceneCamera>())
+    {
+    }
+    
+    glm::mat4 GetProjectionMatrix() const
+    {
+        return Camera->GetProjectionMatrix();
     }
 };
 

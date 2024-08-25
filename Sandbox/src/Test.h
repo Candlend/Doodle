@@ -36,7 +36,8 @@ public:
         cube->GetComponent<Transform>().Position = glm::vec3(0.5f, 0.f, 0.f);
         cube->GetComponent<Transform>().Scale = glm::vec3(0.01f);
 
-        m_mainCamera = Camera::Create();
+        auto mainCamera = m_activeScene->CreateEntity("MainCamera");
+        mainCamera->AddComponent<CameraComponent>();
     }
 
     void OnUpdate() override
@@ -47,7 +48,7 @@ public:
         auto cerberus = m_activeScene->GetEntity("Cerberus");
         auto &transform = cerberus->GetComponent<Transform>();
         transform.Rotation.y += 100.f * Application::Time::GetDeltaTime();
-        m_activeScene->Render(m_mainCamera);
+        m_activeScene->Render();
     }
 
     void OnLayout() override
@@ -70,5 +71,4 @@ public:
 private:
     bool m_useWireframe = false;
     std::shared_ptr<Scene> m_activeScene;
-    std::shared_ptr<Camera> m_mainCamera;
 };

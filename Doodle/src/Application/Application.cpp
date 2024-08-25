@@ -34,7 +34,6 @@ void Application::Time::Update()
 {
     s_Time = static_cast<float>(glfwGetTime());
     s_DeltaTime = GetTime() - s_LastFrameTime;
-    DOO_CORE_DEBUG("DeltaTime: {0}", s_DeltaTime);
     s_FPS = 1.0f / s_DeltaTime;
     s_LastFrameTime = GetTime();
 }

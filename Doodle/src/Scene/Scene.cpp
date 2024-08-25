@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Entity.h"
+#include <memory>
 
 namespace Doodle
 {
@@ -25,10 +26,30 @@ std::shared_ptr<Entity> Scene::GetEntity(const std::string &name) const
     return m_entities.at(name);
 }
 
-void Scene::Render(const std::shared_ptr<Camera> &camera)
+std::shared_ptr<Entity> Scene::GetMainCameraEntity()
 {
-    glm::mat4 view = camera->GetViewMatrix();
-    glm::mat4 projection = camera->GetProjectionMatrix(16.0f / 9.0f);
+    auto cameraView = m_registry.view<CameraComponent>();
+    for (auto entity : cameraView)
+    {
+        const auto &camera = cameraView.get<CameraComponent>(entity);
+        if (camera.Primary)
+        {
+            return std::make_shared<Entity>(m_registry, entity);
+        }
+    }
+    DOO_CORE_WARN("No primary camera found");
+    return nullptr;
+}
+
+void Scene::Render()
+{
+    auto cameraEntity = GetMainCameraEntity();
+    if (!cameraEntity)
+    {
+        return;
+    }
+    glm::mat4 view = glm::inverse(cameraEntity->GetComponent<Transform>().GetModelMatrix());
+    glm::mat4 projection = cameraEntity->GetComponent<CameraComponent>().GetProjectionMatrix();
 
     auto vaoView = m_registry.view<Transform, VAOComponent, MaterialComponent>();
     for (auto entity : vaoView)
@@ -44,7 +65,7 @@ void Scene::Render(const std::shared_ptr<Camera> &camera)
         material.MaterialInstance->SetUniformMatrix4f("u_Projection", projection);
 
         material.MaterialInstance->Bind();
-        vao.VAO->Render();
+        vao.Render();
     }
 
     auto meshView = m_registry.view<Transform, MeshComponent, MaterialComponent>();
@@ -62,7 +83,7 @@ void Scene::Render(const std::shared_ptr<Camera> &camera)
         material.MaterialInstance->SetUniformMatrix4f("u_Projection", projection);
 
         material.MaterialInstance->Bind();
-        mesh.Mesh->Render();
+        mesh.Render();
     }
 }
 
