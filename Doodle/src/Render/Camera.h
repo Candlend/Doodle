@@ -10,6 +10,10 @@ namespace Doodle
 class DOO_API Camera
 {
 public:
+    static std::shared_ptr<Camera> Create()
+    {
+        return std::make_shared<Camera>();
+    }
     Camera()
     {
         // 初始化相机参数

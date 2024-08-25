@@ -18,7 +18,7 @@ public:
     static std::shared_ptr<Scene> Create();
     std::shared_ptr<Entity> CreateEntity(const std::string &name);
     std::shared_ptr<Entity> GetEntity(const std::string &name) const;
-    void Render() const;
+    void Render(const std::shared_ptr<Camera> &camera);
 
 private:
     entt::registry m_registry;
