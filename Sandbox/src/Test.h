@@ -2,6 +2,7 @@
 
 #include "Component.h"
 #include "Material.h"
+#include "SceneManager.h"
 #include "VertexBuffer.h"
 #include <Doodle.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,7 +25,8 @@ public:
         auto material = Material::Create("Test");
         material->SetUniformTexture("u_Texture", texture2D);
 
-        m_activeScene = Scene::Create();
+        m_activeScene = SceneManager::Get().GetActiveScene();
+
         auto cerberus = m_activeScene->CreateEntity("Cerberus");
         cerberus->AddComponent<MeshComponent>("assets/models/cerberus.fbx");
         cerberus->AddComponent<MaterialComponent>(material);

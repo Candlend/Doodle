@@ -10,7 +10,7 @@
 namespace Doodle
 {
 
-class DOO_API Scene
+class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
 public:
     static std::shared_ptr<Scene> Create();
@@ -18,6 +18,8 @@ public:
     std::shared_ptr<Entity> GetEntity(const std::string &name) const;
     void Render();
     std::shared_ptr<Entity> GetMainCameraEntity();
+    void Begin();
+    void End();
 
 private:
     entt::registry m_registry;

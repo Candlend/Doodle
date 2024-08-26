@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Entity.h"
+#include "SceneManager.h"
 #include <memory>
 
 namespace Doodle
@@ -85,6 +86,16 @@ void Scene::Render()
         material.MaterialInstance->Bind();
         mesh.Render();
     }
+}
+
+void Scene::Begin()
+{
+    SceneManager::Get().m_activeScene = shared_from_this();
+}
+
+void Scene::End()
+{
+    SceneManager::Get().m_activeScene = nullptr;
 }
 
 } // namespace Doodle
