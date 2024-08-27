@@ -56,7 +56,7 @@ public:
         Renderer::Submit([this, data]() {
             glCreateBuffers(1, &m_rendererId);
             glNamedBufferData(m_rendererId, m_size, data, m_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-            DOO_CORE_TRACE("VBO <{0}> created", m_rendererId);
+            DOO_CORE_TRACE("VBO <{0}> created: size={1}, dynamic={2}", m_rendererId, m_size, m_dynamic);
         });
     }
 

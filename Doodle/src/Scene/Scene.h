@@ -2,10 +2,12 @@
 
 #include "pch.h"
 #include <entt/entt.hpp>
+#include <memory>
 
 #include "Camera.h"
 #include "Component.h"
 #include "Entity.h"
+#include "UniformBuffer.h"
 
 namespace Doodle
 {
@@ -86,6 +88,10 @@ public:
     void End();
 
 private:
+    std::shared_ptr<UniformBuffer> m_sceneUBO;
+    std::shared_ptr<UniformBuffer> m_pointLightsUBO;
+    std::shared_ptr<UniformBuffer> m_spotLightsUBO;
+
     LightEnvironment m_lightEnvironment;
     entt::registry m_registry;
     std::unordered_map<std::string, std::shared_ptr<Entity>> m_entities;

@@ -1,7 +1,6 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "SceneManager.h"
-#include "UniformBuffer.h"
 
 namespace Doodle
 {
@@ -117,24 +116,23 @@ void Scene::Render()
     }
     UBOScene sceneData = {};
     sceneData.DirectionalLight = m_lightEnvironment.DirectionalLights[0];
-    // std::shared_ptr<UniformBuffer> sceneUBO = UniformBuffer::Create(&sceneData, sizeof(UBOScene), true);
+    m_sceneUBO = UniformBuffer::Create(&sceneData, sizeof(UBOScene), true);
 
     UBOPointLights pointLightData = {};
     const std::vector<PointLight> &pointLightsVec = m_lightEnvironment.PointLights;
     pointLightData.Count = pointLightsVec.size();
     std::memcpy(pointLightData.PointLights, pointLightsVec.data(), m_lightEnvironment.GetPointLightsSize());
-    // std::shared_ptr<UniformBuffer> pointLightUBO = UniformBuffer::Create(&pointLightData, sizeof(UBOPointLights),
-    // true);
+    m_pointLightsUBO = UniformBuffer::Create(&pointLightData, sizeof(UBOPointLights), true);
 
     UBOSpotLights spotLightData = {};
     const std::vector<SpotLight> &spotLightsVec = m_lightEnvironment.SpotLights;
     spotLightData.Count = spotLightsVec.size();
     std::memcpy(spotLightData.SpotLights, spotLightsVec.data(), m_lightEnvironment.GetSpotLightsSize());
-    // std::shared_ptr<UniformBuffer> spotLightUBO = UniformBuffer::Create(&spotLightData, sizeof(UBOSpotLights), true);
+    m_spotLightsUBO = UniformBuffer::Create(&spotLightData, sizeof(UBOSpotLights), true);
 
-    // sceneUBO->Bind(0);
-    // pointLightUBO->Bind(1);
-    // spotLightUBO->Bind(2);
+    // m_sceneUBO->Bind(0);
+    // m_pointLightsUBO->Bind(1);
+    // m_spotLightsUBO->Bind(2);
 
     auto vaoView = m_registry.view<Transform, VAOComponent, MaterialComponent>();
     for (auto entity : vaoView)

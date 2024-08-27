@@ -53,8 +53,8 @@ struct TextureParams
     std::string ToString() const
     {
         std::ostringstream oss;
-        oss << "Format: " << TextureFormatToString(Format) << ", Wrap: " << TextureWrapToString(Wrap)
-            << ", Filter: " << TextureFilterToString(Filter);
+        oss << "Format=" << TextureFormatToString(Format) << ", Wrap=" << TextureWrapToString(Wrap)
+            << ", Filter=" << TextureFilterToString(Filter);
         return oss.str();
     }
 };
