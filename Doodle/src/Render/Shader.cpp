@@ -1,8 +1,14 @@
+#include "Log.h"
 #include "pch.h"
+#include <cstddef>
+#include <cstdint>
 #include <glad/glad.h>
 
 #include "Shader.h"
 #include <boost/algorithm/string.hpp>
+#include <sstream>
+#include <unordered_map>
+#include <vector>
 
 namespace Doodle
 {
@@ -17,6 +23,8 @@ public:
         Renderer::Submit([this, filepath]() {
             CompileAndUploadShader();
             DOO_CORE_TRACE("OpenGLShader <{0}> created: {1}", m_rendererID, filepath);
+            PrintActiveUniforms();
+            PrintActiveUniformBlocks();
         });
     }
 
@@ -168,6 +176,25 @@ private:
             }
         }
 
+        int numUniformBlocks = 0;
+        glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &numUniformBlocks);
+
+        int uniformBlockMaxLength = 0;
+        glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &uniformBlockMaxLength);
+
+        count = -1;
+        type = 0;
+        std::vector<GLchar> uniformBlockName(uniformBlockMaxLength);
+        for (int i = 0; i < numUniformBlocks; i++)
+        {
+            glGetActiveUniformBlockName(program, i, uniformBlockMaxLength, &length, uniformBlockName.data());
+            std::string name(uniformBlockName.begin(), uniformBlockName.begin() + length);
+            location = glGetUniformBlockIndex(program, name.c_str());
+            if (location == -1)
+                continue;
+            m_uniformBlocksCache[name] = location;
+        }
+
         for (auto id : shaderRendererIDs)
             glDetachShader(program, id);
     }
@@ -190,7 +217,7 @@ private:
         return GL_NONE;
     }
 
-    int GetUniformLocation(const std::string &name) override
+    uint32_t GetUniformLocation(const std::string &name) override
     {
         auto it = m_uniformsCache.find(name);
         if (it == m_uniformsCache.end())
@@ -201,6 +228,95 @@ private:
         {
             return it->second;
         }
+    }
+
+    uint32_t GetUniformBlockIndex(const std::string &name) override
+    {
+        auto it = m_uniformBlocksCache.find(name);
+        if (it == m_uniformBlocksCache.end())
+        {
+            return -1;
+        }
+        else
+        {
+            return it->second;
+        }
+    }
+
+    uint32_t GetUniformBlockBinding(const std::string &name) override
+    {
+        uint32_t index = GetUniformBlockIndex(name);
+        if (index == -1)
+            return -1;
+
+        int blockBinding;
+        glGetActiveUniformBlockiv(m_rendererID, index, GL_UNIFORM_BLOCK_BINDING, &blockBinding);
+        return blockBinding;
+    }
+
+    void BindUniformBlock(const std::string &name, uint32_t binding) override
+    {
+        uint32_t index = GetUniformBlockIndex(name);
+        if (index == -1)
+            return;
+
+        glUniformBlockBinding(m_rendererID, index, binding);
+    }
+
+    void PrintActiveUniforms() override
+    {
+        int numUniforms = 0;
+        glGetProgramiv(m_rendererID, GL_ACTIVE_UNIFORMS, &numUniforms);
+
+        int uniformMaxLength = 0;
+        glGetProgramiv(m_rendererID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniformMaxLength);
+
+        std::ostringstream oss;
+        int count = -1;
+        GLenum type = 0;
+        GLsizei length;
+        int location;
+        std::vector<GLchar> uniformName(uniformMaxLength);
+        oss << "Active uniforms for shader <" << m_rendererID << ">:" << std::endl;
+        for (int i = 0; i < numUniforms; i++)
+        {
+            glGetActiveUniform(m_rendererID, i, uniformMaxLength, &length, &count, &type, uniformName.data());
+            std::string name(uniformName.begin(), uniformName.begin() + length);
+            location = glGetUniformLocation(m_rendererID, name.c_str());
+            if (location == -1)
+                continue;
+            oss << "    <" << location << "> " << name << std::endl;
+        }
+        DOO_CORE_INFO(oss.str());
+    }
+
+    void PrintActiveUniformBlocks() override
+    {
+        int numUniformBlocks = 0;
+        glGetProgramiv(m_rendererID, GL_ACTIVE_UNIFORM_BLOCKS, &numUniformBlocks);
+
+        int uniformBlockMaxLength = 0;
+        glGetProgramiv(m_rendererID, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &uniformBlockMaxLength);
+
+        std::ostringstream oss;
+        GLsizei length;
+        std::vector<GLchar> uniformBlockName(uniformBlockMaxLength);
+        oss << "Active uniform blocks for shader <" << m_rendererID << ">:" << std::endl;
+        for (int i = 0; i < numUniformBlocks; i++)
+        {
+            int blockBinding;
+            int blockDataSize;
+            glGetActiveUniformBlockName(m_rendererID, i, uniformBlockMaxLength, &length, uniformBlockName.data());
+            glGetActiveUniformBlockiv(m_rendererID, i, GL_UNIFORM_BLOCK_BINDING, &blockBinding);
+            glGetActiveUniformBlockiv(m_rendererID, i, GL_UNIFORM_BLOCK_DATA_SIZE, &blockDataSize);
+            std::string name(uniformBlockName.begin(), uniformBlockName.begin() + length);
+            int location = glGetUniformBlockIndex(m_rendererID, name.c_str());
+            if (location == -1)
+                continue;
+            oss << "    <" << location << "> " << name << ", binding=" << blockBinding << ", size=" << blockDataSize
+                << std::endl;
+        }
+        DOO_CORE_INFO(oss.str());
     }
 
     void SetUniform1i(const std::string &name, int v) override
@@ -304,7 +420,8 @@ private:
         SetUniform1i(name, slot);
     }
 
-    std::unordered_map<std::string, int> m_uniformsCache;
+    std::unordered_map<std::string, uint32_t> m_uniformsCache;
+    std::unordered_map<std::string, uint32_t> m_uniformBlocksCache;
     uint32_t m_rendererID;
     std::string m_shaderSource;
 };

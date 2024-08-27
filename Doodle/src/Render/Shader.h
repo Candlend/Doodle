@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <fstream>
 #include <glm/glm.hpp>
 #include <sstream>
@@ -18,13 +19,18 @@ class DOO_API Shader
 public:
     static std::shared_ptr<Shader> Create(const std::string &filepath);
     virtual void Bind() = 0;
-    virtual int GetUniformLocation(const std::string &name) = 0;
+    virtual uint32_t GetUniformLocation(const std::string &name) = 0;
+    virtual uint32_t GetUniformBlockIndex(const std::string &name) = 0;
+    virtual uint32_t GetUniformBlockBinding(const std::string &name) = 0;
+    virtual void BindUniformBlock(const std::string &name, uint32_t slot) = 0;
+    virtual void PrintActiveUniforms() = 0;
+    virtual void PrintActiveUniformBlocks() = 0;
 
     template <typename Func, typename... Args> void SetUniform(const std::string &name, Func func, Args... args)
     {
         Bind();
         Renderer::Submit([=, this]() {
-            int location = GetUniformLocation(name);
+            uint32_t location = GetUniformLocation(name);
             func(location, args...);
             std::ostringstream oss;
             (void)std::initializer_list<int>{(oss << args << ", ", 0)...};

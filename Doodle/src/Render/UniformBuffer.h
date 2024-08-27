@@ -13,6 +13,7 @@ class DOO_API UniformBuffer
 {
 public:
     static std::shared_ptr<UniformBuffer> Create(void *data, size_t size, bool dynamic = false);
+    static std::shared_ptr<UniformBuffer> Create(size_t size, bool dynamic = false);
     virtual ~UniformBuffer() = default;
 
     virtual void SetSubData(const void *data, size_t size, size_t offset) = 0;

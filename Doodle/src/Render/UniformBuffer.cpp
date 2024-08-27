@@ -21,6 +21,17 @@ public:
         });
     }
 
+    OpenGLUniformBuffer(size_t size, bool dynamic)
+    {
+        m_size = size;
+        m_dynamic = dynamic;
+        Renderer::Submit([this]() {
+            glCreateBuffers(1, &m_rendererId);
+            glNamedBufferData(m_rendererId, m_size, nullptr, m_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+            DOO_CORE_TRACE("UBO <{0}> created: size={1}, dynamic={2}", m_rendererId, m_size, m_dynamic);
+        });
+    }
+
     ~OpenGLUniformBuffer()
     {
         Renderer::Submit([this]() {
@@ -85,6 +96,11 @@ private:
 std::shared_ptr<UniformBuffer> UniformBuffer::Create(void *data, size_t size, bool dynamic)
 {
     return std::make_shared<OpenGLUniformBuffer>(data, size, dynamic);
+}
+
+std::shared_ptr<UniformBuffer> UniformBuffer::Create(size_t size, bool dynamic)
+{
+    return std::make_shared<OpenGLUniformBuffer>(size, dynamic);
 }
 
 } // namespace Doodle

@@ -12,14 +12,14 @@
 namespace Doodle
 {
 
-struct DirectionalLight
+struct alignas(16) DirectionalLight
 {
     glm::vec3 Direction{0.0f};
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
 };
 
-struct PointLight
+struct alignas(16) PointLight
 {
     glm::vec3 Position{0.0f};
     glm::vec3 Radiance{1.0f};
@@ -30,7 +30,7 @@ struct PointLight
     float SourceSize = 0.1f;
 };
 
-struct SpotLight
+struct alignas(16) SpotLight
 {
     glm::vec3 Position{0.0f};
     glm::vec3 Direction{0.0f};
@@ -79,6 +79,7 @@ struct LightEnvironment
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
 public:
+    Scene();
     static std::shared_ptr<Scene> Create();
     std::shared_ptr<Entity> CreateEntity(const std::string &name);
     std::shared_ptr<Entity> GetEntity(const std::string &name) const;

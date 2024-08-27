@@ -10,6 +10,13 @@ std::shared_ptr<Scene> Scene::Create()
     return std::make_shared<Scene>();
 }
 
+Scene::Scene()
+{
+    m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
+    m_pointLightsUBO = UniformBuffer::Create(sizeof(UBOPointLights), true);
+    m_spotLightsUBO = UniformBuffer::Create(sizeof(UBOSpotLights), true);
+}
+
 std::shared_ptr<Entity> Scene::CreateEntity(const std::string &name)
 {
     if (m_entities.find(name) != m_entities.end())
@@ -116,23 +123,23 @@ void Scene::Render()
     }
     UBOScene sceneData = {};
     sceneData.DirectionalLight = m_lightEnvironment.DirectionalLights[0];
-    m_sceneUBO = UniformBuffer::Create(&sceneData, sizeof(UBOScene), true);
+    m_sceneUBO->SetSubData(&sceneData, sizeof(UBOScene));
 
     UBOPointLights pointLightData = {};
     const std::vector<PointLight> &pointLightsVec = m_lightEnvironment.PointLights;
     pointLightData.Count = pointLightsVec.size();
     std::memcpy(pointLightData.PointLights, pointLightsVec.data(), m_lightEnvironment.GetPointLightsSize());
-    m_pointLightsUBO = UniformBuffer::Create(&pointLightData, sizeof(UBOPointLights), true);
+    m_pointLightsUBO->SetSubData(&pointLightData, sizeof(UBOPointLights));
 
     UBOSpotLights spotLightData = {};
     const std::vector<SpotLight> &spotLightsVec = m_lightEnvironment.SpotLights;
     spotLightData.Count = spotLightsVec.size();
     std::memcpy(spotLightData.SpotLights, spotLightsVec.data(), m_lightEnvironment.GetSpotLightsSize());
-    m_spotLightsUBO = UniformBuffer::Create(&spotLightData, sizeof(UBOSpotLights), true);
+    m_spotLightsUBO->SetSubData(&spotLightData, sizeof(UBOSpotLights));
 
-    // m_sceneUBO->Bind(0);
-    // m_pointLightsUBO->Bind(1);
-    // m_spotLightsUBO->Bind(2);
+    m_sceneUBO->Bind(0);
+    m_pointLightsUBO->Bind(1);
+    m_spotLightsUBO->Bind(2);
 
     auto vaoView = m_registry.view<Transform, VAOComponent, MaterialComponent>();
     for (auto entity : vaoView)
