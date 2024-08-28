@@ -68,7 +68,8 @@ void Scene::Render()
             for (auto entity : lights)
             {
                 auto [transformComponent, lightComponent] = lights.get<Transform, DirectionalLightComponent>(entity);
-                glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(1.0f));
+                glm::vec3 direction =
+                    glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
                 DOO_CORE_ASSERT(directionalLightIndex < LightEnvironment::MAX_DIRECTIONAL_LIGHTS,
                                 "More than {} directional lights in scene!", LightEnvironment::MAX_DIRECTIONAL_LIGHTS);
                 m_lightEnvironment.DirectionalLights[directionalLightIndex++] = {

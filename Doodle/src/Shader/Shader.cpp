@@ -1,14 +1,9 @@
-#include "Log.h"
 #include "pch.h"
-#include <cstddef>
-#include <cstdint>
+#include <boost/algorithm/string.hpp>
 #include <glad/glad.h>
 
 #include "Shader.h"
-#include <boost/algorithm/string.hpp>
-#include <sstream>
-#include <unordered_map>
-#include <vector>
+#include "ShaderReloader.h"
 
 namespace Doodle
 {
@@ -17,8 +12,9 @@ class OpenGLShader : public Shader
 {
 
 public:
-    explicit OpenGLShader(const std::string &filepath)
+    explicit OpenGLShader(const std::string &filepath) : m_reloader(filepath, *this)
     {
+        m_filepath = filepath;
         ReadShaderFromFile(filepath);
         Renderer::Submit([this, filepath]() {
             CompileAndUploadShader();
@@ -28,7 +24,18 @@ public:
         });
     }
 
-    virtual void Bind() override
+    void Reload() override
+    {
+        ReadShaderFromFile(m_filepath);
+        Renderer::Submit([this]() {
+            CompileAndUploadShader();
+            DOO_CORE_TRACE("OpenGLShader <{0}> reloaded", m_rendererID);
+            PrintActiveUniforms();
+            PrintActiveUniformBlocks();
+        });
+    }
+
+    void Bind() override
     {
         Renderer::Submit([this]() {
             glUseProgram(m_rendererID);
@@ -420,10 +427,12 @@ private:
         SetUniform1i(name, slot);
     }
 
+    std::string m_filepath;
     std::unordered_map<std::string, uint32_t> m_uniformsCache;
     std::unordered_map<std::string, uint32_t> m_uniformBlocksCache;
     uint32_t m_rendererID;
     std::string m_shaderSource;
+    ShaderReloader m_reloader;
 };
 
 std::shared_ptr<Shader> Shader::Create(const std::string &filepath)

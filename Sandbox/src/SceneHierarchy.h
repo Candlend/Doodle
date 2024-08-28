@@ -10,7 +10,7 @@
 
 using namespace Doodle;
 
-class Test : public RegisterModule<Test>
+class SceneHierarchy : public RegisterModule<SceneHierarchy>
 {
 public:
     void Initialize() override
@@ -41,6 +41,10 @@ public:
         auto mainCamera = m_activeScene->CreateEntity("MainCamera");
         mainCamera->AddComponent<CameraComponent>();
         mainCamera->GetComponent<Transform>().Position = glm::vec3(0.f, 0.f, 3.f);
+
+        auto directionalLight = m_activeScene->CreateEntity("DirectionalLight");
+        auto &light = directionalLight->AddComponent<DirectionalLightComponent>();
+        light.Intensity = 1.0f;
     }
 
     void OnUpdate() override

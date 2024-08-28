@@ -2,7 +2,7 @@
 
 #include "CameraController.h"
 #include "LogWindow.h"
-#include "Test.h"
+#include "SceneHierarchy.h"
 #include <Doodle.h>
 #include <memory>
 
@@ -14,7 +14,7 @@ public:
     void Initialize() override
     {
         LogWindow::Register();
-        Test::Register();
+        SceneHierarchy::Register();
         CameraController::Register();
 
         m_scene = SceneManager::Get().CreateScene("Main");
