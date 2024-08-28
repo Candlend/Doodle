@@ -15,7 +15,7 @@ class InputImpl : public Input
 private:
     GLFWwindow* GetNativeWindow() const
     {
-        return static_cast<GLFWwindow*>(ApplicationRunner::GetCurrentWindow().GetNativeWindow());
+        return static_cast<GLFWwindow *>(ApplicationRunner::GetWindow().GetNativeWindow());
     }
 
 protected:

@@ -9,6 +9,7 @@
 #include "EventManager.h"
 #include "Singleton.h"
 #include "Window.h"
+#include <memory>
 
 namespace Doodle
 {
@@ -41,6 +42,7 @@ public:
     virtual void Deinitialize();
     virtual void OnLayout();
     virtual void OnUpdate();
+    std::shared_ptr<Window> GetWindow();
 
 protected:
     void Run();

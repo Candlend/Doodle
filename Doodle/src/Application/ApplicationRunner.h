@@ -47,12 +47,14 @@ public:
 
     void Run();
 
-    static Window &GetCurrentWindow(){
+    static Window &GetWindow()
+    {
         DOO_CORE_ASSERT(Get().m_window, "No window created!");
         return *Get().m_window;
     }
 
-    static Application &GetCurrentApp(){
+    static Application &GetApplication()
+    {
         DOO_CORE_ASSERT(Get().m_app, "No application created!");
         return *Get().m_app;
     }

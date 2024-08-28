@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ApplicationRunner.h"
 #include "Component.h"
 #include "KeyCode.h"
 #include "glm/fwd.hpp"
@@ -15,12 +16,20 @@ public:
     {
         m_moveSpeed = 2.0f;
         m_rotateSpeed = 20.0f;
+        m_cameraEntity = SceneManager::Get().GetActiveScene()->GetMainCameraEntity();
+        auto &camera = m_cameraEntity->GetComponent<CameraComponent>().Camera;
+        camera->SetViewportSize(ApplicationRunner::Get().GetWindow().GetWidth(),
+                                ApplicationRunner::Get().GetWindow().GetHeight());
+
+        m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
+
+        EventManager::Get().AddListener(this, &CameraController::OnWindowResizeEvent);
     }
 
     void OnUpdate() override
     {
         m_activeScene = SceneManager::Get().GetActiveScene();
-        auto &transform = m_activeScene->GetMainCameraEntity()->GetComponent<Transform>();
+        auto &transform = m_cameraEntity->GetComponent<Transform>();
 
         float deltaTime = Application::Time::GetDeltaTime();
         if (Input::IsKeyPressed(KeyCode::W))
@@ -50,18 +59,13 @@ public:
         // 处理相机旋转
         if (Input::IsMouseButtonPressed(MouseButtonCode::Right))
         {
-            // 获取当前鼠标位置
             glm::vec2 currentMousePosition =
                 glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
-
-            // 计算鼠标移动量
             glm::vec2 mouseDelta = currentMousePosition - m_lastMousePosition;
 
-            // 更新偏航角和俯仰角
             transform.Rotation.y -= mouseDelta.x * m_rotateSpeed * deltaTime; // 偏航角
             transform.Rotation.x -= mouseDelta.y * m_rotateSpeed * deltaTime; // 俯仰角
 
-            // 限制俯仰角，避免翻转
             if (transform.Rotation.x > 89.0f)
                 transform.Rotation.x = 89.0f;
             if (transform.Rotation.x < -89.0f)
@@ -73,19 +77,29 @@ public:
 
     void OnLayout() override
     {
+        auto &transform = m_cameraEntity->GetComponent<Transform>();
+
         ImGui::Begin("相机控制器");
         ImGui::SliderFloat("移动速度", &m_moveSpeed, 0.1f, 10.0f);
         ImGui::SliderFloat("旋转速度", &m_rotateSpeed, 1.0f, 100.0f);
         if (ImGui::Button("重置相机"))
         {
-            m_activeScene->GetMainCameraEntity()->GetComponent<Transform>().Reset();
-            m_activeScene->GetMainCameraEntity()->GetComponent<Transform>().Position.z = 3.0f;
+            transform.Reset();
+            transform.Position.z = 3.0f;
         }
         ImGui::End();
     }
 
     void Deinitialize() override
     {
+        EventManager::Get().RemoveListener(this, &CameraController::OnWindowResizeEvent);
+    }
+
+    bool OnWindowResizeEvent(const WindowResizeEvent &event)
+    {
+        auto &camera = m_cameraEntity->GetComponent<CameraComponent>().Camera;
+        camera->SetViewportSize(event.GetWidth(), event.GetHeight());
+        return false;
     }
 
 private:
@@ -93,4 +107,5 @@ private:
     float m_rotateSpeed;
     glm::vec2 m_lastMousePosition;
     std::shared_ptr<Scene> m_activeScene;
+    std::shared_ptr<Entity> m_cameraEntity;
 };

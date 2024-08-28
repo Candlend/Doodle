@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#include <memory>
 
 #include "Application.h"
 #include "ApplicationEvent.h"
@@ -9,6 +10,7 @@
 #include "Log.h"
 #include "Module.h"
 #include "Renderer.h"
+#include "Window.h"
 #include "imgui.h"
 
 
@@ -47,6 +49,11 @@ void Application::Time::Freeze()
 float Application::Time::GetFPS()
 {
     return s_FPS;
+}
+
+std::shared_ptr<Window> Application::GetWindow()
+{
+    return m_window.lock();
 }
 
 void Application::Initialize()
