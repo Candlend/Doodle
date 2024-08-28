@@ -57,11 +57,9 @@ struct Transform
 
     glm::vec3 GetUp() const
     {
-        glm::vec3 up;
-        up.x = -sin(glm::radians(Rotation.y));
-        up.y = cos(glm::radians(Rotation.x)) * cos(glm::radians(Rotation.y));
-        up.z = cos(glm::radians(Rotation.x)) * sin(glm::radians(Rotation.y));
-        return glm::normalize(up);
+        glm::vec3 front = GetFront();
+        glm::vec3 right = GetRight();
+        return glm::normalize(glm::cross(right, front));
     }
 
     void LookAt(const glm::vec3 &target)
