@@ -208,7 +208,9 @@ private:
 
 std::shared_ptr<Window> Window::Create(const WindowProps &props, bool visible)
 {
-    return std::make_shared<WindowsWindow>(props, visible);
+    auto window = std::make_shared<WindowsWindow>(props, visible);
+    SetInstance(window);
+    return window;
 }
 
 } // namespace Doodle

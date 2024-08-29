@@ -10,7 +10,7 @@ namespace Doodle
 namespace ImGuiUtils
 {
 
-bool ToggleButton(const char *strId, bool &v, const ImVec2 &size = ImVec2(0, 0))
+inline bool ToggleButton(const char *strId, bool &v, const ImVec2 &size = ImVec2(0, 0))
 {
     // 获取当前按钮的活动颜色
     ImVec4 color = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
@@ -30,7 +30,7 @@ bool ToggleButton(const char *strId, bool &v, const ImVec2 &size = ImVec2(0, 0))
     return false; // 返回按钮未被点击
 }
 
-ImColor GetColor(ImU32 hex)
+inline ImColor GetColor(ImU32 hex)
 {
     if (hex <= 0xFFFFFF)
     {

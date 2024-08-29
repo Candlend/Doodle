@@ -1,60 +1,42 @@
-#ifdef DOO_PLATFORM_WINDOWS
-
-#include "pch.h"
-#include <GLFW/glfw3.h>
-#include "Application.h"
-#include "ApplicationRunner.h"
 #include "Input.h"
 #include "KeyCode.h"
+#include "Window.h"
+#include "pch.h"
+#include <GLFW/glfw3.h>
 
 namespace Doodle
 {
 
-class InputImpl : public Input
+bool Input::IsKeyPressed(KeyCode keycode)
 {
-private:
-    GLFWwindow* GetNativeWindow() const
-    {
-        return static_cast<GLFWwindow *>(ApplicationRunner::GetWindow().GetNativeWindow());
-    }
+    auto *window = static_cast<GLFWwindow *>(Window::Get()->GetNativeWindow());
+    auto state = glfwGetKey(window, keycode);
+    return state == GLFW_PRESS || state == GLFW_REPEAT;
+}
 
-protected:
-    virtual bool IsKeyPressedImpl(KeyCode keycode) override
-    {
-        auto *window = GetNativeWindow();
-        auto state = glfwGetKey(window, keycode);
-        return state == GLFW_PRESS || state == GLFW_REPEAT;
-    }
+bool Input::IsMouseButtonPressed(MouseButtonCode button)
+{
+    auto *window = static_cast<GLFWwindow *>(Window::Get()->GetNativeWindow());
+    auto state = glfwGetMouseButton(window, button);
+    return state == GLFW_PRESS;
+}
 
-    virtual bool IsMouseButtonPressedImpl(MouseButtonCode button) override
-    {
-        auto *window = GetNativeWindow();
-        auto state = glfwGetMouseButton(window, button);
-        return state == GLFW_PRESS;
-    }
+std::pair<float, float> Input::GetMousePosition()
+{
+    auto *window = static_cast<GLFWwindow *>(Window::Get()->GetNativeWindow());
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    return {static_cast<float>(xpos), static_cast<float>(ypos)};
+}
 
-    virtual std::pair<float, float> GetMousePositionImpl() override
-    {
-        auto *window = GetNativeWindow();
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        return {static_cast<float>(xpos), static_cast<float>(ypos)};
-    }
+float Input::GetMouseX()
+{
+    return GetMousePosition().first;
+}
 
-    virtual float GetMouseXImpl() override
-    {
-        return GetMousePositionImpl().first;
-    }
-
-    virtual float GetMouseYImpl() override
-    {
-        return GetMousePositionImpl().second;
-    }
-};
-
-// 静态实例化
-std::shared_ptr<Input> Input::s_Instance = std::make_shared<InputImpl>();
+float Input::GetMouseY()
+{
+    return GetMousePosition().second;
+}
 
 } // namespace Doodle
-
-#endif

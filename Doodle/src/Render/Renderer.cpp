@@ -1,7 +1,10 @@
 #include "Renderer.h"
+#include "ApplicationEvent.h"
+#include "EventManager.h"
 #include "Log.h"
 #include "pch.h"
 #include <functional>
+#include <limits>
 
 namespace Doodle
 {
@@ -12,10 +15,13 @@ void Renderer::Initialize()
         RendererAPI::Initialize();
         DOO_CORE_TRACE("Renderer initialized");
     });
+
+    EventManager::Get().AddListener<AppRenderEvent>(this, &Renderer::WaitAndRender, std::numeric_limits<int>::max());
 }
 
 void Renderer::Deinitialize()
 {
+    EventManager::Get().RemoveListener<AppRenderEvent>(this, &Renderer::WaitAndRender);
 }
 
 void Renderer::Clear(float r, float g, float b, float a)

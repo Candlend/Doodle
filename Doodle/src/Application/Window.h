@@ -4,6 +4,7 @@
 
 #include "Core.h"
 #include "Event.h"
+#include "Singleton.h"
 
 namespace Doodle
 {
@@ -20,7 +21,8 @@ struct WindowProps
     }
 };
 
-class DOO_API Window
+
+class DOO_API Window : public LazySingleton<Window>
 {
 public:
     using EventCallbackFn = std::function<void(Event &)>;

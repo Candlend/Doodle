@@ -9,10 +9,6 @@
 namespace Doodle
 {
 
-void LogPanel::Initialize()
-{
-}
-
 void LogPanel::OnUpdate()
 {
     m_logCount = Log::GetLogCount(LogType::Trace) + Log::GetLogCount(LogType::Debug) + Log::GetLogCount(LogType::Info);
@@ -38,11 +34,8 @@ bool LogPanel::ShouldSkip(const LogInfo &logInfo)
     return false;
 }
 
-void LogPanel::OnLayout()
+void LogPanel::OnPanelLayout()
 {
-    std::string title = "日志";
-    ImGuiUtils::WindowScope ws(title.c_str());
-
     if (ImGui::Button("清空"))
     {
         Log::Clear();
@@ -158,10 +151,6 @@ void LogPanel::OnLayout()
             }
         }
     }
-}
-
-void LogPanel::Deinitialize()
-{
 }
 
 } // namespace Doodle

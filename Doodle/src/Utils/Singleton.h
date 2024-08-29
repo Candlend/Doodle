@@ -7,8 +7,7 @@
 namespace Doodle
 {
 
-template <typename T>
-class Singleton
+template <typename T> class DOO_API Singleton
 {
 public:
     // 获取单例实例
@@ -27,5 +26,33 @@ protected:
     Singleton() = default;
     virtual ~Singleton() = default;
 };
+
+template <typename T> class DOO_API LazySingleton : std::enable_shared_from_this<T>
+{
+public:
+    static std::shared_ptr<T> Get()
+    {
+        if (!s_Instance)
+        {
+            DOO_CORE_ERROR("{0} is not initialized", typeid(T).name());
+        }
+        return s_Instance;
+    }
+
+    // 删除拷贝构造和赋值运算符
+    LazySingleton(const LazySingleton &) = delete;
+    LazySingleton &operator=(const LazySingleton &) = delete;
+
+protected:
+    static void SetInstance(std::shared_ptr<T> instance)
+    {
+        s_Instance = instance;
+    }
+    static std::shared_ptr<T> s_Instance;
+    LazySingleton() = default;
+    virtual ~LazySingleton() = default;
+};
+
+template <typename T> std::shared_ptr<T> LazySingleton<T>::s_Instance = nullptr;
 
 } // namespace Doodle

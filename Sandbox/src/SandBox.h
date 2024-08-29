@@ -2,6 +2,7 @@
 
 #include "CameraController.h"
 #include "LogPanel.h"
+#include "PanelManager.h"
 #include "SceneHierarchy.h"
 #include <Doodle.h>
 #include <memory>
@@ -13,8 +14,7 @@ class Sandbox : public Application
 public:
     void Initialize() override
     {
-        LogPanel::Register();
-        SceneHierarchy::Register();
+        PanelManager::Get().CreatePanel<LogPanel>();
 
         m_scene = SceneManager::Get().CreateScene("Main");
         m_scene->Begin();

@@ -5,9 +5,8 @@
 #include "ApplicationEvent.h"
 #include "ApplicationRunner.h"
 #include "EventManager.h"
-#include "ImGuiManager.h"
+#include "ImGuiBuilder.h"
 #include "Log.h"
-#include "Module.h"
 #include "Renderer.h"
 #include "Window.h"
 
@@ -48,62 +47,43 @@ float Application::Time::GetFPS()
     return s_FPS;
 }
 
-std::shared_ptr<Window> Application::GetWindow()
+Application::Application()
 {
-    return m_window.lock();
+    EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
+    EventManager::Get().AddListener(this, &Application::OnWindowRefreshEvent);
+    EventManager::Get().AddListener(this, &Application::OnWindowMoveEvent);
+}
+
+Application::~Application()
+{
+    Deinitialize();
 }
 
 void Application::Initialize()
 {
-    EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
-    EventManager::Get().AddListener(this, &Application::OnAppLayoutEvent);
-    EventManager::Get().AddListener(this, &Application::OnWindowRefreshEvent);
-    EventManager::Get().AddListener(this, &Application::OnWindowMoveEvent);
-
-    Renderer::Initialize();
-    ImGuiManager::Get().Initialize();
-    
-    for (auto *module : Module::GetModules())
-    {
-        module->Initialize();
-    }
+    Renderer::Get().Initialize();
+    ImGuiBuilder::Get().Initialize();
 }
 
 void Application::Deinitialize()
 {
-    for (auto *module : Module::GetModules())
-    {
-        module->Deinitialize();
-    }
-
-    Renderer::Deinitialize();
-    ImGuiManager::Get().Deinitialize();
-
-    EventManager::Get().RemoveListener(this, &Application::OnAppLayoutEvent);
-    EventManager::Get().RemoveListener(this, &Application::OnWindowCloseEvent);
-    EventManager::Get().RemoveListener(this, &Application::OnWindowRefreshEvent);
-    EventManager::Get().RemoveListener(this, &Application::OnWindowMoveEvent);
+    Renderer::Get().Deinitialize();
+    ImGuiBuilder::Get().Deinitialize();
 }
 
-void Application::OnUpdate()
-{
-    auto window = m_window.lock();
-    for (auto *module : Module::GetModules())
-    {
-        module->OnUpdate();
-    }
-    Renderer::Get().WaitAndRender();
-    ImGuiManager::Get().DrawLayout();
-}
-
-void Application::Run()
+void Application::Run() const
 {
     while (m_running)
     {
         Time::Update();
-        auto window = m_window.lock();
+        auto window = Window::Get();
         window->PollEvents();
-        OnUpdate();
+        AppUpdateEvent updateEvent;
+        EventManager::Get().Dispatch(updateEvent);
+        AppLayoutEvent layoutEvent;
+        EventManager::Get().Dispatch(layoutEvent);
+        AppRenderEvent renderEvent;
+        EventManager::Get().Dispatch(renderEvent);
         window->SwapBuffers();
     }
 }
@@ -114,19 +94,12 @@ bool Application::OnWindowCloseEvent(WindowCloseEvent & /*e*/)
     return true;
 }
 
-void Application::OnLayout()
-{
-    for (auto *module : Module::GetModules())
-    {
-        module->OnLayout();
-    }
-}
-
 bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
 {
     Time::Freeze();
-    auto window = m_window.lock();
-    OnUpdate();
+    auto window = Window::Get();
+    AppUpdateEvent e;
+    EventManager::Get().Dispatch(e);
     window->SwapBuffers();
     return false;
 }
@@ -134,12 +107,6 @@ bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
 bool Application::OnWindowMoveEvent(WindowMoveEvent & /*e*/)
 {
     Time::Freeze();
-    return false;
-}
-
-bool Application::OnAppLayoutEvent(AppLayoutEvent & /*e*/)
-{
-    OnLayout();
     return false;
 }
 

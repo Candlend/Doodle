@@ -6,7 +6,7 @@
 #include "ApplicationEvent.h"
 #include "Core.h"
 #include "EventManager.h"
-#include "ImGuiManager.h"
+#include "ImGuiBuilder.h"
 #include "Singleton.h"
 #include "Window.h"
 
@@ -14,7 +14,7 @@ namespace Doodle
 {
 class ApplicationRunner;
 
-class DOO_API Application
+class DOO_API Application : public LazySingleton<Application>
 {
 public:
     class DOO_API Time
@@ -37,19 +37,17 @@ public:
     friend class ApplicationRunner;
 
     static Application &Get();
+
+    Application();
+    virtual ~Application();
     virtual void Initialize();
     virtual void Deinitialize();
-    virtual void OnLayout();
-    virtual void OnUpdate();
-    std::shared_ptr<Window> GetWindow();
 
 protected:
-    void Run();
+    void Run() const;
     bool OnWindowRefreshEvent(WindowRefreshEvent &e);
     bool OnWindowMoveEvent(WindowMoveEvent &e);
     bool OnWindowCloseEvent(WindowCloseEvent &e);
-    bool OnAppLayoutEvent(AppLayoutEvent &e);
-    std::weak_ptr<Window> m_window;
     bool m_running = true;
 };
 

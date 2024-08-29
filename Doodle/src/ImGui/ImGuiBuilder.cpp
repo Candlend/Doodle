@@ -8,6 +8,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <filesystem>
 #include <glad/glad.h>
+#include <limits>
 
 #include "Application.h"
 #include "ApplicationEvent.h"
@@ -15,19 +16,17 @@
 #include "Event.h"
 #include "IconsFontAwesome6Pro.h"
 #include "IconsFontAwesome6ProBrands.h"
+#include "ImGuiBuilder.h"
 #include "ImGuiCustomStyle.h"
-#include "ImGuiManager.h"
 #include "Input.h"
 #include "KeyCode.h"
 #include "KeyEvent.h"
 #include "MouseEvent.h"
-
-
 namespace Doodle
 {
 
-void ImGuiManager::RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont, std::string iconFont,
-                                std::string brandFont)
+void ImGuiBuilder::RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont,
+                                std::string iconFont, std::string brandFont)
 {
     static const ImWchar ICONS_RANGES[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
 
@@ -49,7 +48,7 @@ void ImGuiManager::RegisterFont(int sizeInPixels, std::string englishFont, std::
     m_fonts.push_back(font);
 }
 
-void ImGuiManager::Initialize()
+void ImGuiBuilder::Initialize()
 {
     IMGUI_CHECKVERSION();
 
@@ -85,9 +84,12 @@ void ImGuiManager::Initialize()
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(window.GetNativeWindow()), true);
     ImGui_ImplOpenGL3_Init(glslVersion);
 
+    EventManager::Get().AddListener<AppLayoutEvent>(this, &ImGuiBuilder::BeginFrame,
+                                                    std::numeric_limits<int>::lowest());
+    EventManager::Get().AddListener<AppLayoutEvent>(this, &ImGuiBuilder::EndFrame, std::numeric_limits<int>::max());
 }
 
-void ImGuiManager::Deinitialize()
+void ImGuiBuilder::Deinitialize()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -95,7 +97,7 @@ void ImGuiManager::Deinitialize()
     ImNodes::DestroyContext();
 }
 
-void ImGuiManager::BeginFrame()
+void ImGuiBuilder::BeginFrame()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -103,7 +105,7 @@ void ImGuiManager::BeginFrame()
     ImGuizmo::BeginFrame();
 }
 
-void ImGuiManager::EndFrame()
+void ImGuiBuilder::EndFrame()
 {
     ImGuiIO &io = ImGui::GetIO();
     // Rendering
@@ -116,31 +118,16 @@ void ImGuiManager::EndFrame()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
-    // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+    // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this
+    // code elsewhere.
     //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
+        GLFWwindow *backupCurrentContext = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backupCurrentContext);
     }
-}
-
-void ImGuiManager::ShowDockspace(){
-    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-}
-
-void ImGuiManager::DrawLayout()
-{
-    BeginFrame();
-
-    ShowDockspace();
-
-    AppLayoutEvent event;
-    EventManager::Get().Dispatch(event);
-
-    EndFrame();
 }
 
 } // namespace Doodle

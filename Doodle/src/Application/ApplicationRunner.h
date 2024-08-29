@@ -39,8 +39,7 @@ public:
         m_window = Window::Create(props, true);
 #endif
         SetIcon(m_window->GetNativeWindow(), iconSmall, iconLarge);
-        m_app = std::make_shared<T>();
-        m_app->m_window = m_window;
+        m_app = T::Create();
         m_app->Initialize();
         m_splashScreen.End();
     }

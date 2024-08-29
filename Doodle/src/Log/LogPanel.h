@@ -4,18 +4,16 @@
 #include "pch.h"
 #include <imgui.h>
 
-#include "Module.h"
+#include "ImGuiPanel.h"
 
 namespace Doodle
 {
 
-class DOO_API LogPanel : public RegisterModule<LogPanel>
+class DOO_API LogPanel : public ImGuiPanel
 {
 public:
-    void Initialize() override;
     void OnUpdate() override;
-    void OnLayout() override;
-    void Deinitialize() override;
+    void OnPanelLayout() override;
 
 private:
     char m_filter[100] = "";

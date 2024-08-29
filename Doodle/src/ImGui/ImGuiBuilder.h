@@ -11,12 +11,11 @@
 namespace Doodle
 {
 
-class DOO_API ImGuiManager : public Singleton<ImGuiManager>
+class DOO_API ImGuiBuilder : public Singleton<ImGuiBuilder>
 {
 public:
     void Initialize();
     void Deinitialize();
-    void DrawLayout();
 
     inline ImGuiContext *GetContext()
     {
@@ -28,12 +27,12 @@ public:
         return m_imnodesContext;
     }
 
-    void RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont, std::string iconFont, std::string brandFont);
+    void RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont, std::string iconFont,
+                      std::string brandFont);
 
 protected:
     void BeginFrame();
     void EndFrame();
-    void ShowDockspace();
 
     ImNodesContext *m_imnodesContext;
     ImGuiContext *m_imguiContext;
@@ -43,8 +42,8 @@ protected:
 #ifndef DOO_BUILD_DLL
 void ActivateImGuiContext()
 {
-    ImNodes::SetCurrentContext(ImGuiManager::Get().GetImnodesContext());
-    ImGui::SetCurrentContext(ImGuiManager::Get().GetContext());
+    ImNodes::SetCurrentContext(ImGuiBuilder::Get().GetImnodesContext());
+    ImGui::SetCurrentContext(ImGuiBuilder::Get().GetContext());
 }
 #endif
 
