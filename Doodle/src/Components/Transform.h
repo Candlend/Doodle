@@ -5,14 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-
-#include "MaterialInstance.h"
-#include "Mesh.h"
-#include "SceneCamera.h"
-#include "VertexArray.h"
-
 
 namespace Doodle
 {
@@ -100,89 +95,4 @@ struct Transform
     }
 };
 
-struct IRenderable
-{
-    virtual void Render() const = 0;
-};
-
-struct VAOComponent : public IRenderable
-{
-    std::shared_ptr<VertexArray> VAO;
-
-    void Render() const override
-    {
-        VAO->Render();
-    }
-};
-
-struct MeshComponent : public IRenderable
-{
-    std::shared_ptr<Mesh> Mesh;
-
-    explicit MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
-    {
-    }
-
-    void Render() const override
-    {
-        Mesh->Render();
-    }
-};
-
-struct MaterialComponent
-{
-    std::shared_ptr<MaterialInstance> MaterialInstance;
-
-    explicit MaterialComponent(const std::shared_ptr<Doodle::MaterialInstance> &materialInstance)
-        : MaterialInstance(materialInstance)
-    {
-    }
-
-    explicit MaterialComponent(const std::shared_ptr<Material> &material)
-        : MaterialInstance(MaterialInstance::Create(material))
-    {
-    }
-};
-
-struct CameraComponent
-{
-    std::shared_ptr<SceneCamera> Camera;
-    bool Primary = true;
-
-    explicit CameraComponent(ProjectionType type = ProjectionType::Perspective)
-        : Camera(std::make_shared<SceneCamera>(type))
-    {
-    }
-    
-    glm::mat4 GetProjectionMatrix() const
-    {
-        return Camera->GetProjectionMatrix();
-    }
-};
-
-struct DirectionalLightComponent
-{
-    glm::vec3 Radiance{1.0f};
-    float Intensity = 0.0f;
-};
-
-struct PointLightComponent
-{
-    glm::vec3 Radiance{1.0f};
-    float Intensity = 0.0f;
-    float MinRadius = 0.001f;
-    float Radius = 25.0f;
-    float Falloff = 1.f;
-    float SourceSize = 0.1f;
-};
-
-struct SpotLightComponent
-{
-    glm::vec3 Radiance{1.0f};
-    float Intensity = 0.0f;
-    float AngleAttenuation = 0.0f;
-    float Range = 0.1f;
-    float Angle = 0.0f;
-    float Falloff = 1.0f;
-};
 } // namespace Doodle

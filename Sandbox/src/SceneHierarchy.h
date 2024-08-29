@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Component.h"
-#include "Material.h"
-#include "SceneManager.h"
-#include "VertexBuffer.h"
-#include <Doodle.h>
+#include <imgui.h>
+
+#include <ImGuizmo.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include <memory>
+
+#include <Doodle.h>
+
+#include "CameraController.h"
 
 using namespace Doodle;
 
@@ -41,6 +42,7 @@ public:
         auto mainCamera = m_activeScene->CreateEntity("MainCamera");
         mainCamera->AddComponent<CameraComponent>();
         mainCamera->GetComponent<Transform>().Position = glm::vec3(0.f, 0.f, 3.f);
+        mainCamera->AddComponent<NativeScript>().Bind<CameraController>();
 
         auto directionalLight = m_activeScene->CreateEntity("DirectionalLight");
         auto &light = directionalLight->AddComponent<DirectionalLightComponent>();
@@ -55,6 +57,7 @@ public:
         auto cerberus = m_activeScene->GetEntity("Cerberus");
         auto &transform = cerberus->GetComponent<Transform>();
         transform.Rotation.y += 100.f * Application::Time::GetDeltaTime();
+        m_activeScene->OnUpdate();
         m_activeScene->Render();
     }
 
@@ -69,6 +72,28 @@ public:
             ImGui::LabelText("帧率", "%f", Application::Time::GetFPS());
             ImGui::Checkbox("线框模式", &m_useWireframe);
         }
+        // ImGui::Begin("node editor");
+
+        // const int hardcoded_node_id = 1;
+
+        // ImNodes::BeginNodeEditor();
+
+        // ImNodes::BeginNode(hardcoded_node_id);
+        // ImGui::Dummy(ImVec2(80.0f, 45.0f));
+        // ImNodes::EndNode();
+
+        // ImNodes::EndNodeEditor();
+
+        // ImGui::End();
+
+        // float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+        // static glm::mat4 gizmoMatrix = glm::mat4(1.0f);
+
+        // ImGuizmo::DecomposeMatrixToComponents(&gizmoMatrix[0][0], matrixTranslation, matrixRotation, matrixScale);
+        // ImGui::InputFloat3("Tr", matrixTranslation);
+        // ImGui::InputFloat3("Rt", matrixRotation);
+        // ImGui::InputFloat3("Sc", matrixScale);
+        // ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, &gizmoMatrix[0][0]);
     }
 
     void Deinitialize() override

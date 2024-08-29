@@ -4,8 +4,6 @@
 #include <entt/entt.hpp>
 #include <memory>
 
-#include "Component.h"
-
 namespace Doodle
 {
 

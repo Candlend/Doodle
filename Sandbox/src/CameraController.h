@@ -9,15 +9,15 @@
 
 using namespace Doodle;
 
-class CameraController : public RegisterModule<CameraController, 10>
+class CameraController : public ScriptableEntity
 {
 public:
     void Initialize() override
     {
         m_moveSpeed = 2.0f;
         m_rotateSpeed = 20.0f;
-        m_cameraEntity = SceneManager::Get().GetActiveScene()->GetMainCameraEntity();
-        auto &camera = m_cameraEntity->GetComponent<CameraComponent>().Camera;
+
+        auto &camera = GetComponent<CameraComponent>().Camera;
         camera->SetViewportSize(ApplicationRunner::Get().GetWindow().GetWidth(),
                                 ApplicationRunner::Get().GetWindow().GetHeight());
 
@@ -29,7 +29,7 @@ public:
     void OnUpdate() override
     {
         m_activeScene = SceneManager::Get().GetActiveScene();
-        auto &transform = m_cameraEntity->GetComponent<Transform>();
+        auto &transform = GetComponent<Transform>();
 
         float deltaTime = Application::Time::GetDeltaTime();
         if (Input::IsKeyPressed(KeyCode::W))
@@ -77,7 +77,7 @@ public:
 
     void OnLayout() override
     {
-        auto &transform = m_cameraEntity->GetComponent<Transform>();
+        auto &transform = GetComponent<Transform>();
 
         ImGui::Begin("相机控制器");
         ImGui::SliderFloat("移动速度", &m_moveSpeed, 0.1f, 10.0f);
@@ -97,7 +97,7 @@ public:
 
     bool OnWindowResizeEvent(const WindowResizeEvent &event)
     {
-        auto &camera = m_cameraEntity->GetComponent<CameraComponent>().Camera;
+        auto &camera = GetComponent<CameraComponent>().Camera;
         camera->SetViewportSize(event.GetWidth(), event.GetHeight());
         return false;
     }

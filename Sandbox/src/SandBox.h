@@ -15,7 +15,6 @@ public:
     {
         LogWindow::Register();
         SceneHierarchy::Register();
-        CameraController::Register();
 
         m_scene = SceneManager::Get().CreateScene("Main");
         m_scene->Begin();

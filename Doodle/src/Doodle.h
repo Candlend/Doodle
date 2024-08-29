@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "ApplicationRunner.h"
+#include "Component.h"
 #include "EventManager.h"
 #include "IconsFontAwesome6Pro.h"
 #include "IconsFontAwesome6ProBrands.h"

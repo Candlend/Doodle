@@ -83,12 +83,15 @@ public:
     static std::shared_ptr<Scene> Create();
     std::shared_ptr<Entity> CreateEntity(const std::string &name);
     std::shared_ptr<Entity> GetEntity(const std::string &name) const;
+    void OnUpdate();
     void Render();
     std::shared_ptr<Entity> GetMainCameraEntity();
     void Begin();
     void End();
 
 private:
+    void Prepare();
+
     std::shared_ptr<UniformBuffer> m_sceneUBO;
     std::shared_ptr<UniformBuffer> m_pointLightsUBO;
     std::shared_ptr<UniformBuffer> m_spotLightsUBO;
