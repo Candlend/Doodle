@@ -1,15 +1,16 @@
 
-#include "ApplicationEvent.h"
 #include "pch.h"
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+
+#include <ImGuizmo.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-#include <cstdint>
-#include <glad/glad.h>
-#include <imgui.h>
 #include <filesystem>
+#include <glad/glad.h>
 
 #include "Application.h"
+#include "ApplicationEvent.h"
 #include "ApplicationRunner.h"
 #include "Event.h"
 #include "IconsFontAwesome6Pro.h"
@@ -51,7 +52,9 @@ void ImGuiManager::RegisterFont(int sizeInPixels, std::string englishFont, std::
 void ImGuiManager::Initialize()
 {
     IMGUI_CHECKVERSION();
-    m_context = ImGui::CreateContext();
+
+    m_imnodesContext = ImNodes::CreateContext();
+    m_imguiContext = ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
@@ -89,6 +92,7 @@ void ImGuiManager::Deinitialize()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    ImNodes::DestroyContext();
 }
 
 void ImGuiManager::BeginFrame()

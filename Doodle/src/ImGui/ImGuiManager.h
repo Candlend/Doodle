@@ -1,9 +1,13 @@
 #pragma once
 
+#define IMGUI_HAS_VIEWPORT
+#include <imgui.h>
+
+#include <ImGuizmo.h>
+#include <imnodes.h>
+
 #include "ApplicationEvent.h"
 #include "Singleton.h"
-#include "imgui.h"
-
 
 namespace Doodle
 {
@@ -17,7 +21,12 @@ public:
 
     inline ImGuiContext *GetContext()
     {
-        return m_context;
+        return m_imguiContext;
+    }
+
+    inline ImNodesContext *GetImnodesContext()
+    {
+        return m_imnodesContext;
     }
 
     void RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont, std::string iconFont, std::string brandFont);
@@ -27,13 +36,15 @@ protected:
     void EndFrame();
     void ShowDockspace();
 
-    ImGuiContext *m_context;
+    ImNodesContext *m_imnodesContext;
+    ImGuiContext *m_imguiContext;
     std::vector<ImFont *> m_fonts;
 };
 
 #ifndef DOO_BUILD_DLL
 void ActivateImGuiContext()
 {
+    ImNodes::SetCurrentContext(ImGuiManager::Get().GetImnodesContext());
     ImGui::SetCurrentContext(ImGuiManager::Get().GetContext());
 }
 #endif

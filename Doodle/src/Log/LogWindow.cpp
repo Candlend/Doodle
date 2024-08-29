@@ -1,10 +1,10 @@
-#include "LogWindow.h"
+#include <imgui.h>
+
 #include "IconsFontAwesome6Pro.h"
 #include "ImGuiUtils.h"
-#include "Log.h"
+#include "LogWindow.h"
 #include "Utils.h"
-#include "imgui.h"
-#include <string>
+
 
 namespace Doodle
 {

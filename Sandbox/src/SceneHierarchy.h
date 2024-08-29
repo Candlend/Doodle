@@ -72,28 +72,6 @@ public:
             ImGui::LabelText("帧率", "%f", Application::Time::GetFPS());
             ImGui::Checkbox("线框模式", &m_useWireframe);
         }
-        // ImGui::Begin("node editor");
-
-        // const int hardcoded_node_id = 1;
-
-        // ImNodes::BeginNodeEditor();
-
-        // ImNodes::BeginNode(hardcoded_node_id);
-        // ImGui::Dummy(ImVec2(80.0f, 45.0f));
-        // ImNodes::EndNode();
-
-        // ImNodes::EndNodeEditor();
-
-        // ImGui::End();
-
-        // float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-        // static glm::mat4 gizmoMatrix = glm::mat4(1.0f);
-
-        // ImGuizmo::DecomposeMatrixToComponents(&gizmoMatrix[0][0], matrixTranslation, matrixRotation, matrixScale);
-        // ImGui::InputFloat3("Tr", matrixTranslation);
-        // ImGui::InputFloat3("Rt", matrixRotation);
-        // ImGui::InputFloat3("Sc", matrixScale);
-        // ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, &gizmoMatrix[0][0]);
     }
 
     void Deinitialize() override

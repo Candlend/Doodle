@@ -1,6 +1,5 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
-#include <memory>
 
 #include "Application.h"
 #include "ApplicationEvent.h"
@@ -11,8 +10,6 @@
 #include "Module.h"
 #include "Renderer.h"
 #include "Window.h"
-#include "imgui.h"
-
 
 namespace Doodle
 {
