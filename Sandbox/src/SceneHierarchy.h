@@ -42,7 +42,7 @@ public:
         auto mainCamera = m_activeScene->CreateEntity("MainCamera");
         mainCamera->AddComponent<CameraComponent>();
         mainCamera->GetComponent<Transform>().Position = glm::vec3(0.f, 0.f, 3.f);
-        mainCamera->AddComponent<NativeScript>().Bind<CameraController>();
+        mainCamera->AddComponent<ScriptComponent>().Bind<CameraController>();
 
         auto directionalLight = m_activeScene->CreateEntity("DirectionalLight");
         auto &light = directionalLight->AddComponent<DirectionalLightComponent>();

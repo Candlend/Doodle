@@ -2,11 +2,12 @@
 
 #include "pch.h"
 #include <entt/entt.hpp>
-#include <memory>
 
+#include "ApplicationEvent.h"
 #include "Camera.h"
 #include "Component.h"
 #include "Entity.h"
+#include "EventManager.h"
 #include "UniformBuffer.h"
 
 namespace Doodle
@@ -80,6 +81,8 @@ class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
 public:
     Scene();
+    ~Scene();
+    bool OnAppLayoutEvent(AppLayoutEvent &e);
     static std::shared_ptr<Scene> Create();
     std::shared_ptr<Entity> CreateEntity(const std::string &name);
     std::shared_ptr<Entity> GetEntity(const std::string &name) const;

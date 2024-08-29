@@ -9,7 +9,7 @@
 
 using namespace Doodle;
 
-class CameraController : public ScriptableEntity
+class CameraController : public Scriptable
 {
 public:
     void Initialize() override

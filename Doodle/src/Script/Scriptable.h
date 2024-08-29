@@ -6,7 +6,7 @@
 namespace Doodle
 {
 
-class DOO_API ScriptableEntity
+class DOO_API Scriptable
 {
 public:
     template <typename T> T &GetComponent()
@@ -14,12 +14,12 @@ public:
         return m_entity->GetComponent<T>();
     }
 
-    explicit ScriptableEntity() : m_entity(nullptr)
+    explicit Scriptable() : m_entity(nullptr)
     {
     }
 
 protected:
-    virtual ~ScriptableEntity() = default;
+    virtual ~Scriptable() = default;
 
     virtual void Initialize()
     {

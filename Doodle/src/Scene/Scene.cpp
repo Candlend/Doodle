@@ -15,6 +15,21 @@ Scene::Scene()
     m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
     m_pointLightsUBO = UniformBuffer::Create(sizeof(UBOPointLights), true);
     m_spotLightsUBO = UniformBuffer::Create(sizeof(UBOSpotLights), true);
+    EventManager::Get().AddListener(this, &Scene::OnAppLayoutEvent);
+}
+
+Scene::~Scene()
+{
+    EventManager::Get().RemoveListener(this, &Scene::OnAppLayoutEvent);
+}
+
+bool Scene::OnAppLayoutEvent(AppLayoutEvent & /*e*/)
+{
+    m_registry.view<ScriptComponent>().each([=, this](auto entity, auto &ns) {
+        if (ns.OnLayoutFunction)
+            ns.OnLayoutFunction(ns.Instance);
+    });
+    return false;
 }
 
 std::shared_ptr<Entity> Scene::CreateEntity(const std::string &name)
@@ -50,21 +65,19 @@ std::shared_ptr<Entity> Scene::GetMainCameraEntity()
 
 void Scene::OnUpdate()
 {
-    {
-        m_registry.view<NativeScript>().each([=, this](auto entity, auto &ns) {
-            if (!ns.Instance)
-            {
-                ns.InstantiateFunction();
-                ns.Instance->m_entity = std::make_shared<Entity>(m_registry, entity);
+    m_registry.view<ScriptComponent>().each([=, this](auto entity, auto &ns) {
+        if (!ns.Instance)
+        {
+            ns.InstantiateFunction();
+            ns.Instance->m_entity = std::make_shared<Entity>(m_registry, entity);
 
-                if (ns.InitializeFunction)
-                    ns.InitializeFunction(ns.Instance);
-            }
+            if (ns.InitializeFunction)
+                ns.InitializeFunction(ns.Instance);
+        }
 
-            if (ns.OnUpdateFunction)
-                ns.OnUpdateFunction(ns.Instance);
-        });
-    }
+        if (ns.OnUpdateFunction)
+            ns.OnUpdateFunction(ns.Instance);
+    });
 }
 
 void Scene::Render()
