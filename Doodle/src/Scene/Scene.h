@@ -90,8 +90,6 @@ public:
     void End();
 
 private:
-    void Prepare();
-
     std::shared_ptr<UniformBuffer> m_sceneUBO;
     std::shared_ptr<UniformBuffer> m_pointLightsUBO;
     std::shared_ptr<UniformBuffer> m_spotLightsUBO;

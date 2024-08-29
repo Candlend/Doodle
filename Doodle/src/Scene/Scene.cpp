@@ -67,8 +67,16 @@ void Scene::OnUpdate()
     }
 }
 
-void Scene::Prepare()
+void Scene::Render()
 {
+    auto cameraEntity = GetMainCameraEntity();
+    if (!cameraEntity)
+    {
+        return;
+    }
+    glm::mat4 view = glm::inverse(cameraEntity->GetComponent<Transform>().GetModelMatrix());
+    glm::mat4 projection = cameraEntity->GetComponent<CameraComponent>().GetProjectionMatrix();
+
     // Process lights
     {
         m_lightEnvironment = LightEnvironment();
@@ -152,19 +160,6 @@ void Scene::Prepare()
     m_sceneUBO->Bind(0);
     m_pointLightsUBO->Bind(1);
     m_spotLightsUBO->Bind(2);
-}
-
-void Scene::Render()
-{
-    auto cameraEntity = GetMainCameraEntity();
-    if (!cameraEntity)
-    {
-        return;
-    }
-    glm::mat4 view = glm::inverse(cameraEntity->GetComponent<Transform>().GetModelMatrix());
-    glm::mat4 projection = cameraEntity->GetComponent<CameraComponent>().GetProjectionMatrix();
-
-    Prepare();
 
     auto vaoView = m_registry.view<Transform, VAOComponent, MaterialComponent>();
     for (auto entity : vaoView)
