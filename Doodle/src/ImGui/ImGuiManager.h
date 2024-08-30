@@ -1,6 +1,5 @@
 #pragma once
 
-#define IMGUI_HAS_VIEWPORT
 #include <imgui.h>
 
 #include <ImGuizmo.h>

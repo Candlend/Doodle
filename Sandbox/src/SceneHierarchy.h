@@ -8,6 +8,7 @@
 #include <Doodle.h>
 
 #include "CameraController.h"
+#include "glm/matrix.hpp"
 
 using namespace Doodle;
 
@@ -56,7 +57,7 @@ public:
 
         auto cerberus = m_activeScene->GetEntity("Cerberus");
         auto &transform = cerberus->GetComponent<Transform>();
-        transform.Rotation.y += 100.f * Application::Time::GetDeltaTime();
+        // transform.Rotation.y += 100.f * Application::Time::GetDeltaTime();
         m_activeScene->OnUpdate();
         m_activeScene->Render();
     }

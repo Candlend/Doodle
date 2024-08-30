@@ -3,7 +3,8 @@ set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
 add_requires("fmt", "assimp", "boost", "stb", "spdlog", "cereal", "nlohmann_json", "glfw", "glad", "glm", "entt")
 add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
-add_requires("imnodes", "imguizmo 99358b3afc8cdfff5c264f97ab1718b2d8089319")
+add_requires("imnodes")
+add_requires("imguizmo", {configs = {cxxflags = "-DIMGUI_HAS_VIEWPORT -DIMGUI_DEFINE_MATH_OPERATORS"}})
 
 if is_os("windows") then
     add_defines("DOO_PLATFORM_WINDOWS")
