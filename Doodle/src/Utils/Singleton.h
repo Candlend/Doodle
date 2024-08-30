@@ -7,7 +7,7 @@
 namespace Doodle
 {
 
-template <typename T> class DOO_API Singleton
+template <typename T> class Singleton
 {
 public:
     // 获取单例实例
@@ -28,7 +28,7 @@ protected:
     virtual ~Singleton() = default;
 };
 
-template <typename T> class DOO_API LazySingleton : std::enable_shared_from_this<T>
+template <typename T> class LazySingleton : public std::enable_shared_from_this<T>
 {
 public:
     static std::shared_ptr<T> Get()

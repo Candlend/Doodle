@@ -6,23 +6,17 @@
 namespace Doodle
 {
 
-std::shared_ptr<Entity> Entity::Create(entt::registry &registry)
+std::shared_ptr<Entity> Entity::Create(Scene *scene)
 {
-    return std::make_shared<Entity>(registry);
+    return std::make_shared<Entity>(scene, scene->m_registry.create());
 }
 
-Entity::Entity(entt::registry &registry, entt::entity id) : m_registry(registry), m_entityHandle(id)
-{
-}
-
-Entity::Entity(const entt::registry &registry, entt::entity id)
-    : m_registry(const_cast<entt::registry &>(registry)), m_entityHandle(id)
+Entity::Entity(Scene *scene, entt::entity id) : m_scene(scene), m_entityHandle(id)
 {
 }
 
-Entity::Entity(entt::registry &registry) : m_registry(registry)
+Entity::Entity(const Scene *scene, entt::entity id) : m_scene(const_cast<Scene *>(scene)), m_entityHandle(id)
 {
-    m_entityHandle = m_registry.create();
 }
 
 entt::entity Entity::GetEntityHandle() const
@@ -35,14 +29,24 @@ UUID Entity::GetUUID() const
     return GetComponent<IDComponent>();
 }
 
+Scene *Entity::GetScene() const
+{
+    return m_scene;
+}
+
 bool Entity::IsValid() const
 {
-    return (m_entityHandle != entt::null) && m_registry.valid(m_entityHandle);
+    return (m_entityHandle != entt::null) && m_scene && GetRegistry().valid(m_entityHandle);
 }
 
 Entity::operator bool() const
 {
     return IsValid();
+}
+
+entt::registry &Entity::GetRegistry() const
+{
+    return m_scene->m_registry;
 }
 
 } // namespace Doodle

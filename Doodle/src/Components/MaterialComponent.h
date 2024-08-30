@@ -1,11 +1,14 @@
 #pragma once
 
+#include "pch.h"
+
+#include "BaseComponent.h"
 #include "MaterialInstance.h"
 
 namespace Doodle
 {
 
-struct MaterialComponent
+struct MaterialComponent : public BaseComponent
 {
     std::shared_ptr<MaterialInstance> MaterialInstance;
 

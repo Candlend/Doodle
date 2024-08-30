@@ -28,7 +28,7 @@ std::shared_ptr<Entity> Scene::GetMainCameraEntity()
         const auto &camera = cameraView.get<CameraComponent>(entity);
         if (camera.Primary)
         {
-            return std::make_shared<Entity>(m_registry, entity);
+            return std::make_shared<Entity>(this, entity);
         }
     }
     DOO_CORE_WARN("No primary camera found");
@@ -37,7 +37,7 @@ std::shared_ptr<Entity> Scene::GetMainCameraEntity()
 
 std::shared_ptr<Entity> Scene::CreateEntity(const std::string &name)
 {
-    auto entity = Entity::Create(m_registry);
+    auto entity = Entity::Create(this);
     entity->AddComponent<IDComponent>();
     entity->AddComponent<TagComponent>(name);
     entity->AddComponent<TransformComponent>();

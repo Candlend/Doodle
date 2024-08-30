@@ -1,22 +1,27 @@
 #pragma once
 
-#include "BaseComponent.h"
-#include "UUID.h"
+#include "glm/fwd.hpp"
 #include "pch.h"
 #include <entt/entt.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
+#include "UUID.h"
 
 namespace Doodle
 {
 
-class Scriptable;
+class Entity;
 class Scene;
-class DOO_API Entity
+struct DOO_API BaseComponent
 {
-public:
-    static std::shared_ptr<Entity> Create(Scene *scene);
-    Entity(Scene *scene, entt::entity id);
-    Entity(const Scene *scene, entt::entity id);
+    operator Entity &();
+
+    operator const Entity &() const;
 
     entt::entity GetEntityHandle() const;
     UUID GetUUID() const;
@@ -26,61 +31,61 @@ public:
     {
         DOO_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");
         static_assert(std::is_base_of_v<BaseComponent, T>, "T must derive from BaseComponent");
-        return GetRegistry().emplace<T>(m_entityHandle, std::forward<Args>(args)...);
+        return GetRegistry().template emplace<T>(GetEntityHandle(), this, std::forward<Args>(args)...);
     }
 
     template <typename T> T &GetComponent()
     {
         DOO_CORE_ASSERT(HasComponent<T>(), "Entity does not have component");
-        return GetRegistry().get<T>(m_entityHandle);
+        return GetRegistry().template get<T>(GetEntityHandle());
     }
 
     template <typename T> const T &GetComponent() const
     {
         DOO_CORE_ASSERT(HasComponent<T>(), "Entity does not have component");
-        return GetRegistry().get<T>(m_entityHandle);
+        return GetRegistry().template get<T>(GetEntityHandle());
     }
 
     template <typename T> T *TryGetComponent()
     {
         DOO_CORE_ASSERT(IsValid(), "Entity is not valid");
-        return GetRegistry().try_get<T>(m_entityHandle);
+        return GetRegistry().template try_get<T>(GetEntityHandle());
     }
 
     template <typename T> const T *TryGetComponent() const
     {
         DOO_CORE_ASSERT(IsValid(), "Entity is not valid");
-        return GetRegistry().try_get<T>(m_entityHandle);
+        return GetRegistry().template try_get<T>(GetEntityHandle());
     }
 
     template <typename... T> bool HasComponent()
     {
         DOO_CORE_ASSERT(IsValid(), "Entity is not valid");
-        return GetRegistry().all_of<T...>(m_entityHandle);
+        return GetRegistry().template all_of<T...>(GetEntityHandle());
     }
 
     template <typename... T> bool HasComponent() const
     {
         DOO_CORE_ASSERT(IsValid(), "Entity is not valid");
-        return GetRegistry().all_of<T...>(m_entityHandle);
+        return GetRegistry().template all_of<T...>(GetEntityHandle());
     }
 
     template <typename... T> bool HasAny()
     {
         DOO_CORE_ASSERT(IsValid(), "Entity is not valid");
-        return GetRegistry().any_of<T...>(m_entityHandle);
+        return GetRegistry().template any_of<T...>(GetEntityHandle());
     }
 
     template <typename... T> bool HasAny() const
     {
         DOO_CORE_ASSERT(IsValid(), "Entity is not valid");
-        return GetRegistry().any_of<T...>(m_entityHandle);
+        return GetRegistry().template any_of<T...>(GetEntityHandle());
     }
 
     template <typename T> void RemoveComponent()
     {
         DOO_CORE_ASSERT(HasComponent<T>(), "Entity does not have component");
-        GetRegistry().remove<T>(m_entityHandle);
+        GetRegistry().template remove<T>(GetEntityHandle());
     }
 
     template <typename T> void RemoveComponentIfExists()
@@ -88,23 +93,16 @@ public:
         DOO_CORE_ASSERT(IsValid(), "Entity is not valid");
         if (HasComponent<T>())
         {
-            GetRegistry().remove<T>(m_entityHandle);
+            GetRegistry().template remove<T>(GetEntityHandle());
         }
     }
 
     bool IsValid() const;
     operator bool() const;
 
-    bool operator==(const Entity &other) const
-    {
-        return m_entityHandle == other.m_entityHandle;
-    }
-
+protected:
     entt::registry &GetRegistry() const;
-
-private:
-    Scene *m_scene;
-    entt::entity m_entityHandle;
+    Entity *m_entity;
 };
 
 } // namespace Doodle

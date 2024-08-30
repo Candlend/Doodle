@@ -1,11 +1,13 @@
 #pragma once
 
+#include <glm/fwd.hpp>
+
 #include "ApplicationRunner.h"
 #include "Component.h"
+#include "Input.h"
 #include "KeyCode.h"
-#include "glm/fwd.hpp"
-#include <Doodle.h>
-#include <memory>
+#include "Log.h"
+#include "SceneManager.h"
 
 using namespace Doodle;
 
@@ -17,19 +19,19 @@ public:
         m_moveSpeed = 2.0f;
         m_rotateSpeed = 20.0f;
 
-        auto &camera = GetComponent<CameraComponent>().Camera;
-        camera->SetViewportSize(ApplicationRunner::Get().GetWindow().GetWidth(),
-                                ApplicationRunner::Get().GetWindow().GetHeight());
+        std::shared_ptr<SceneCamera> camera = GetComponent<CameraComponent>();
+        camera->SetViewportSize(ApplicationRunner::Get()->GetWindow().GetWidth(),
+                                ApplicationRunner::Get()->GetWindow().GetHeight());
 
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
 
-        EventManager::Get().AddListener(this, &CameraController::OnWindowResizeEvent);
+        EventManager::Get()->AddListener(this, &CameraController::OnWindowResizeEvent);
     }
 
     void OnUpdate() override
     {
-        m_activeScene = SceneManager::Get().GetActiveScene();
-        auto &transform = GetComponent<Transform>();
+        m_activeScene = SceneManager::Get()->GetActiveScene();
+        auto &transform = GetComponent<TransformComponent>();
 
         float deltaTime = Application::Time::GetDeltaTime();
         if (Input::IsKeyPressed(KeyCode::W))
@@ -77,7 +79,7 @@ public:
 
     void OnLayout() override
     {
-        auto &transform = GetComponent<Transform>();
+        auto &transform = GetComponent<TransformComponent>();
 
         ImGui::Begin("相机控制器");
         ImGui::SliderFloat("移动速度", &m_moveSpeed, 0.1f, 10.0f);
@@ -92,7 +94,7 @@ public:
 
     void Deinitialize() override
     {
-        EventManager::Get().RemoveListener(this, &CameraController::OnWindowResizeEvent);
+        EventManager::Get()->RemoveListener(this, &CameraController::OnWindowResizeEvent);
     }
 
     bool OnWindowResizeEvent(const WindowResizeEvent &event)

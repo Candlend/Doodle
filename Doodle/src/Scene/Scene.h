@@ -9,7 +9,6 @@
 #include "EventManager.h"
 #include "SceneRenderer.h"
 #include "UniformBuffer.h"
-#include <string>
 
 namespace Doodle
 {
@@ -17,6 +16,7 @@ namespace Doodle
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
+    friend class Entity;
 
 public:
     Scene();
@@ -33,7 +33,7 @@ public:
             std::string tag = view.get<TagComponent>(entity);
             if (tag == name)
             {
-                return std::make_shared<Entity>(m_registry, entity);
+                return std::make_shared<Entity>(this, entity);
             }
         }
         return nullptr;
@@ -53,6 +53,11 @@ public:
         return m_active;
     }
 
+    bool operator==(const Scene &other) const
+    {
+        return m_name == other.m_name;
+    }
+
     void BeginScene();
     void EndScene();
 
@@ -61,7 +66,7 @@ private:
     bool m_active = false;
     std::unordered_map<UUID, entt::entity> m_entityMap;
     entt::registry m_registry;
-    SceneRenderer m_sceneRenderer{shared_from_this()};
+    SceneRenderer m_sceneRenderer{this};
 };
 
 } // namespace Doodle

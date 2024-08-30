@@ -2,12 +2,13 @@
 
 #include "pch.h"
 
+#include "BaseComponent.h"
 #include "SceneCamera.h"
 
 namespace Doodle
 {
 
-struct CameraComponent
+struct CameraComponent : public BaseComponent
 {
     std::shared_ptr<SceneCamera> Camera;
     bool Primary = true;

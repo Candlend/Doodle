@@ -34,12 +34,12 @@ class Scene;
 class DOO_API SceneRenderer // for each scene
 {
 public:
-    SceneRenderer(const std::shared_ptr<Scene> &scene);
+    SceneRenderer(Scene *scene);
     ~SceneRenderer();
     void Render();
 
 private:
-    std::shared_ptr<Scene> m_scene;
+    Scene *m_scene;
     entt::registry &m_registry;
     std::shared_ptr<UniformBuffer> m_sceneUBO;
     std::shared_ptr<UniformBuffer> m_pointLightsUBO;

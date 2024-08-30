@@ -21,6 +21,8 @@ enum class EventType
     AppUpdate,
     AppRender,
     AppLayout,
+    SceneActivate,
+    SceneDeactivate,
     KeyPressed,
     KeyReleased,
     CharInput,
@@ -37,7 +39,8 @@ enum EventCategory
     EventCategoryInput = 1 << 1,
     EventCategoryKeyboard = 1 << 2,
     EventCategoryMouse = 1 << 3,
-    EventCategoryMouseButton = 1 << 4
+    EventCategoryMouseButton = 1 << 4,
+    EventCategoryScene = 1 << 5,
 };
 
 #define INSTANTIATE_EVENT_MANAGER_LISTENER(eventType)                                                                  \

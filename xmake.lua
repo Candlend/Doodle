@@ -66,7 +66,7 @@ target("Sandbox")
     add_deps("Doodle")
     traverse_directory("Doodle/src")
 
-    add_packages("spdlog", "imgui", "imnodes", "imguizmo", "glm", "entt")
+    add_packages("boost", "spdlog", "imgui", "imnodes", "imguizmo", "glm", "entt")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")

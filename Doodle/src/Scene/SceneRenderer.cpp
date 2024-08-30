@@ -8,7 +8,7 @@
 namespace Doodle
 {
 
-SceneRenderer::SceneRenderer(const std::shared_ptr<Scene> &scene) : m_scene(scene), m_registry(scene->m_registry)
+SceneRenderer::SceneRenderer(Scene *scene) : m_scene(scene), m_registry(scene->m_registry)
 {
     m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
     m_pointLightsUBO = UniformBuffer::Create(sizeof(UBOPointLights), true);
@@ -65,7 +65,7 @@ void SceneRenderer::Render()
                 uint32_t pointLightIndex = 0;
                 for (auto e : pointLights)
                 {
-                    Entity entity(m_registry, e);
+                    Entity entity(m_scene, e);
                     auto [transformComponent, lightComponent] =
                         pointLights.get<TransformComponent, PointLightComponent>(e);
                     auto transform = entity.GetComponent<TransformComponent>();
@@ -83,7 +83,7 @@ void SceneRenderer::Render()
                 uint32_t spotLightIndex = 0;
                 for (auto e : spotLights)
                 {
-                    Entity entity(m_registry, e);
+                    Entity entity(m_scene, e);
                     auto [transformComponent, lightComponent] =
                         spotLights.get<TransformComponent, SpotLightComponent>(e);
                     auto transform = entity.GetComponent<TransformComponent>();

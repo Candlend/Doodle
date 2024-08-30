@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BaseComponent.h"
 #include "Mesh.h"
 #include "SceneCamera.h"
 #include "VertexArray.h"
@@ -7,7 +8,7 @@
 namespace Doodle
 {
 
-struct IRenderable
+struct IRenderable : public BaseComponent
 {
     virtual void Render() const = 0;
 };

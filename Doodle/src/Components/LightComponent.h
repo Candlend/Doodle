@@ -3,16 +3,18 @@
 #include "pch.h"
 #include <glm/glm.hpp>
 
+#include "BaseComponent.h"
+
 namespace Doodle
 {
 
-struct DirectionalLightComponent
+struct DirectionalLightComponent : public BaseComponent
 {
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
 };
 
-struct PointLightComponent
+struct PointLightComponent : public BaseComponent
 {
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
@@ -22,7 +24,7 @@ struct PointLightComponent
     float SourceSize = 0.1f;
 };
 
-struct SpotLightComponent
+struct SpotLightComponent : public BaseComponent
 {
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
