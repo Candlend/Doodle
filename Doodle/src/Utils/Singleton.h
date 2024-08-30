@@ -25,7 +25,13 @@ public:
 
 protected:
     Singleton() = default;
-    virtual ~Singleton() = default;
+    virtual ~Singleton()
+    {
+        DOO_CORE_DEBUG("{0} Destroy", typeid(T).name());
+        m_destroyed = true;
+    };
+
+    bool m_destroyed = false;
 };
 
 template <typename T> class LazySingleton : public std::enable_shared_from_this<T>
@@ -51,7 +57,13 @@ protected:
     }
     static std::shared_ptr<T> s_Instance;
     LazySingleton() = default;
-    virtual ~LazySingleton() = default;
+    virtual ~LazySingleton()
+    {
+        DOO_CORE_DEBUG("{0} Destroy", typeid(T).name());
+        m_destroyed = true;
+    };
+
+    bool m_destroyed = false;
 };
 
 template <typename T> std::shared_ptr<T> LazySingleton<T>::s_Instance = nullptr;

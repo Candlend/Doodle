@@ -63,6 +63,10 @@ struct PairEqual
 class DOO_API EventManager : public Singleton<EventManager>
 {
 public:
+    ~EventManager()
+    {
+        m_eventListeners.clear();
+    }
     template <typename T> void AddListener(EventCallbackFn<T> &callback, int executionOrder = 0)
     {
         EventType eventType = T::GetStaticType();
@@ -117,6 +121,7 @@ public:
 
     template <typename T> void RemoveListener(EventCallbackFn<T> &callback)
     {
+        if (m_destroyed) return;
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
 
@@ -132,6 +137,7 @@ public:
 
     template <typename T> void RemoveListener(std::function<void()> &callback)
     {
+        if (m_destroyed) return;
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
 
@@ -147,6 +153,7 @@ public:
 
     template <typename T, typename C> void RemoveListener(C *obj, bool (C::*func)(T &))
     {
+        if (m_destroyed) return;
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
         DOO_DEBUG("RemoveListener {0}", typeid(func).name());
@@ -160,6 +167,7 @@ public:
 
     template <typename T, typename C> void RemoveListener(C *obj, void (C::*func)())
     {
+        if (m_destroyed) return;
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
         DOO_DEBUG("RemoveListener {0}", typeid(func).name());

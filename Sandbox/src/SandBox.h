@@ -4,6 +4,7 @@
 #include "LogPanel.h"
 #include "PanelManager.h"
 #include "SceneHierarchyPanel.h"
+#include "imgui.h"
 #include <Doodle.h>
 #include <memory>
 
@@ -16,12 +17,14 @@ public:
     {
         auto sandbox = std::make_shared<Sandbox>();
         sandbox->SetInstance(sandbox);
+
         return sandbox;
     }
 
     void BeforeLayout() override
     {
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+        ImGui::ShowDemoWindow();
     }
 
     void Initialize() override
@@ -32,12 +35,12 @@ public:
         PanelManager::Get()->CreatePanel<SceneHierarchyPanel>();
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();
-        BuildScene();
+        Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
+        // BuildScene();
     }
 
     void BuildScene()
     {
-        Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
 
         ShaderLibrary::Get()->LoadShader("Test", "assets/shaders/shader.glsl");
         TextureParams params;

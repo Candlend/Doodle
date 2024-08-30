@@ -63,7 +63,6 @@ Application::Application()
 
 Application::~Application()
 {
-    Deinitialize();
 }
 
 void Application::Initialize()
