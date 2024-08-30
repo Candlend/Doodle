@@ -9,12 +9,12 @@ namespace ImGuiUtils
 class StyleVarScope
 {
 public:
-    explicit StyleVarScope(ImGuiStyleVar idx, float val)
+    StyleVarScope(ImGuiStyleVar idx, float val)
     {
         ImGui::PushStyleVar(idx, val);
     }
 
-    explicit StyleVarScope(ImGuiStyleVar idx, const ImVec2 &val)
+    StyleVarScope(ImGuiStyleVar idx, const ImVec2 &val)
     {
         ImGui::PushStyleVar(idx, val);
     }
@@ -28,17 +28,17 @@ public:
 class StyleColorScope
 {
 public:
-    explicit StyleColorScope(ImGuiCol idx, ImU32 col)
+    StyleColorScope(ImGuiCol idx, ImU32 col)
     {
         ImGui::PushStyleColor(idx, col);
     }
 
-    explicit StyleColorScope(ImGuiCol idx, const ImVec4 &col)
+    StyleColorScope(ImGuiCol idx, const ImVec4 &col)
     {
         ImGui::PushStyleColor(idx, col);
     }
 
-    explicit StyleColorScope(ImGuiCol idx, const ImColor &col)
+    StyleColorScope(ImGuiCol idx, const ImColor &col)
     {
         ImGui::PushStyleColor(idx, col.Value);
     }
@@ -52,7 +52,7 @@ public:
 class ItemWidthScope
 {
 public:
-    explicit ItemWidthScope(float itemWidth)
+    ItemWidthScope(float itemWidth)
     {
         ImGui::PushItemWidth(itemWidth);
     }
@@ -66,17 +66,17 @@ public:
 class IDScope
 {
 public:
-    explicit IDScope(const char *strId)
+    IDScope(const char *strId)
     {
         ImGui::PushID(strId);
     }
 
-    explicit IDScope(int intId)
+    IDScope(int intId)
     {
         ImGui::PushID(intId);
     }
 
-    explicit IDScope(void *ptrId)
+    IDScope(void *ptrId)
     {
         ImGui::PushID(ptrId);
     }
@@ -90,7 +90,7 @@ public:
 class FontScope
 {
 public:
-    explicit FontScope(ImFont *font)
+    FontScope(ImFont *font)
     {
         ImGui::PushFont(font);
     }
@@ -104,7 +104,7 @@ public:
 class ButtonRepeatScope
 {
 public:
-    explicit ButtonRepeatScope(bool repeat)
+    ButtonRepeatScope(bool repeat)
     {
         ImGui::PushButtonRepeat(repeat);
     }
@@ -118,7 +118,7 @@ public:
 class ClipRectScope
 {
 public:
-    explicit ClipRectScope(const ImVec2 &clipRectMin, const ImVec2 &clipRectMax, bool intersectWithCurrentClipRect)
+    ClipRectScope(const ImVec2 &clipRectMin, const ImVec2 &clipRectMax, bool intersectWithCurrentClipRect)
     {
         ImGui::PushClipRect(clipRectMin, clipRectMax, intersectWithCurrentClipRect);
     }
@@ -132,7 +132,7 @@ public:
 class TextWrapPosScope
 {
 public:
-    explicit TextWrapPosScope(float wrapLocalPosX)
+    TextWrapPosScope(float wrapLocalPosX)
     {
         ImGui::PushTextWrapPos(wrapLocalPosX);
     }

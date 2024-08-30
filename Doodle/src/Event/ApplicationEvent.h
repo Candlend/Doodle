@@ -119,23 +119,4 @@ public:
     EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
-class DOO_API AppActivateEvent : public Event
-{
-public:
-    AppActivateEvent() = default;
-
-    EVENT_CLASS_TYPE(AppActivate)
-    EVENT_CLASS_CATEGORY(EventCategoryApplication)
-};
-}
-
-class DOO_API AppQuitEvent : public Event
-{
-public:
-    AppQuitEvent() = default;
-
-    EVENT_CLASS_TYPE(AppQuit)
-    EVENT_CLASS_CATEGORY(EventCategoryApplication)
-};
-
 } // namespace Doodle

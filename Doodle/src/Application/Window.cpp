@@ -20,7 +20,7 @@ namespace Doodle
 class WindowsWindow : public Window
 {
 public:
-    explicit WindowsWindow(const WindowProps &props, bool visible)
+    WindowsWindow(const WindowProps &props, bool visible)
     {
         Initialize(props, visible);
     }
@@ -111,26 +111,26 @@ private:
             appWindow.m_data.Height = height;
 
             WindowResizeEvent event(width, height);
-            EventManager::Get().Dispatch(event);
+            EventManager::Get()->Dispatch(event);
         });
 
         glfwSetWindowRefreshCallback(m_window, [](GLFWwindow *window) {
             WindowsWindow &appWindow = *static_cast<WindowsWindow *>(glfwGetWindowUserPointer(window));
 
             WindowRefreshEvent event;
-            EventManager::Get().Dispatch(event);
+            EventManager::Get()->Dispatch(event);
         });
 
         glfwSetWindowPosCallback(m_window, [](GLFWwindow *window, int xPos, int yPos) {
             WindowsWindow &appWindow = *static_cast<WindowsWindow *>(glfwGetWindowUserPointer(window));
 
             WindowMoveEvent event(xPos, yPos);
-            EventManager::Get().Dispatch(event);
+            EventManager::Get()->Dispatch(event);
         });
 
         glfwSetWindowCloseCallback(m_window, [](GLFWwindow * /*window*/) {
             WindowCloseEvent event;
-            EventManager::Get().Dispatch(event);
+            EventManager::Get()->Dispatch(event);
         });
 
         glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int /*scancode*/, int action, int /*mods*/) {
@@ -140,19 +140,19 @@ private:
             {
             case GLFW_PRESS: {
                 KeyPressedEvent event(keycode, 0);
-                EventManager::Get().Dispatch(event); // 初始化重复计数
+                EventManager::Get()->Dispatch(event); // 初始化重复计数
                 break;
             }
             case GLFW_RELEASE: {
                 KeyReleasedEvent event(keycode);
-                EventManager::Get().Dispatch(event);
+                EventManager::Get()->Dispatch(event);
                 appWindow.m_keyRepeatCounts.erase(keycode); // 移除按键的重复计数
                 break;
             }
             case GLFW_REPEAT: {
                 appWindow.m_keyRepeatCounts[keycode]++; // 增加重复计数
                 KeyPressedEvent event(keycode, appWindow.m_keyRepeatCounts[keycode]);
-                EventManager::Get().Dispatch(event);
+                EventManager::Get()->Dispatch(event);
                 break;
             }
             }
@@ -160,7 +160,7 @@ private:
 
         glfwSetCharCallback(m_window, [](GLFWwindow * /*window*/, unsigned int keycode) {
             CharInputEvent event(static_cast<KeyCode>(keycode));
-            EventManager::Get().Dispatch(event);
+            EventManager::Get()->Dispatch(event);
         });
 
         glfwSetMouseButtonCallback(m_window, [](GLFWwindow * /*window*/, int button, int action, int /*mods*/) {
@@ -169,12 +169,12 @@ private:
             {
             case GLFW_PRESS: {
                 MouseButtonPressedEvent event(btn);
-                EventManager::Get().Dispatch(event);
+                EventManager::Get()->Dispatch(event);
                 break;
             }
             case GLFW_RELEASE: {
                 MouseButtonReleasedEvent event(btn);
-                EventManager::Get().Dispatch(event);
+                EventManager::Get()->Dispatch(event);
                 break;
             }
             }
@@ -182,12 +182,12 @@ private:
 
         glfwSetScrollCallback(m_window, [](GLFWwindow * /*window*/, double xOffset, double yOffset) {
             MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
-            EventManager::Get().Dispatch(event);
+            EventManager::Get()->Dispatch(event);
         });
 
         glfwSetCursorPosCallback(m_window, [](GLFWwindow * /*window*/, double xPos, double yPos) {
             MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
-            EventManager::Get().Dispatch(event);
+            EventManager::Get()->Dispatch(event);
         });
     }
 

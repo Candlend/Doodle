@@ -23,17 +23,17 @@ PanelData PanelData::GetCurrentPanelData(uint32_t id, ImGuiWindowFlags flags, bo
     currentData.Moving = false;
     if (currentData.Focused)
     {
-        auto focusedPanelID = PanelManager::Get().GetFocusedPanelID();
+        auto focusedPanelID = PanelManager::Get()->GetFocusedPanelID();
         if (focusedPanelID != 0 && focusedPanelID != currentData.ID)
         {
-            uint32_t prevFocusedPanelID = PanelManager::Get().GetFocusedPanelID();
-            PanelData *prevFocusedPanelData = PanelManager::Get().GetPanelData(prevFocusedPanelID);
+            uint32_t prevFocusedPanelID = PanelManager::Get()->GetFocusedPanelID();
+            PanelData *prevFocusedPanelData = PanelManager::Get()->GetPanelData(prevFocusedPanelID);
             if (prevFocusedPanelData && prevFocusedPanelData->DockID == currentData.DockID)
             {
                 prevFocusedPanelData->Appeared = false;
             }
         }
-        PanelManager::Get().SetFocusedPanelID(currentData.ID);
+        PanelManager::Get()->SetFocusedPanelID(currentData.ID);
         currentData.Appeared = true;
 
         currentData.Moving = false;
@@ -67,14 +67,14 @@ PanelData PanelData::GetCurrentPanelData(uint32_t id, ImGuiWindowFlags flags, bo
 
 ImGuiPanel::ImGuiPanel()
 {
-    EventManager::Get().AddListener<AppLayoutEvent>(this, &ImGuiPanel::OnLayout);
-    EventManager::Get().AddListener<AppUpdateEvent>(this, &ImGuiPanel::OnUpdate);
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiPanel::OnLayout);
+    EventManager::Get()->AddListener<AppUpdateEvent>(this, &ImGuiPanel::OnUpdate);
 }
 
 ImGuiPanel::~ImGuiPanel()
 {
-    EventManager::Get().RemoveListener<AppLayoutEvent>(this, &ImGuiPanel::OnLayout);
-    EventManager::Get().RemoveListener<AppUpdateEvent>(this, &ImGuiPanel::OnUpdate);
+    EventManager::Get()->RemoveListener<AppLayoutEvent>(this, &ImGuiPanel::OnLayout);
+    EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &ImGuiPanel::OnUpdate);
 }
 
 void ImGuiPanel::OnLayout()
@@ -82,7 +82,7 @@ void ImGuiPanel::OnLayout()
     ImGuiUtils::WindowScope scope(m_panelName.c_str(), &m_open, m_flags);
     uint32_t id = ImGui::GetID(m_panelName.c_str());
     m_panelData = PanelData::GetCurrentPanelData(id, m_flags, m_open);
-    PanelManager::Get().SetPanelData(id, m_panelData);
+    PanelManager::Get()->SetPanelData(id, m_panelData);
     OnPanelLayout();
 }
 

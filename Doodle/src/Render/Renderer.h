@@ -18,8 +18,8 @@ public:
     {
         using CommandType = RenderCommand<Args...>;
         auto command = new CommandType(func, args...);
-        void *mem = Get().m_commandQueue.Allocate([](void *cmd) { static_cast<CommandType *>(cmd)->Execute(); },
-                                                sizeof(CommandType));
+        void *mem = Get()->m_commandQueue.Allocate([](void *cmd) { static_cast<CommandType *>(cmd)->Execute(); },
+                                                   sizeof(CommandType));
         new (mem) CommandType(*command);
     }
     static void Submit(std::function<void()> func)

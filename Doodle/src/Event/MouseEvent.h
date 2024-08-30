@@ -56,19 +56,21 @@ namespace Doodle {
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
-		explicit MouseButtonEvent(MouseButtonCode button)
-			: m_button(button) {}
+        MouseButtonEvent(MouseButtonCode button) : m_button(button)
+        {
+        }
 
-		int m_button;
+        int m_button;
 	};
 
 	class DOO_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		explicit MouseButtonPressedEvent(MouseButtonCode button)
-			: MouseButtonEvent(button) {}
+        MouseButtonPressedEvent(MouseButtonCode button) : MouseButtonEvent(button)
+        {
+        }
 
-		std::string ToString() const override
+        std::string ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseButtonPressedEvent: " << m_button;
@@ -81,10 +83,11 @@ namespace Doodle {
 	class DOO_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		explicit MouseButtonReleasedEvent(MouseButtonCode button)
-			: MouseButtonEvent(button) {}
+        MouseButtonReleasedEvent(MouseButtonCode button) : MouseButtonEvent(button)
+        {
+        }
 
-		std::string ToString() const override
+        std::string ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseButtonReleasedEvent: " << m_button;

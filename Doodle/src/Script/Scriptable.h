@@ -14,7 +14,7 @@ public:
         return m_entity->GetComponent<T>();
     }
 
-    explicit Scriptable() : m_entity(nullptr)
+    Scriptable() : m_entity(nullptr)
     {
     }
 

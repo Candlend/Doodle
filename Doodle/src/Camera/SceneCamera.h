@@ -19,7 +19,7 @@ public:
     static std::shared_ptr<SceneCamera> Create(ProjectionType type = ProjectionType::Perspective);
 
     SceneCamera() = default;
-    explicit SceneCamera(ProjectionType type);
+    SceneCamera(ProjectionType type);
 
     void SetPerspective(float verticalFov, float nearClip = 0.1f, float farClip = 1000.0f);
     void SetOrthographic(float size, float nearClip = -1.0f, float farClip = 1.0f);

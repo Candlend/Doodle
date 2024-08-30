@@ -30,7 +30,7 @@ protected:
 class WindowScope : public ImGuiScope
 {
 public:
-    explicit WindowScope(const char *strId, bool *pOpen = nullptr, ImGuiWindowFlags windowFlags = 0)
+    WindowScope(const char *strId, bool *pOpen = nullptr, ImGuiWindowFlags windowFlags = 0)
     {
         m_opened = ImGui::Begin(strId, pOpen, windowFlags);
     }
@@ -44,8 +44,8 @@ public:
 class ChildWindowScope : public ImGuiScope
 {
 public:
-    explicit ChildWindowScope(const char *strId, ImVec2 size = ImVec2(0, 0), ImGuiChildFlags childFlags = 0,
-                              ImGuiWindowFlags windowFlags = 0)
+    ChildWindowScope(const char *strId, ImVec2 size = ImVec2(0, 0), ImGuiChildFlags childFlags = 0,
+                     ImGuiWindowFlags windowFlags = 0)
     {
         m_opened = ImGui::BeginChild(strId, size, childFlags, windowFlags);
     }
@@ -59,7 +59,7 @@ public:
 class ComboScope : public ImGuiScope
 {
 public:
-    explicit ComboScope(const char *label, const char *previewValue = nullptr, ImGuiComboFlags flags = 0)
+    ComboScope(const char *label, const char *previewValue = nullptr, ImGuiComboFlags flags = 0)
     {
         m_opened = ImGui::BeginCombo(label, previewValue, flags);
     }
@@ -73,7 +73,7 @@ public:
 class DisabledScope : public ImGuiScope
 {
 public:
-    explicit DisabledScope(bool disabled = true)
+    DisabledScope(bool disabled = true)
     {
         ImGui::BeginDisabled(disabled);
     }
@@ -86,7 +86,7 @@ public:
 class DragDropSourceScope : public ImGuiScope
 {
 public:
-    explicit DragDropSourceScope(ImGuiDragDropFlags flags = 0)
+    DragDropSourceScope(ImGuiDragDropFlags flags = 0)
     {
         m_opened = ImGui::BeginDragDropSource(flags);
     }
@@ -127,7 +127,7 @@ public:
 class ListBoxScope : public ImGuiScope
 {
 public:
-    explicit ListBoxScope(const char *label, ImVec2 size = ImVec2(0, 0))
+    ListBoxScope(const char *label, ImVec2 size = ImVec2(0, 0))
     {
         m_opened = ImGui::BeginListBox(label, size);
     }
@@ -155,7 +155,7 @@ public:
 class MenuScope : public ImGuiScope
 {
 public:
-    explicit MenuScope(const char *label, bool enabled = true)
+    MenuScope(const char *label, bool enabled = true)
     {
         m_opened = ImGui::BeginMenu(label, enabled);
     }
@@ -183,7 +183,7 @@ public:
 class PopupScope : public ImGuiScope
 {
 public:
-    explicit PopupScope(const char *strId, ImGuiWindowFlags flags = 0)
+    PopupScope(const char *strId, ImGuiWindowFlags flags = 0)
     {
         m_opened = ImGui::BeginPopup(strId, flags);
     }
@@ -197,8 +197,7 @@ public:
 class PopupContextItemScope : public ImGuiScope
 {
 public:
-    explicit PopupContextItemScope(const char *strId = nullptr,
-                                   ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonRight)
+    PopupContextItemScope(const char *strId = nullptr, ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonRight)
     {
         m_opened = ImGui::BeginPopupContextItem(strId, popupFlags);
     }
@@ -212,8 +211,7 @@ public:
 class PopupContextVoidScope : public ImGuiScope
 {
 public:
-    explicit PopupContextVoidScope(const char *strId = nullptr,
-                                   ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonRight)
+    PopupContextVoidScope(const char *strId = nullptr, ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonRight)
     {
         m_opened = ImGui::BeginPopupContextVoid(strId, popupFlags);
     }
@@ -227,8 +225,7 @@ public:
 class PopupContextWindowScope : public ImGuiScope
 {
 public:
-    explicit PopupContextWindowScope(const char *strId = nullptr,
-                                     ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonRight)
+    PopupContextWindowScope(const char *strId = nullptr, ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonRight)
     {
         m_opened = ImGui::BeginPopupContextWindow(strId, popupFlags);
     }
@@ -256,7 +253,7 @@ public:
 class TabBarScope : public ImGuiScope
 {
 public:
-    explicit TabBarScope(const char *strId, ImGuiTabBarFlags flags = 0)
+    TabBarScope(const char *strId, ImGuiTabBarFlags flags = 0)
     {
         m_opened = ImGui::BeginTabBar(strId, flags);
     }
@@ -270,7 +267,7 @@ public:
 class TabItemScope : public ImGuiScope
 {
 public:
-    explicit TabItemScope(const char *label)
+    TabItemScope(const char *label)
     {
         m_opened = ImGui::BeginTabItem(label);
     }

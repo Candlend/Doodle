@@ -26,7 +26,7 @@ class DOO_API Mesh
 {
 public:
     static std::shared_ptr<Mesh> Create(const std::string &filename);
-    explicit Mesh(const std::string &filename);
+    Mesh(const std::string &filename);
     ~Mesh();
 
     void Render();

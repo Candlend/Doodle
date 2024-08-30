@@ -11,7 +11,7 @@ class DOO_API Camera
 {
 public:
     Camera() = default;
-    explicit Camera(const glm::mat4 &projection);
+    Camera(const glm::mat4 &projection);
     Camera(float degFov, float width, float height, float nearP, float farP);
     virtual ~Camera() = default;
 

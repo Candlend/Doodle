@@ -26,7 +26,7 @@ struct MeshComponent : public IRenderable
 {
     std::shared_ptr<Mesh> Mesh;
 
-    explicit MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
+    MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
     {
     }
 

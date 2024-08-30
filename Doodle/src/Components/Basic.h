@@ -9,16 +9,60 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "UUID.h"
+
 namespace Doodle
 {
 
-struct Transform
+struct IDComponent
+{
+    UUID ID;
+
+    IDComponent() = default;
+    IDComponent(const IDComponent &) = default;
+    IDComponent(const UUID &id) : ID(id)
+    {
+    }
+
+    operator UUID &()
+    {
+        return ID;
+    }
+
+    operator const UUID &() const
+    {
+        return ID;
+    }
+};
+
+struct TagComponent
+{
+    std::string Tag;
+
+    TagComponent() = default;
+    TagComponent(const TagComponent &) = default;
+    TagComponent(const std::string &tag) : Tag(tag)
+    {
+    }
+
+    operator std::string &()
+    {
+        return Tag;
+    }
+
+    operator const std::string &() const
+    {
+        return Tag;
+    }
+};
+
+struct TransformComponent
 {
     glm::vec3 Position;
     glm::vec3 Rotation; // Euler angles in degrees
     glm::vec3 Scale;
 
-    Transform() : Position(0.0f), Rotation(0.0f), Scale(1.0f)
+    TransformComponent() : Position(0.0f), Rotation(0.0f), Scale(1.0f)
     {
     }
 
@@ -91,6 +135,21 @@ struct Transform
     {
         Position = glm::vec3(0.0f);
         Rotation = glm::vec3(0.0f);
+        Scale = glm::vec3(1.0f);
+    }
+
+    void ResetPosition()
+    {
+        Position = glm::vec3(0.0f);
+    }
+
+    void ResetRotation()
+    {
+        Rotation = glm::vec3(0.0f);
+    }
+
+    void ResetScale()
+    {
         Scale = glm::vec3(1.0f);
     }
 };

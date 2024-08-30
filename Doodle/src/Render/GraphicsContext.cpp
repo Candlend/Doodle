@@ -10,7 +10,7 @@ namespace Doodle
 class OpenGLContext : public GraphicsContext
 {
 public:
-    explicit OpenGLContext(GLFWwindow *window) : m_window(window)
+    OpenGLContext(GLFWwindow *window) : m_window(window)
 
     {
     }

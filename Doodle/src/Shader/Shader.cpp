@@ -12,7 +12,7 @@ class OpenGLShader : public Shader
 {
 
 public:
-    explicit OpenGLShader(const std::string &filepath) : m_reloader(filepath, *this)
+    OpenGLShader(const std::string &filepath) : m_reloader(filepath, *this)
     {
         m_filepath = filepath;
         ReadShaderFromFile(filepath);

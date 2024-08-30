@@ -27,13 +27,13 @@ public:
         return std::make_shared<Material>(shader);
     }
 
-    explicit Material(std::shared_ptr<Shader> shader) : m_shader(shader)
+    Material(std::shared_ptr<Shader> shader) : m_shader(shader)
     {
     }
 
-    explicit Material(const std::string &shaderName)
+    Material(const std::string &shaderName)
     {
-        m_shader = ShaderLibrary::Get().GetShader(shaderName);
+        m_shader = ShaderLibrary::Get()->GetShader(shaderName);
     }
 
     void Bind();

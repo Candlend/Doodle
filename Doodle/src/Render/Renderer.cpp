@@ -16,12 +16,12 @@ void Renderer::Initialize()
         DOO_CORE_TRACE("Renderer initialized");
     });
 
-    EventManager::Get().AddListener<AppRenderEvent>(this, &Renderer::WaitAndRender, std::numeric_limits<int>::max());
+    EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::WaitAndRender, std::numeric_limits<int>::max());
 }
 
 void Renderer::Deinitialize()
 {
-    EventManager::Get().RemoveListener<AppRenderEvent>(this, &Renderer::WaitAndRender);
+    EventManager::Get()->RemoveListener<AppRenderEvent>(this, &Renderer::WaitAndRender);
 }
 
 void Renderer::Clear(float r, float g, float b, float a)
@@ -66,7 +66,7 @@ void Renderer::UseWireframe(bool useWireframe)
 
 void Renderer::WaitAndRender()
 {
-    Get().m_commandQueue.Execute();
+    Get()->m_commandQueue.Execute();
 }
 
 } // namespace Doodle

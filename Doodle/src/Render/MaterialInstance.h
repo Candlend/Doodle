@@ -17,7 +17,10 @@ public:
         return std::make_shared<MaterialInstance>(material);
     }
 
-    explicit MaterialInstance(std::shared_ptr<Material> material);
+    MaterialInstance() : m_material(nullptr)
+    {
+    }
+    MaterialInstance(std::shared_ptr<Material> material);
 
     void Bind();
 

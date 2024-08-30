@@ -49,9 +49,9 @@ float Application::Time::GetFPS()
 
 Application::Application()
 {
-    EventManager::Get().AddListener(this, &Application::OnWindowCloseEvent);
-    EventManager::Get().AddListener(this, &Application::OnWindowRefreshEvent);
-    EventManager::Get().AddListener(this, &Application::OnWindowMoveEvent);
+    EventManager::Get()->AddListener(this, &Application::OnWindowCloseEvent);
+    EventManager::Get()->AddListener(this, &Application::OnWindowRefreshEvent);
+    EventManager::Get()->AddListener(this, &Application::OnWindowMoveEvent);
 }
 
 Application::~Application()
@@ -61,14 +61,14 @@ Application::~Application()
 
 void Application::Initialize()
 {
-    Renderer::Get().Initialize();
-    ImGuiBuilder::Get().Initialize();
+    Renderer::Get()->Initialize();
+    ImGuiBuilder::Get()->Initialize();
 }
 
 void Application::Deinitialize()
 {
-    Renderer::Get().Deinitialize();
-    ImGuiBuilder::Get().Deinitialize();
+    Renderer::Get()->Deinitialize();
+    ImGuiBuilder::Get()->Deinitialize();
 }
 
 void Application::Run() const
@@ -79,11 +79,11 @@ void Application::Run() const
         auto window = Window::Get();
         window->PollEvents();
         AppUpdateEvent updateEvent;
-        EventManager::Get().Dispatch(updateEvent);
+        EventManager::Get()->Dispatch(updateEvent);
         AppLayoutEvent layoutEvent;
-        EventManager::Get().Dispatch(layoutEvent);
+        EventManager::Get()->Dispatch(layoutEvent);
         AppRenderEvent renderEvent;
-        EventManager::Get().Dispatch(renderEvent);
+        EventManager::Get()->Dispatch(renderEvent);
         window->SwapBuffers();
     }
 }
@@ -99,7 +99,7 @@ bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
     Time::Freeze();
     auto window = Window::Get();
     AppUpdateEvent e;
-    EventManager::Get().Dispatch(e);
+    EventManager::Get()->Dispatch(e);
     window->SwapBuffers();
     return false;
 }

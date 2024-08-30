@@ -42,8 +42,8 @@ protected:
 #ifndef DOO_BUILD_DLL
 void ActivateImGuiContext()
 {
-    ImNodes::SetCurrentContext(ImGuiBuilder::Get().GetImnodesContext());
-    ImGui::SetCurrentContext(ImGuiBuilder::Get().GetContext());
+    ImNodes::SetCurrentContext(ImGuiBuilder::Get()->GetImnodesContext());
+    ImGui::SetCurrentContext(ImGuiBuilder::Get()->GetContext());
 }
 #endif
 

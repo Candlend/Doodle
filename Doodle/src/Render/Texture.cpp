@@ -83,7 +83,7 @@ static int CalculateMipMapCount(int width, int height)
 class OpenGLTexture2D : public Texture2D
 {
 public:
-    explicit OpenGLTexture2D(const std::string &filepath, const TextureParams &params)
+    OpenGLTexture2D(const std::string &filepath, const TextureParams &params)
         : m_filepath(filepath), m_width(0), m_height(0), m_data(nullptr), m_params(params)
     {
         LoadTexture();

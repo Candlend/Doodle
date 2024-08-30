@@ -21,4 +21,9 @@ void SceneManager::AddScene(const std::string &name, std::shared_ptr<Scene> scen
     m_scenes[name] = scene;
 }
 
+void SceneManager::RemoveScene(const std::string &name)
+{
+    m_scenes.erase(name);
+}
+
 } // namespace Doodle

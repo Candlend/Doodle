@@ -9,7 +9,7 @@ namespace Doodle
 class OpenGLIndexBuffer : public IndexBuffer
 {
 public:
-    explicit OpenGLIndexBuffer(void *data, size_t size)
+    OpenGLIndexBuffer(void *data, size_t size)
     {
         m_size = size;
         Renderer::Submit([this, data]() {

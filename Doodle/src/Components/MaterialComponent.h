@@ -9,14 +9,23 @@ struct MaterialComponent
 {
     std::shared_ptr<MaterialInstance> MaterialInstance;
 
-    explicit MaterialComponent(const std::shared_ptr<Doodle::MaterialInstance> &materialInstance)
+    MaterialComponent(const std::shared_ptr<Doodle::MaterialInstance> &materialInstance)
         : MaterialInstance(materialInstance)
     {
     }
 
-    explicit MaterialComponent(const std::shared_ptr<Material> &material)
-        : MaterialInstance(MaterialInstance::Create(material))
+    MaterialComponent(const std::shared_ptr<Material> &material) : MaterialInstance(MaterialInstance::Create(material))
     {
+    }
+
+    operator std::shared_ptr<Doodle::MaterialInstance> &()
+    {
+        return MaterialInstance;
+    }
+
+    operator const std::shared_ptr<Doodle::MaterialInstance> &() const
+    {
+        return MaterialInstance;
     }
 };
 

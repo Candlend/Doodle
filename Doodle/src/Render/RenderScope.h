@@ -10,7 +10,7 @@ template <typename T> class RenderScope
 {
 public:
     // 支持 std::shared_ptr
-    explicit RenderScope(std::shared_ptr<T> object) : m_object(object)
+    RenderScope(std::shared_ptr<T> object) : m_object(object)
     {
         if (m_object)
         {
@@ -19,7 +19,7 @@ public:
     }
 
     // 支持 std::unique_ptr
-    explicit RenderScope(std::unique_ptr<T> &object) : m_object(std::move(object))
+    RenderScope(std::unique_ptr<T> &object) : m_object(std::move(object))
     {
         if (m_object)
         {
@@ -28,7 +28,7 @@ public:
     }
 
     // 支持原始指针
-    explicit RenderScope(T *object) : m_object(object)
+    RenderScope(T *object) : m_object(object)
     {
         if (m_object)
         {

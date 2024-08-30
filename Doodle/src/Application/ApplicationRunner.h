@@ -48,14 +48,14 @@ public:
 
     static Window &GetWindow()
     {
-        DOO_CORE_ASSERT(Get().m_window, "No window created!");
-        return *Get().m_window;
+        DOO_CORE_ASSERT(Get()->m_window, "No window created!");
+        return *Get()->m_window;
     }
 
     static Application &GetApplication()
     {
-        DOO_CORE_ASSERT(Get().m_app, "No application created!");
-        return *Get().m_app;
+        DOO_CORE_ASSERT(Get()->m_app, "No application created!");
+        return *Get()->m_app;
     }
 
     static void SetIcon(void *window, const std::string &iconSmall, const std::string &iconLarge);

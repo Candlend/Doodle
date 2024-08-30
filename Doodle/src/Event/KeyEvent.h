@@ -16,7 +16,7 @@ public:
 
     EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 protected:
-    explicit KeyEvent(KeyCode keycode) : m_keyCode(keycode)
+    KeyEvent(KeyCode keycode) : m_keyCode(keycode)
     {
     }
 
@@ -50,7 +50,7 @@ private:
 class DOO_API KeyReleasedEvent : public KeyEvent
 {
 public:
-    explicit KeyReleasedEvent(KeyCode keycode) : KeyEvent(keycode)
+    KeyReleasedEvent(KeyCode keycode) : KeyEvent(keycode)
     {
     }
 
@@ -72,7 +72,7 @@ public:
         return m_inputChar;
     }
 
-    explicit CharInputEvent(uint16_t inputChar)
+    CharInputEvent(uint16_t inputChar)
     {
 		m_inputChar = inputChar;
     }

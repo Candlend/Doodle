@@ -1,7 +1,6 @@
+#include "Basic.h"
 #include "CameraComponent.h"
-#include "Light.h"
+#include "LightComponent.h"
 #include "MaterialComponent.h"
 #include "Renderable.h"
 #include "ScriptComponent.h"
-#include "Transform.h"
-

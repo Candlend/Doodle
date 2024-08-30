@@ -49,7 +49,7 @@ size_t GetSize(VertexDataType type)
 class OpenGLVertexBuffer : public VertexBuffer
 {
 public:
-    explicit OpenGLVertexBuffer(void *data, size_t size, bool dynamic)
+    OpenGLVertexBuffer(void *data, size_t size, bool dynamic)
     {
         m_dynamic = dynamic;
         m_size = size;

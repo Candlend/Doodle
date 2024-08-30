@@ -84,9 +84,9 @@ void ImGuiBuilder::Initialize()
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(window.GetNativeWindow()), true);
     ImGui_ImplOpenGL3_Init(glslVersion);
 
-    EventManager::Get().AddListener<AppLayoutEvent>(this, &ImGuiBuilder::BeginFrame,
-                                                    std::numeric_limits<int>::lowest());
-    EventManager::Get().AddListener<AppLayoutEvent>(this, &ImGuiBuilder::EndFrame, std::numeric_limits<int>::max());
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiBuilder::BeginFrame,
+                                                     std::numeric_limits<int>::lowest());
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiBuilder::EndFrame, std::numeric_limits<int>::max());
 }
 
 void ImGuiBuilder::Deinitialize()
