@@ -2,25 +2,25 @@
 
 #include "IconsFontAwesome6Pro.h"
 #include "ImGuiUtils.h"
-#include "LogWindow.h"
+#include "LogPanel.h"
 #include "Utils.h"
 
 
 namespace Doodle
 {
 
-void LogWindow::Initialize()
+void LogPanel::Initialize()
 {
 }
 
-void LogWindow::OnUpdate()
+void LogPanel::OnUpdate()
 {
     m_logCount = Log::GetLogCount(LogType::Trace) + Log::GetLogCount(LogType::Debug) + Log::GetLogCount(LogType::Info);
     m_warningCount = Log::GetLogCount(LogType::Warning);
     m_errorCount = Log::GetLogCount(LogType::Error);
 }
 
-bool LogWindow::ShouldSkip(const LogInfo &logInfo)
+bool LogPanel::ShouldSkip(const LogInfo &logInfo)
 {
     std::string filter(m_filter);
     if (!filter.empty() && logInfo.Message.find(filter) == std::string::npos)
@@ -38,7 +38,7 @@ bool LogWindow::ShouldSkip(const LogInfo &logInfo)
     return false;
 }
 
-void LogWindow::OnLayout()
+void LogPanel::OnLayout()
 {
     std::string title = "日志";
     ImGuiUtils::WindowScope ws(title.c_str());
@@ -160,7 +160,7 @@ void LogWindow::OnLayout()
     }
 }
 
-void LogWindow::Deinitialize()
+void LogPanel::Deinitialize()
 {
 }
 

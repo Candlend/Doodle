@@ -9,7 +9,7 @@
 namespace Doodle
 {
 
-class DOO_API LogWindow : public RegisterModule<LogWindow>
+class DOO_API LogPanel : public RegisterModule<LogPanel>
 {
 public:
     void Initialize() override;

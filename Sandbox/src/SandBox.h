@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CameraController.h"
-#include "LogWindow.h"
+#include "LogPanel.h"
 #include "SceneHierarchy.h"
 #include <Doodle.h>
 #include <memory>
@@ -13,7 +13,7 @@ class Sandbox : public Application
 public:
     void Initialize() override
     {
-        LogWindow::Register();
+        LogPanel::Register();
         SceneHierarchy::Register();
 
         m_scene = SceneManager::Get().CreateScene("Main");
