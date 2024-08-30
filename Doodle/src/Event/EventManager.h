@@ -5,6 +5,7 @@
 #include "Core.h"
 #include "Event.h"
 #include "Singleton.h"
+#include <limits>
 
 namespace Doodle
 {
@@ -16,7 +17,7 @@ struct EventCallback
     void *Obj;
     void *Func;
     EventCallbackFn<Event> Callback;
-    int Priority; // 新增优先级成员
+    int ExecutionOrder; // 新增优先级成员
 };
 // NOLINTBEGIN
 template <typename T, typename R, typename E> void *void_cast(R (T::*f)(E))
@@ -62,19 +63,19 @@ struct PairEqual
 class DOO_API EventManager : public Singleton<EventManager>
 {
 public:
-    template <typename T> void AddListener(EventCallbackFn<T> &callback, int priority = 0)
+    template <typename T> void AddListener(EventCallbackFn<T> &callback, int executionOrder = 0)
     {
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
         DOO_DEBUG("AddListener {0}", typeid(callback).name());
         EventCallback eventCallback{nullptr, reinterpret_cast<void *>(&callback),
                                     [callback](Event &event) -> bool { return callback(static_cast<T &>(event)); },
-                                    priority}; // 设置优先级
+                                    executionOrder}; // 设置优先级
 
         listeners.push_back(eventCallback);
     }
 
-    template <typename T> void AddListener(std::function<void()> &callback, int priority = 0)
+    template <typename T> void AddListener(std::function<void()> &callback, int executionOrder = 0)
     {
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
@@ -84,22 +85,23 @@ public:
                                         callback();
                                         return false;
                                     },
-                                    priority = 0}; // 设置优先级
+                                    executionOrder = 0}; // 设置优先级
 
         listeners.push_back(eventCallback);
     }
 
-    template <typename T, typename C> void AddListener(C *obj, bool (C::*func)(T &), int priority = 0)
+    template <typename T, typename C> void AddListener(C *obj, bool (C::*func)(T &), int executionOrder = 0)
     {
         EventType eventType = T::GetStaticType();
         auto callback = [obj, func](Event &event) -> bool { return (obj->*func)(static_cast<T &>(event)); };
         auto &listeners = m_eventListeners[eventType];
         DOO_DEBUG("AddListener {0}", typeid(callback).name());
-        EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback, priority}; // 设置优先级
+        EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback,
+                                    executionOrder}; // 设置优先级
         listeners.emplace_back(eventCallback);
     }
 
-    template <typename T, typename C> void AddListener(C *obj, void (C::*func)(), int priority = 0)
+    template <typename T, typename C> void AddListener(C *obj, void (C::*func)(), int executionOrder = 0)
     {
         EventType eventType = T::GetStaticType();
         auto callback = [obj, func](Event & /*event*/) {
@@ -108,7 +110,8 @@ public:
         };
         auto &listeners = m_eventListeners[eventType];
         DOO_DEBUG("AddListener {0}", typeid(callback).name());
-        EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback, priority}; // 设置优先级
+        EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback,
+                                    executionOrder}; // 设置优先级
         listeners.emplace_back(eventCallback);
     }
 
@@ -172,6 +175,15 @@ public:
 
 private:
     std::unordered_map<EventType, std::vector<EventCallback>> m_eventListeners;
+};
+
+enum ExecutionOrder
+{
+    First = std::numeric_limits<int>::min(),
+    Early = -1000,
+    Default = 0,
+    Late = 1000,
+    Last = std::numeric_limits<int>::max()
 };
 
 } // namespace Doodle

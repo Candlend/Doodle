@@ -47,8 +47,8 @@ struct DOO_API PanelData
 class DOO_API ImGuiPanel
 {
 public:
-    ImGuiPanel();
-    virtual ~ImGuiPanel();
+    ImGuiPanel(const std::string &panelName, ImGuiWindowFlags flags = ImGuiWindowFlags_None);
+    ~ImGuiPanel();
 
     void OnLayout();
 

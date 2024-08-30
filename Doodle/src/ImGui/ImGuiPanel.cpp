@@ -65,7 +65,7 @@ PanelData PanelData::GetCurrentPanelData(uint32_t id, ImGuiWindowFlags flags, bo
     return currentData;
 }
 
-ImGuiPanel::ImGuiPanel()
+ImGuiPanel::ImGuiPanel(const std::string &panelName, ImGuiWindowFlags flags) : m_panelName(panelName), m_flags(flags)
 {
     EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiPanel::OnLayout);
     EventManager::Get()->AddListener<AppUpdateEvent>(this, &ImGuiPanel::OnUpdate);

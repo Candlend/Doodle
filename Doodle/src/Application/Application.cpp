@@ -52,6 +52,13 @@ Application::Application()
     EventManager::Get()->AddListener(this, &Application::OnWindowCloseEvent);
     EventManager::Get()->AddListener(this, &Application::OnWindowRefreshEvent);
     EventManager::Get()->AddListener(this, &Application::OnWindowMoveEvent);
+
+    EventManager::Get()->AddListener<AppUpdateEvent>(this, &Application::BeforeUpdate, ExecutionOrder::First + 1);
+    EventManager::Get()->AddListener<AppUpdateEvent>(this, &Application::AfterUpdate, ExecutionOrder::Last - 1);
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &Application::BeforeLayout, ExecutionOrder::First + 1);
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &Application::AfterLayout, ExecutionOrder::Last - 1);
+    EventManager::Get()->AddListener<AppRenderEvent>(this, &Application::BeforeRender, ExecutionOrder::First + 1);
+    EventManager::Get()->AddListener<AppRenderEvent>(this, &Application::AfterRender, ExecutionOrder::Last - 1);
 }
 
 Application::~Application()
@@ -71,7 +78,7 @@ void Application::Deinitialize()
     ImGuiBuilder::Get()->Deinitialize();
 }
 
-void Application::Run() const
+void Application::Run()
 {
     while (m_running)
     {

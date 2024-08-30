@@ -1,4 +1,5 @@
 
+#include "EventManager.h"
 #include "pch.h"
 #include <GLFW/glfw3.h>
 #include <imgui.h>
@@ -8,7 +9,6 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <filesystem>
 #include <glad/glad.h>
-#include <limits>
 
 #include "Application.h"
 #include "ApplicationEvent.h"
@@ -84,9 +84,8 @@ void ImGuiBuilder::Initialize()
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(window.GetNativeWindow()), true);
     ImGui_ImplOpenGL3_Init(glslVersion);
 
-    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiBuilder::BeginFrame,
-                                                     std::numeric_limits<int>::lowest());
-    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiBuilder::EndFrame, std::numeric_limits<int>::max());
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiBuilder::BeginFrame, ExecutionOrder::First);
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiBuilder::EndFrame, ExecutionOrder::Last);
 }
 
 void ImGuiBuilder::Deinitialize()

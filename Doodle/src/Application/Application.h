@@ -42,9 +42,15 @@ public:
     virtual ~Application();
     virtual void Initialize();
     virtual void Deinitialize();
+    virtual void BeforeUpdate() {};
+    virtual void AfterUpdate() {};
+    virtual void BeforeLayout() {};
+    virtual void AfterLayout() {};
+    virtual void BeforeRender() {};
+    virtual void AfterRender() {};
 
 protected:
-    void Run() const;
+    void Run();
     bool OnWindowRefreshEvent(WindowRefreshEvent &e);
     bool OnWindowMoveEvent(WindowMoveEvent &e);
     bool OnWindowCloseEvent(WindowCloseEvent &e);

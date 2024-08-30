@@ -11,9 +11,8 @@ void EventManager::Dispatch(Event &event)
     if (it != m_eventListeners.end())
     {
         // 按优先级排序
-        std::sort(it->second.begin(), it->second.end(), [](const EventCallback &a, const EventCallback &b) {
-            return a.Priority > b.Priority; // 高优先级先执行
-        });
+        std::sort(it->second.begin(), it->second.end(),
+                  [](const EventCallback &a, const EventCallback &b) { return a.ExecutionOrder < b.ExecutionOrder; });
 
         for (auto &listener : it->second)
         {

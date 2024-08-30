@@ -19,15 +19,20 @@ public:
         return sandbox;
     }
 
+    void BeforeLayout() override
+    {
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+    }
+
     void Initialize() override
     {
-        PanelManager::Get()->CreatePanel<LogPanel>();
-        PanelManager::Get()->CreatePanel<SceneHierarchyPanel>();
         Application::Initialize();
         ActivateImGuiContext();
-
+        PanelManager::Get()->CreatePanel<LogPanel>();
+        PanelManager::Get()->CreatePanel<SceneHierarchyPanel>();
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();
+        BuildScene();
     }
 
     void BuildScene()

@@ -4,7 +4,6 @@
 #include "Log.h"
 #include "pch.h"
 #include <functional>
-#include <limits>
 
 namespace Doodle
 {
@@ -16,7 +15,7 @@ void Renderer::Initialize()
         DOO_CORE_TRACE("Renderer initialized");
     });
 
-    EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::WaitAndRender, std::numeric_limits<int>::max());
+    EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::WaitAndRender, ExecutionOrder::Last);
 }
 
 void Renderer::Deinitialize()

@@ -14,7 +14,7 @@ namespace Doodle
 class SceneActivateEvent;
 class SceneDeactivateEvent;
 
-class Scriptable : public BaseComponent
+class DOO_API Scriptable : public BaseComponent
 {
 public:
     Scriptable();

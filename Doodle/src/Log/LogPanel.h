@@ -12,6 +12,9 @@ namespace Doodle
 class DOO_API LogPanel : public ImGuiPanel
 {
 public:
+    LogPanel() : ImGuiPanel("日志")
+    {
+    }
     void OnUpdate() override;
     void OnPanelLayout() override;
 

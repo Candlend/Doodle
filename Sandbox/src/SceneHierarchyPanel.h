@@ -16,6 +16,9 @@ using namespace Doodle;
 class SceneHierarchyPanel : public ImGuiPanel
 {
 public:
+    SceneHierarchyPanel() : ImGuiPanel("层级")
+    {
+    }
     void OnUpdate() override
     {
         Renderer::UseWireframe(m_useWireframe);

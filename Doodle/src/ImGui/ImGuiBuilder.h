@@ -44,6 +44,7 @@ void ActivateImGuiContext()
 {
     ImNodes::SetCurrentContext(ImGuiBuilder::Get()->GetImnodesContext());
     ImGui::SetCurrentContext(ImGuiBuilder::Get()->GetContext());
+    DOO_CORE_INFO("Activate ImGui Context");
 }
 #endif
 
