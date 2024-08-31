@@ -34,4 +34,12 @@ public:
                                              const TextureParams &params = TextureParams());
 };
 
+class DOO_API TextureCube : public Texture
+{
+public:
+    static std::shared_ptr<TextureCube> Create(const std::array<std::string, 6>& facePaths,
+                                                const TextureParams& params = TextureParams());
+};
+
+
 } // namespace Doodle

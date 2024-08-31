@@ -19,10 +19,10 @@ set_languages("c++20")
 add_rules("plugin.compile_commands.autoupdate", {outputdir = ".vscode"})
 
 -- 在构建后调用创建符号链接的函数
-after_build(function (target)
-    os.cp("assets/", target:targetdir())
-    os.cp("config/", target:targetdir())
-end)
+-- after_build(function (target)
+--     os.cp("assets/", target:targetdir())
+--     os.cp("config/", target:targetdir())
+-- end)
 
 function traverse_directory(path)
     add_headerfiles(path .. "/**.h")
