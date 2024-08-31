@@ -14,7 +14,7 @@ namespace Doodle
 {
 class ApplicationRunner;
 
-class DOO_API Application : public LazySingleton<Application>
+class DOO_API Application
 {
 public:
     class DOO_API Time
@@ -35,8 +35,6 @@ public:
     };
 
     friend class ApplicationRunner;
-
-    static Application &Get();
 
     Application();
     virtual ~Application();

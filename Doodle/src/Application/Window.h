@@ -21,8 +21,7 @@ struct WindowProps
     }
 };
 
-
-class DOO_API Window : public LazySingleton<Window>
+class DOO_API Window
 {
 public:
     using EventCallbackFn = std::function<void(Event &)>;

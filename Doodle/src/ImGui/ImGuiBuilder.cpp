@@ -79,9 +79,9 @@ void ImGuiBuilder::Initialize()
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
     const char *glslVersion = "#version 410";
-    auto &window = ApplicationRunner::GetWindow();
+    auto window = ApplicationRunner::GetWindow();
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(window.GetNativeWindow()), true);
+    ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(window->GetNativeWindow()), true);
     ImGui_ImplOpenGL3_Init(glslVersion);
 
     EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiBuilder::BeginFrame, ExecutionOrder::First);
@@ -110,9 +110,9 @@ void ImGuiBuilder::EndFrame()
     // Rendering
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    auto &window = ApplicationRunner::GetWindow();
+    auto window = ApplicationRunner::GetWindow();
     int displayW, displayH;
-    glfwGetFramebufferSize(static_cast<GLFWwindow *>(window.GetNativeWindow()), &displayW, &displayH);
+    glfwGetFramebufferSize(static_cast<GLFWwindow *>(window->GetNativeWindow()), &displayW, &displayH);
     glViewport(0, 0, displayW, displayH);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

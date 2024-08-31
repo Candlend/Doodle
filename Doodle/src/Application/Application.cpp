@@ -82,7 +82,7 @@ void Application::Run()
     while (m_running)
     {
         Time::Update();
-        auto window = Window::Get();
+        auto window = ApplicationRunner::GetWindow();
         window->PollEvents();
         AppUpdateEvent updateEvent;
         EventManager::Get()->Dispatch(updateEvent);
@@ -103,7 +103,7 @@ bool Application::OnWindowCloseEvent(WindowCloseEvent & /*e*/)
 bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
 {
     Time::Freeze();
-    auto window = Window::Get();
+    auto window = ApplicationRunner::GetWindow();
     AppRenderEvent renderEvent;
     EventManager::Get()->Dispatch(renderEvent);
     AppLayoutEvent layoutEvent;

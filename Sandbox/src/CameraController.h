@@ -20,8 +20,8 @@ public:
         m_rotateSpeed = 20.0f;
 
         std::shared_ptr<SceneCamera> camera = GetComponent<CameraComponent>();
-        camera->SetViewportSize(ApplicationRunner::Get()->GetWindow().GetWidth(),
-                                ApplicationRunner::Get()->GetWindow().GetHeight());
+        camera->SetViewportSize(ApplicationRunner::GetWindow()->GetWidth(),
+                                ApplicationRunner::GetWindow()->GetHeight());
 
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
 

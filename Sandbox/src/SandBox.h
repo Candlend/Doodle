@@ -17,10 +17,7 @@ class Sandbox : public Application
 public:
     static std::shared_ptr<Sandbox> Create()
     {
-        auto sandbox = std::make_shared<Sandbox>();
-        sandbox->SetInstance(sandbox);
-
-        return sandbox;
+        return std::make_shared<Sandbox>();
     }
 
     void BeforeLayout() override
