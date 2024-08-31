@@ -98,6 +98,10 @@ public:
 
     bool OnWindowResizeEvent(const WindowResizeEvent &event)
     {
+        int width = event.GetWidth();
+        int height = event.GetHeight();
+        if (width == 0 || height == 0)
+            return false;
         auto &camera = GetComponent<CameraComponent>().Camera;
         camera->SetViewportSize(event.GetWidth(), event.GetHeight());
         return false;

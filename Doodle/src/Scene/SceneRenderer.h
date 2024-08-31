@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.h"
 #include "pch.h"
 #include <entt/entt.hpp>
 

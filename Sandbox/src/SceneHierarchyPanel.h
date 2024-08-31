@@ -34,5 +34,4 @@ public:
 
 private:
     bool m_useWireframe = false;
-    std::shared_ptr<Scene> m_activeScene;
 };

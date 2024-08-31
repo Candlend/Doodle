@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CameraController.h"
+#include "Component.h"
 #include "Log.h"
 #include "LogPanel.h"
 #include "PanelManager.h"
@@ -40,10 +41,6 @@ public:
         BuildScene();
     }
 
-    void BeforeUpdate() override
-    {
-    }
-
     void BuildScene()
     {
 
@@ -69,21 +66,27 @@ public:
         auto mainCamera = m_scene->CreateEntity("MainCamera");
         mainCamera->AddComponent<CameraComponent>();
         mainCamera->GetComponent<TransformComponent>().Position = glm::vec3(0.f, 0.f, 3.f);
-        a = &mainCamera->AddComponent<CameraController>();
+        mainCamera->AddComponent<CameraController>();
 
         auto directionalLight = m_scene->CreateEntity("DirectionalLight");
         auto &light = directionalLight->AddComponent<DirectionalLightComponent>();
         light.Intensity = 1.0f;
     }
 
+    void BeforeUpdate() override
+    {
+        auto cerberus = m_scene->FindEntity("Cerberus");
+        cerberus->GetComponent<TransformComponent>().Rotation.y += 100.f * Time::GetDeltaTime();
+        auto directionalLight = m_scene->FindEntity("DirectionalLight");
+        directionalLight->GetComponent<TransformComponent>().Rotation.x += 50.f * Time::GetDeltaTime();
+    }
+
     void Deinitialize() override
     {
-        a->Deinitialize();
         m_scene->EndScene();
         Application::Deinitialize();
     }
 
 private:
     std::shared_ptr<Scene> m_scene;
-    CameraController *a;
 };

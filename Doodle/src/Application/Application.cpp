@@ -104,8 +104,10 @@ bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
 {
     Time::Freeze();
     auto window = Window::Get();
-    AppUpdateEvent e;
-    EventManager::Get()->Dispatch(e);
+    AppRenderEvent renderEvent;
+    EventManager::Get()->Dispatch(renderEvent);
+    AppLayoutEvent layoutEvent;
+    EventManager::Get()->Dispatch(layoutEvent);
     window->SwapBuffers();
     return false;
 }

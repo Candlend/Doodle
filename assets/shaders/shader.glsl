@@ -106,25 +106,25 @@ void main()
         finalLighting += diff * light.Radiance * light.Intensity * attenuation;
     }
 
-    // // Spot Lights
-    // for (uint i = 0; i < u_SpotLights.LightCount; ++i)
-    // {
-    //     SpotLight light = u_SpotLights.Lights[i];
-    //     vec3 lightDir = light.Position - v_Position;
-    //     float distance = length(lightDir);
-    //     lightDir = normalize(lightDir);
+    // Spot Lights
+    for (uint i = 0; i < u_SpotLights.LightCount; ++i)
+    {
+        SpotLight light = u_SpotLights.Lights[i];
+        vec3 lightDir = light.Position - v_Position;
+        float distance = length(lightDir);
+        lightDir = normalize(lightDir);
         
-    //     // Attenuation
-    //     float attenuation = clamp(1.0 - (distance / light.Range), 0.0, 1.0);
+        // Attenuation
+        float attenuation = clamp(1.0 - (distance / light.Range), 0.0, 1.0);
         
-    //     // Angle attenuation
-    //     float angle = dot(normalize(light.Direction), -lightDir);
-    //     float spotAttenuation = smoothstep(cos(light.Angle), 1.0, angle);
-    //     attenuation *= spotAttenuation;
+        // Angle attenuation
+        float angle = dot(normalize(light.Direction), -lightDir);
+        float spotAttenuation = smoothstep(cos(light.Angle), 1.0, angle);
+        attenuation *= spotAttenuation;
 
-    //     float diff = max(dot(norm, lightDir), 0.0);
-    //     finalLighting += diff * light.Radiance * light.Intensity * attenuation;
-    // }
+        float diff = max(dot(norm, lightDir), 0.0);
+        finalLighting += diff * light.Radiance * light.Intensity * attenuation;
+    }
 
-    finalColor = vec4(u_Scene.DirectionalLight.Radiance * u_Scene.DirectionalLight.Intensity * color, 1.0);
+    finalColor = vec4(finalLighting * color, 1.0);
 }

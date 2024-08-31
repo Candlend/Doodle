@@ -21,14 +21,14 @@ struct MaterialComponent : public BaseComponent
     {
     }
 
-    operator std::shared_ptr<Doodle::MaterialInstance> &()
+    operator Doodle::MaterialInstance &() const
     {
-        return MaterialInstance;
+        return *MaterialInstance;
     }
 
-    operator const std::shared_ptr<Doodle::MaterialInstance> &() const
+    operator const Doodle::MaterialInstance &() const
     {
-        return MaterialInstance;
+        return *MaterialInstance;
     }
 };
 

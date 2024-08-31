@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <glad/glad.h>
+#include <sstream>
 
 #include "Renderer.h"
 #include "UniformBuffer.h"
