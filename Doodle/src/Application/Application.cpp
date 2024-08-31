@@ -86,10 +86,10 @@ void Application::Run()
         window->PollEvents();
         AppUpdateEvent updateEvent;
         EventManager::Get()->Dispatch(updateEvent);
-        AppLayoutEvent layoutEvent;
-        EventManager::Get()->Dispatch(layoutEvent);
         AppRenderEvent renderEvent;
         EventManager::Get()->Dispatch(renderEvent);
+        AppLayoutEvent layoutEvent;
+        EventManager::Get()->Dispatch(layoutEvent);
         window->SwapBuffers();
     }
 }
