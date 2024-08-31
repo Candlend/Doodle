@@ -19,9 +19,9 @@ class DOO_API Scene : public std::enable_shared_from_this<Scene>
     friend class Entity;
 
 public:
-    Scene();
+    static std::shared_ptr<Scene> Create(const std::string &name);
+    Scene(const std::string &name);
     ~Scene();
-    static std::shared_ptr<Scene> Create();
     std::shared_ptr<Entity> GetMainCameraEntity();
 
     std::shared_ptr<Entity> CreateEntity(const std::string &name);
@@ -64,7 +64,7 @@ public:
 private:
     std::string m_name;
     bool m_active = false;
-    std::unordered_map<UUID, entt::entity> m_entityMap;
+    std::unordered_map<UUID, std::shared_ptr<Entity>> m_entityMap;
     entt::registry m_registry;
     SceneRenderer m_sceneRenderer{this};
 };

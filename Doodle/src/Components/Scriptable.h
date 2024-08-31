@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Entity.h"
 #include "SceneEvent.h"
 #include "pch.h"
 
@@ -19,8 +18,13 @@ class DOO_API Scriptable : public BaseComponent
 public:
     Scriptable();
 
-    virtual ~Scriptable();
+    virtual ~Scriptable() override;
 
+    // 不允许拷贝构造和赋值
+    Scriptable(const Scriptable &) = delete;
+    Scriptable &operator=(const Scriptable &) = delete;
+
+    void OnAdded();
     virtual void Initialize() {};
     virtual void OnUpdate() {};
     virtual void OnLayout() {};

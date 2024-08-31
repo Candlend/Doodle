@@ -30,7 +30,6 @@ public:
 
     void OnUpdate() override
     {
-        m_activeScene = SceneManager::Get()->GetActiveScene();
         auto &transform = GetComponent<TransformComponent>();
 
         float deltaTime = Application::Time::GetDeltaTime();
@@ -108,6 +107,4 @@ private:
     float m_moveSpeed;
     float m_rotateSpeed;
     glm::vec2 m_lastMousePosition;
-    std::shared_ptr<Scene> m_activeScene;
-    std::shared_ptr<Entity> m_cameraEntity;
 };

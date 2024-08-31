@@ -5,7 +5,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-class UUID
+class DOO_API UUID
 {
 public:
     // 默认构造函数，生成一个随机 UUID
@@ -67,6 +67,11 @@ public:
     bool operator>=(const UUID &other) const
     {
         return m_uuid >= other.m_uuid;
+    }
+
+    operator std::string() const
+    {
+        return ToString();
     }
 
 private:

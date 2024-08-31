@@ -18,7 +18,7 @@ namespace Doodle
 struct PanelData;
 struct ImGuiPanel;
 
-class PanelManager : public Singleton<PanelManager>
+class DOO_API PanelManager : public Singleton<PanelManager>
 {
 
 public:

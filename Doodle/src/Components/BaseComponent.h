@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.h"
 #include "glm/fwd.hpp"
 #include "pch.h"
 #include <entt/entt.hpp>
@@ -17,8 +18,16 @@ namespace Doodle
 
 class Entity;
 class Scene;
+class Scriptable;
 struct DOO_API BaseComponent
 {
+    BaseComponent() = default;
+
+    virtual ~BaseComponent()
+    {
+    }
+
+    friend class Entity;
     operator Entity &();
 
     operator const Entity &() const;
@@ -31,7 +40,13 @@ struct DOO_API BaseComponent
     {
         DOO_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");
         static_assert(std::is_base_of_v<BaseComponent, T>, "T must derive from BaseComponent");
-        return GetRegistry().template emplace<T>(GetEntityHandle(), this, std::forward<Args>(args)...);
+        T &comp = GetRegistry().emplace<T>(GetEntityHandle(), std::forward<Args>(args)...);
+        comp.m_entity = *this;
+        if constexpr (std::is_base_of_v<Scriptable, T>)
+        {
+            comp.OnAdded();
+        }
+        return comp;
     }
 
     template <typename T> T &GetComponent()

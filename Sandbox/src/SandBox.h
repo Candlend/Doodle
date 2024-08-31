@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CameraController.h"
+#include "Log.h"
 #include "LogPanel.h"
 #include "PanelManager.h"
 #include "SceneHierarchyPanel.h"
@@ -36,7 +37,11 @@ public:
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();
         Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
-        // BuildScene();
+        BuildScene();
+    }
+
+    void BeforeUpdate() override
+    {
     }
 
     void BuildScene()
@@ -64,7 +69,7 @@ public:
         auto mainCamera = m_scene->CreateEntity("MainCamera");
         mainCamera->AddComponent<CameraComponent>();
         mainCamera->GetComponent<TransformComponent>().Position = glm::vec3(0.f, 0.f, 3.f);
-        mainCamera->AddComponent<CameraController>();
+        a = &mainCamera->AddComponent<CameraController>();
 
         auto directionalLight = m_scene->CreateEntity("DirectionalLight");
         auto &light = directionalLight->AddComponent<DirectionalLightComponent>();
@@ -73,10 +78,12 @@ public:
 
     void Deinitialize() override
     {
+        a->Deinitialize();
         m_scene->EndScene();
         Application::Deinitialize();
     }
 
 private:
     std::shared_ptr<Scene> m_scene;
+    CameraController *a;
 };

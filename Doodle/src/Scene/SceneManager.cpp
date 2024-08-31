@@ -11,7 +11,7 @@ std::shared_ptr<Scene> SceneManager::CreateScene(const std::string &name)
     {
         DOO_CORE_WARN("Scene with name {0} already exists", name);
     }
-    auto scene = Scene::Create();
+    auto scene = Scene::Create(name);
     m_scenes[name] = scene;
     return scene;
 }
