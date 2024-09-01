@@ -43,6 +43,31 @@ public:
         m_splashScreen.End();
     }
 
+#ifdef DOO_BUILD_PYTHON
+    void CreateApp(py::object appClass, WindowProps props = WindowProps())
+    {
+        std::string iconSmall = "assets/icons/icon_small.png";
+        std::string iconLarge = "assets/icons/icon_large.png";
+#ifndef DOO_HIDE_SPLASH
+        m_window = Window::Create(props, false);
+        if (!m_splashScreen.LoadImage("assets/splash.png"))
+        {
+            DOO_CORE_ERROR("Failed to load splash screen image!");
+        }
+        // 设置m_splashScreen的图标和Window的图标一致
+        m_splashScreen.Begin(2.0f);
+        SetIcon(m_splashScreen.GetNativeWindow(), iconSmall, iconLarge);
+#else
+        m_window = Window::Create(props, true);
+#endif
+        SetIcon(m_window->GetNativeWindow(), iconSmall, iconLarge);
+        py::object appInstance = appClass.attr("create")();
+        m_app = appInstance.cast<std::shared_ptr<Application>>();
+        m_app->Initialize();
+        m_splashScreen.End();
+    }
+#endif
+
     void Run();
 
     static std::shared_ptr<Window> GetWindow()

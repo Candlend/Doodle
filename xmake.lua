@@ -5,7 +5,8 @@ add_requires("fmt", "assimp", "boost", "stb", "spdlog", "cereal", "nlohmann_json
 add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
 add_requires("imnodes")
 add_requires("imguizmo", {configs = {cxxflags = "-DIMGUI_HAS_VIEWPORT -DIMGUI_DEFINE_MATH_OPERATORS"}})
-
+add_requireconfs("pybind11.python", {override = true, version = "3.10"})
+add_requires("pybind11")
 if is_os("windows") then
     add_defines("DOO_PLATFORM_WINDOWS")
 elseif is_os("linux") then
@@ -19,10 +20,10 @@ set_languages("c++20")
 add_rules("plugin.compile_commands.autoupdate", {outputdir = ".vscode"})
 
 -- 在构建后调用创建符号链接的函数
--- after_build(function (target)
---     os.cp("assets/", target:targetdir())
---     os.cp("config/", target:targetdir())
--- end)
+after_build(function (target)
+    os.cp("assets/", target:targetdir())
+    os.cp("config/", target:targetdir())
+end)
 
 function traverse_directory(path)
     add_headerfiles(path .. "/**.h")
@@ -47,6 +48,7 @@ target("Doodle")
 
     -- 添加依赖库
     add_packages("fmt", "assimp", "boost", "stb", "spdlog", "imgui", "imnodes", "imguizmo", "cereal", "nlohmann_json", "glfw", "glad", "glm", "entt")
+    add_packages("pybind11")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")
@@ -55,6 +57,42 @@ target("Doodle")
     else 
         set_optimize("fastest")
     end
+
+target("doodle")
+    add_defines("DOO_BUILD_DLL")
+    add_defines("DOO_BUILD_PYTHON")
+    -- 添加源文件
+    add_files("Doodle/src/**.cpp")
+    add_files("Doodle/pybind11/**.cpp")
+    -- 添加所有子目录到包含路径
+    traverse_directory("Doodle/src")
+    
+    -- 添加预编译头
+    set_pcxxheader("Doodle/src/pch.h")
+
+    -- 添加依赖库
+    add_packages("fmt", "assimp", "boost", "stb", "spdlog", "imgui", "imnodes", "imguizmo", "cereal", "nlohmann_json", "glfw", "glad", "glm", "entt")
+
+    if is_mode("debug") then
+        add_defines("DOO_ENABLE_ASSERTS")
+        add_defines("DOO_HIDE_SPLASH")
+        set_optimize("none")
+    else 
+        set_optimize("fastest")
+    end
+
+    add_rules("python.library", {soabi = true})
+    add_packages("pybind11")
+    
+    after_build(function (target)
+        local targetdir = target:targetdir()
+        local pythondir = targetdir .. "/python"
+        os.mkdir(pythondir)
+        os.cp(target:targetfile(), pythondir .. "/doodle.pyd")
+        os.cp("assets/", pythondir)
+        os.cp("config/", pythondir)
+        os.cp("python/*", pythondir)
+    end)
     
 target("Sandbox")
     set_kind("binary")

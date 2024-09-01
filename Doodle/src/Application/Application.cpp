@@ -67,12 +67,14 @@ Application::~Application()
 
 void Application::Initialize()
 {
+    DOO_CORE_INFO("Application initialized");
     Renderer::Get()->Initialize();
     ImGuiBuilder::Get()->Initialize();
 }
 
 void Application::Deinitialize()
 {
+    DOO_CORE_INFO("Application deinitialized");
     Renderer::Get()->Deinitialize();
     ImGuiBuilder::Get()->Deinitialize();
 }
