@@ -181,6 +181,12 @@ public:
 
     void Dispatch(Event &event);
 
+    template <typename TEvent, typename... TEventArgs> void Dispatch(TEventArgs &&...args)
+    {
+        TEvent event(std::forward<TEventArgs>(args)...);
+        Dispatch(event);
+    }
+
 private:
     std::unordered_map<EventType, std::vector<EventCallback>> m_eventListeners;
 };

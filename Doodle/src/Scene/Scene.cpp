@@ -25,7 +25,7 @@ Scene::~Scene()
     m_registry.clear();
 }
 
-std::shared_ptr<Entity> Scene::GetMainCameraEntity()
+Entity Scene::GetMainCameraEntity()
 {
     auto cameraView = m_registry.view<CameraComponent>();
     for (auto entity : cameraView)
@@ -33,38 +33,38 @@ std::shared_ptr<Entity> Scene::GetMainCameraEntity()
         const auto &camera = cameraView.get<CameraComponent>(entity);
         if (camera.Primary)
         {
-            return std::make_shared<Entity>(this, entity);
+            return Entity(this, entity);
         }
     }
     DOO_CORE_WARN("No primary camera found");
-    return nullptr;
+    return {};
 }
 
-std::shared_ptr<Entity> Scene::CreateEntity(const std::string &name)
+Entity Scene::CreateEntity(const std::string &name)
 {
     auto entity = Entity::Create(this);
-    entity->AddComponent<IDComponent>();
-    entity->AddComponent<TagComponent>(name);
-    entity->AddComponent<TransformComponent>();
-    m_entityMap[entity->GetComponent<IDComponent>()] = entity;
+    entity.AddComponent<IDComponent>();
+    entity.AddComponent<TagComponent>(name);
+    entity.AddComponent<TransformComponent>();
+    m_entityMap[entity.GetComponent<IDComponent>()] = entity;
     return entity;
 }
 
-void Scene::AddEntity(const std::shared_ptr<Entity> &entity)
+void Scene::AddEntity(const Entity &entity)
 {
-    m_entityMap[entity->GetComponent<IDComponent>()] = entity;
+    m_entityMap[entity.GetComponent<IDComponent>()] = entity;
 }
 
 void Scene::RemoveEntity(const UUID &id)
 {
-    m_registry.destroy(m_entityMap[id]->GetEntityHandle());
+    m_registry.destroy(m_entityMap[id].GetEntityHandle());
     m_entityMap.erase(id);
 }
 
-void Scene::DestroyEntity(const std::shared_ptr<Entity> &entity)
+void Scene::DestroyEntity(const Entity &entity)
 {
-    m_registry.destroy(entity->GetEntityHandle());
-    UUID id = entity->GetComponent<IDComponent>();
+    m_registry.destroy(entity.GetEntityHandle());
+    UUID id = entity.GetComponent<IDComponent>();
     m_entityMap.erase(id);
 }
 

@@ -11,7 +11,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include "Entity.h"
 #include "UUID.h"
+
 
 namespace Doodle
 {
@@ -117,7 +119,7 @@ struct DOO_API BaseComponent
 
 protected:
     entt::registry &GetRegistry() const;
-    Entity *m_entity;
+    Entity m_entity;
 };
 
 } // namespace Doodle

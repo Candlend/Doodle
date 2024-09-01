@@ -5,6 +5,9 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+namespace Doodle
+{
+
 class DOO_API UUID
 {
 public:
@@ -79,12 +82,19 @@ private:
     boost::uuids::random_generator m_generator; // UUID 生成器
 };
 
+inline std::ostream &operator<<(std::ostream &os, const UUID &uuid)
+{
+    return os << uuid.ToString();
+}
+
+} // namespace Doodle
+
 // 为 UUID 提供 std::hash 特化
 namespace std
 {
-template <> struct hash<UUID>
+template <> struct hash<Doodle::UUID>
 {
-    std::size_t operator()(const UUID &uuid) const noexcept
+    std::size_t operator()(const Doodle::UUID &uuid) const noexcept
     {
         return std::hash<std::string>()(uuid.ToString());
     }

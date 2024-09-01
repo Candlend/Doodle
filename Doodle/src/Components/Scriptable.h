@@ -16,15 +16,15 @@ class SceneDeactivateEvent;
 class DOO_API Scriptable : public BaseComponent
 {
 public:
-    Scriptable();
-
-    virtual ~Scriptable() override;
-
     // 不允许拷贝构造和赋值
     Scriptable(const Scriptable &) = delete;
     Scriptable &operator=(const Scriptable &) = delete;
-
     void OnAdded();
+
+protected:
+    Scriptable();
+    virtual ~Scriptable() override;
+
     virtual void Initialize() {};
     virtual void OnUpdate() {};
     virtual void OnLayout() {};

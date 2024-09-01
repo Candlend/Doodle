@@ -6,9 +6,13 @@
 namespace Doodle
 {
 
-std::shared_ptr<Entity> Entity::Create(Scene *scene)
+Entity Entity::Create(Scene *scene)
 {
-    return std::make_shared<Entity>(scene, scene->m_registry.create());
+    return Entity(scene, scene->m_registry.create());
+}
+
+Entity::Entity() : m_scene(nullptr), m_entityHandle(entt::null)
+{
 }
 
 Entity::Entity(Scene *scene, entt::entity id) : m_scene(scene), m_entityHandle(id)

@@ -6,36 +6,36 @@ namespace Doodle
 
 BaseComponent::operator Entity &()
 {
-    return *m_entity;
+    return m_entity;
 }
 
 BaseComponent::operator const Entity &() const
 {
-    return *m_entity;
+    return m_entity;
 }
 
 entt::entity BaseComponent::GetEntityHandle() const
 {
     if (!m_entity)
         return entt::null;
-    return m_entity->GetEntityHandle();
+    return m_entity.GetEntityHandle();
 }
 
 UUID BaseComponent::GetUUID() const
 {
-    return m_entity->GetUUID();
+    return m_entity.GetUUID();
 }
 
 Scene *BaseComponent::GetScene() const
 {
     if (!m_entity)
         return nullptr;
-    return m_entity->GetScene();
+    return m_entity.GetScene();
 }
 
 bool BaseComponent::IsValid() const
 {
-    return m_entity && m_entity->IsValid();
+    return m_entity;
 }
 
 BaseComponent::operator bool() const
@@ -45,6 +45,6 @@ BaseComponent::operator bool() const
 
 entt::registry &BaseComponent::GetRegistry() const
 {
-    return m_entity->GetRegistry();
+    return m_entity.GetRegistry();
 }
 } // namespace Doodle

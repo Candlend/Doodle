@@ -1,6 +1,5 @@
 #pragma once
 
-#include "BaseComponent.h"
 #include "Log.h"
 #include "UUID.h"
 #include "pch.h"
@@ -9,7 +8,7 @@
 
 namespace Doodle
 {
-
+class BaseComponent;
 class Scriptable;
 class Scene;
 class DOO_API Entity
@@ -18,7 +17,13 @@ public:
     ~Entity()
     {
     }
-    static std::shared_ptr<Entity> Create(Scene *scene);
+    static Entity Create(Scene *scene);
+    Entity();
+    Entity(const Entity &other) = default;
+    Entity(Entity &&other) = default;
+    Entity &operator=(const Entity &other) = default;
+    Entity &operator=(Entity &&other) = default;
+
     Entity(Scene *scene, entt::entity id);
     Entity(const Scene *scene, entt::entity id);
 
@@ -31,7 +36,7 @@ public:
         DOO_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");
         static_assert(std::is_base_of_v<BaseComponent, T>, "T must derive from BaseComponent");
         T &comp = GetRegistry().emplace<T>(GetEntityHandle(), std::forward<Args>(args)...);
-        comp.m_entity = this;
+        comp.m_entity = *this;
         if constexpr (std::is_base_of_v<Scriptable, T>)
         {
             comp.OnAdded();

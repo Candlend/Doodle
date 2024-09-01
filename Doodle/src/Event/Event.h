@@ -23,6 +23,7 @@ enum class EventType
     AppLayout,
     SceneActivate,
     SceneDeactivate,
+    SelectionChanged,
     KeyPressed,
     KeyReleased,
     CharInput,

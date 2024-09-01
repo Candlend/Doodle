@@ -22,10 +22,10 @@ public:
     static std::shared_ptr<Scene> Create(const std::string &name);
     Scene(const std::string &name);
     ~Scene();
-    std::shared_ptr<Entity> GetMainCameraEntity();
+    Entity GetMainCameraEntity();
 
-    std::shared_ptr<Entity> CreateEntity(const std::string &name);
-    std::shared_ptr<Entity> FindEntity(const std::string &name) const
+    Entity CreateEntity(const std::string &name);
+    Entity FindEntity(const std::string &name) const
     {
         auto view = m_registry.view<TagComponent>();
         for (auto entity : view)
@@ -33,15 +33,15 @@ public:
             std::string tag = view.get<TagComponent>(entity);
             if (tag == name)
             {
-                return std::make_shared<Entity>(this, entity);
+                return Entity(this, entity);
             }
         }
-        return nullptr;
+        return {};
     }
-    std::shared_ptr<Entity> GetEntity(const UUID &id) const;
-    void AddEntity(const std::shared_ptr<Entity> &entity);
+    Entity GetEntity(const UUID &id) const;
+    void AddEntity(const Entity &entity);
     void RemoveEntity(const UUID &id);
-    void DestroyEntity(const std::shared_ptr<Entity> &entity);
+    void DestroyEntity(const Entity &entity);
 
     inline std::string GetName() const
     {
@@ -64,7 +64,7 @@ public:
 private:
     std::string m_name;
     bool m_active = false;
-    std::unordered_map<UUID, std::shared_ptr<Entity>> m_entityMap;
+    std::unordered_map<UUID, Entity> m_entityMap;
     entt::registry m_registry;
     SceneRenderer m_sceneRenderer{this};
 };

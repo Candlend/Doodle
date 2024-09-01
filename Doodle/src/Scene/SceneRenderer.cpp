@@ -50,8 +50,8 @@ void SceneRenderer::Render()
     {
         return;
     }
-    glm::mat4 view = glm::inverse(cameraEntity->GetComponent<TransformComponent>().GetModelMatrix());
-    glm::mat4 projection = cameraEntity->GetComponent<CameraComponent>().GetProjectionMatrix();
+    glm::mat4 view = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetModelMatrix());
+    glm::mat4 projection = cameraEntity.GetComponent<CameraComponent>().GetProjectionMatrix();
 
     // Process lights
     {
@@ -60,10 +60,10 @@ void SceneRenderer::Render()
         {
             auto lights = m_registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
             uint32_t directionalLightIndex = 0;
-            for (auto entity : lights)
+            for (auto e : lights)
             {
                 auto [transformComponent, lightComponent] =
-                    lights.get<TransformComponent, DirectionalLightComponent>(entity);
+                    lights.get<TransformComponent, DirectionalLightComponent>(e);
                 glm::vec3 direction =
                     glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
                 DOO_CORE_ASSERT(directionalLightIndex < LightEnvironment::MAX_DIRECTIONAL_LIGHTS,
@@ -84,10 +84,9 @@ void SceneRenderer::Render()
                     Entity entity(m_scene, e);
                     auto [transformComponent, lightComponent] =
                         pointLights.get<TransformComponent, PointLightComponent>(e);
-                    auto transform = entity.GetComponent<TransformComponent>();
                     m_lightEnvironment.PointLights[pointLightIndex++] = {
-                        transform.Position,        lightComponent.Radiance, lightComponent.Intensity,
-                        lightComponent.MinRadius,  lightComponent.Radius,   lightComponent.Falloff,
+                        transformComponent.Position, lightComponent.Radiance, lightComponent.Intensity,
+                        lightComponent.MinRadius,    lightComponent.Radius,   lightComponent.Falloff,
                         lightComponent.SourceSize,
                     };
                 }
@@ -102,12 +101,11 @@ void SceneRenderer::Render()
                     Entity entity(m_scene, e);
                     auto [transformComponent, lightComponent] =
                         spotLights.get<TransformComponent, SpotLightComponent>(e);
-                    auto transform = entity.GetComponent<TransformComponent>();
                     glm::vec3 direction =
-                        glm::normalize(glm::rotate(transform.GetRotation(), glm::vec3(1.0f, 0.0f, 0.0f)));
+                        glm::normalize(glm::rotate(transformComponent.GetRotation(), glm::vec3(1.0f, 0.0f, 0.0f)));
 
                     m_lightEnvironment.SpotLights[spotLightIndex++] = {
-                        transform.Position,
+                        transformComponent.Position,
                         direction,
                         lightComponent.Radiance,
                         lightComponent.Intensity,
