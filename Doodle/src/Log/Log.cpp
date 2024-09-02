@@ -12,6 +12,7 @@
 #include "Log.h"
 #include "Utils.h"
 #include "spdlog/fmt/bundled/format.h"
+#include "spdlog/logger.h"
 
 using json = nlohmann::json;
 
@@ -132,8 +133,8 @@ void Log::Initialize()
 {
     try
     {
-        s_CoreLogger = spdlog::stdout_color_mt("CORE");
-        s_ClientLogger = spdlog::stdout_color_mt("CLIENT");
+        s_CoreLogger = std::make_shared<spdlog::logger>("CORE");
+        s_ClientLogger = std::make_shared<spdlog::logger>("CLIENT");
         Log::LoadConfig("config/log.json");
     }
     catch (const std::exception &e)
@@ -187,6 +188,8 @@ void Log::LoadConfig(const std::string &configFile)
             coreLogFileSize = std::stoi(coreLogFileSizeStr.substr(0, coreLogFileSizeStr.size() - 2)) * 1024;
         }
 
+        auto coreConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        s_CoreLogger->sinks().push_back(coreConsoleSink);
         // 创建核心旋转文件输出日志器
         auto coreRotatingSink =
             std::make_shared<spdlog::sinks::rotating_file_sink_mt>(coreLogFile, coreLogFileSize, coreLogFileCount);
@@ -228,6 +231,8 @@ void Log::LoadConfig(const std::string &configFile)
             clientLogFileSize = std::stoi(clientLogFileSizeStr.substr(0, clientLogFileSizeStr.size() - 2)) * 1024;
         }
 
+        auto clientConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        s_ClientLogger->sinks().push_back(clientConsoleSink);
         // 创建客户端旋转文件输出日志器
         auto clientRotatingSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             clientLogFile, clientLogFileSize, clientLogFileCount);
