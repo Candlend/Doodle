@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <boost/algorithm/string.hpp>
 #include <glad/glad.h>
+#include <string>
 
 #include "Shader.h"
 #include "ShaderReloader.h"
@@ -12,9 +13,8 @@ class OpenGLShader : public Shader
 {
 
 public:
-    OpenGLShader(const std::string &filepath) : m_reloader(filepath, *this)
+    OpenGLShader(const std::string &filepath) : m_reloader(filepath, *this), m_filepath(filepath)
     {
-        m_filepath = filepath;
         ReadShaderFromFile(filepath);
         Renderer::Submit([this, filepath]() {
             CompileAndUploadShader();
@@ -22,6 +22,11 @@ public:
             PrintActiveUniforms();
             PrintActiveUniformBlocks();
         });
+    }
+
+    std::string GetPath() const override
+    {
+        return m_filepath;
     }
 
     void Reload() override

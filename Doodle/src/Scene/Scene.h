@@ -4,15 +4,17 @@
 
 #include "ApplicationEvent.h"
 #include "Camera.h"
-#include "Component.h"
-#include "Entity.h"
 #include "EventManager.h"
 #include "SceneRenderer.h"
+#include "UUID.h"
 #include "UniformBuffer.h"
+#include <unordered_map>
 
 namespace Doodle
 {
 
+class Entity;
+class BaseComponent;
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
@@ -25,20 +27,10 @@ public:
     Entity GetMainCameraEntity();
 
     Entity CreateEntity(const std::string &name);
-    Entity FindEntity(const std::string &name) const
-    {
-        auto view = m_registry.view<TagComponent>();
-        for (auto entity : view)
-        {
-            std::string tag = view.get<TagComponent>(entity);
-            if (tag == name)
-            {
-                return Entity(this, entity);
-            }
-        }
-        return {};
-    }
+    Entity FindEntity(const std::string &name) const;
     Entity GetEntity(const UUID &id) const;
+    std::vector<Entity> GetEntities() const;
+    std::vector<BaseComponent *> GetComponents(const UUID &id) const;
     void AddEntity(const Entity &entity);
     void RemoveEntity(const UUID &id);
     void DestroyEntity(const Entity &entity);
@@ -65,6 +57,7 @@ private:
     std::string m_name;
     bool m_active = false;
     std::unordered_map<UUID, Entity> m_entityMap;
+    std::unordered_map<UUID, std::vector<BaseComponent *>> m_entityComponents;
     entt::registry m_registry;
     SceneRenderer m_sceneRenderer{this};
 };

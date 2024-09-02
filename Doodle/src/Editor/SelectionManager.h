@@ -11,8 +11,6 @@ enum class SelectionContext
 {
     Global = 0,
     Scene,
-    // ContentBrowser,
-    // PrefabEditor
 };
 
 class UUID;

@@ -2,6 +2,8 @@
 
 #include "CameraController.h"
 #include "Component.h"
+#include "DebugPanel.h"
+#include "InspectorPanel.h"
 #include "Log.h"
 #include "LogPanel.h"
 #include "PanelManager.h"
@@ -9,6 +11,7 @@
 #include "imgui.h"
 #include <Doodle.h>
 #include <memory>
+
 
 using namespace Doodle;
 
@@ -32,6 +35,9 @@ public:
         ActivateImGuiContext();
         PanelManager::Get()->CreatePanel<LogPanel>();
         PanelManager::Get()->CreatePanel<SceneHierarchyPanel>();
+        PanelManager::Get()->CreatePanel<DebugPanel>();
+        PanelManager::Get()->CreatePanel<InspectorPanel>();
+
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();
         Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);

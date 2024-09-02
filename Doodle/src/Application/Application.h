@@ -49,9 +49,9 @@ public:
 
 protected:
     void Run();
-    bool OnWindowRefreshEvent(WindowRefreshEvent &e);
-    bool OnWindowMoveEvent(WindowMoveEvent &e);
-    bool OnWindowCloseEvent(WindowCloseEvent &e);
+    bool OnWindowRefresh(WindowRefreshEvent &e);
+    bool OnWindowMove(WindowMoveEvent &e);
+    bool OnWindowClose(WindowCloseEvent &e);
     bool m_running = true;
 };
 

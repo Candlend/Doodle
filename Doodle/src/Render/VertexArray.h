@@ -5,6 +5,7 @@
 #include "IndexBuffer.h"
 #include "Renderer.h"
 #include "VertexBuffer.h"
+#include <cstdint>
 
 namespace Doodle
 {
@@ -14,7 +15,7 @@ class DOO_API VertexArray
 public:
     static std::shared_ptr<VertexArray> Create();
     ~VertexArray() = default;
-
+    virtual uint32_t GetRendererID() const = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
     virtual void Render(bool depthTest) const = 0;

@@ -2,6 +2,7 @@
 
 #include "BaseComponent.h"
 #include "CameraComponent.h"
+#include "ImGuiUtils.h"
 #include "LightComponent.h"
 #include "MaterialComponent.h"
 #include "Renderable.h"
@@ -20,6 +21,11 @@ struct IDComponent : public BaseComponent
     {
     }
 
+    std::string GetName() const override
+    {
+        return "ID";
+    }
+
     operator UUID &()
     {
         return ID;
@@ -28,6 +34,11 @@ struct IDComponent : public BaseComponent
     operator const UUID &() const
     {
         return ID;
+    }
+
+    void OnInspectorLayout() override
+    {
+        ImGui::Text("ID: %s", ID.ToString().c_str());
     }
 };
 
@@ -50,6 +61,16 @@ struct TagComponent : public BaseComponent
     {
         return Tag;
     }
+
+    std::string GetName() const override
+    {
+        return "标签";
+    }
+
+    void OnInspectorLayout() override
+    {
+        ImGuiUtils::InputText("Tag", Tag);
+    }
 };
 
 struct TransformComponent : public BaseComponent
@@ -60,6 +81,11 @@ struct TransformComponent : public BaseComponent
 
     TransformComponent() : Position(0.0f), Rotation(0.0f), Scale(1.0f)
     {
+    }
+
+    std::string GetName() const override
+    {
+        return "变换";
     }
 
     glm::quat GetRotation() const
@@ -147,6 +173,16 @@ struct TransformComponent : public BaseComponent
     void ResetScale()
     {
         Scale = glm::vec3(1.0f);
+    }
+
+    void OnInspectorLayout() override
+    {
+        ImGui::Text("Position");
+        ImGui::DragFloat3("##Position", &Position.x, 0.1f);
+        ImGui::Text("Rotation");
+        ImGui::DragFloat3("##Rotation", &Rotation.x, 1.0f);
+        ImGui::Text("Scale");
+        ImGui::DragFloat3("##Scale", &Scale.x, 0.1f);
     }
 };
 } // namespace Doodle

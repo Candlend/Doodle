@@ -1,5 +1,6 @@
 #pragma once
 
+#include "imgui.h"
 #include "pch.h"
 
 #include "BaseComponent.h"
@@ -29,6 +30,17 @@ struct MaterialComponent : public BaseComponent
     operator const Doodle::MaterialInstance &() const
     {
         return *MaterialInstance;
+    }
+
+    std::string GetName() const override
+    {
+        return "材质";
+    }
+
+    void OnInspectorLayout() override
+    {
+        ImGui::LabelText("Shader Path", "%s", MaterialInstance->GetMaterial()->GetShader()->GetPath().c_str());
+        // TODO
     }
 };
 

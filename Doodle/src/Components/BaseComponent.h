@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Log.h"
 #include "glm/fwd.hpp"
 #include "pch.h"
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -18,7 +18,6 @@
 namespace Doodle
 {
 
-class Entity;
 class Scene;
 class Scriptable;
 struct DOO_API BaseComponent
@@ -37,6 +36,12 @@ struct DOO_API BaseComponent
     entt::entity GetEntityHandle() const;
     UUID GetUUID() const;
     Scene *GetScene() const;
+    virtual std::string GetName() const = 0;
+
+    virtual void OnInspectorLayout()
+    {
+        ImGui::TextDisabled("No inspector available");
+    }
 
     template <typename T, typename... Args> T &AddComponent(Args &&...args)
     {
@@ -44,6 +49,7 @@ struct DOO_API BaseComponent
         static_assert(std::is_base_of_v<BaseComponent, T>, "T must derive from BaseComponent");
         T &comp = GetRegistry().emplace<T>(GetEntityHandle(), std::forward<Args>(args)...);
         comp.m_entity = *this;
+        comp.m_entity.template OnComponentAdded<T>();
         if constexpr (std::is_base_of_v<Scriptable, T>)
         {
             comp.OnAdded();

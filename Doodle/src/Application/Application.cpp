@@ -49,9 +49,9 @@ float Application::Time::GetFPS()
 
 Application::Application()
 {
-    EventManager::Get()->AddListener(this, &Application::OnWindowCloseEvent);
-    EventManager::Get()->AddListener(this, &Application::OnWindowRefreshEvent);
-    EventManager::Get()->AddListener(this, &Application::OnWindowMoveEvent);
+    EventManager::Get()->AddListener(this, &Application::OnWindowClose);
+    EventManager::Get()->AddListener(this, &Application::OnWindowRefresh);
+    EventManager::Get()->AddListener(this, &Application::OnWindowMove);
 
     EventManager::Get()->AddListener<AppUpdateEvent>(this, &Application::BeforeUpdate, ExecutionOrder::First + 1);
     EventManager::Get()->AddListener<AppUpdateEvent>(this, &Application::AfterUpdate, ExecutionOrder::Last - 1);
@@ -96,13 +96,13 @@ void Application::Run()
     }
 }
 
-bool Application::OnWindowCloseEvent(WindowCloseEvent & /*e*/)
+bool Application::OnWindowClose(WindowCloseEvent & /*e*/)
 {
     m_running = false;
     return true;
 }
 
-bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
+bool Application::OnWindowRefresh(WindowRefreshEvent & /*e*/)
 {
     Time::Freeze();
     auto window = ApplicationRunner::GetWindow();
@@ -114,7 +114,7 @@ bool Application::OnWindowRefreshEvent(WindowRefreshEvent & /*e*/)
     return false;
 }
 
-bool Application::OnWindowMoveEvent(WindowMoveEvent & /*e*/)
+bool Application::OnWindowMove(WindowMoveEvent & /*e*/)
 {
     Time::Freeze();
     return false;

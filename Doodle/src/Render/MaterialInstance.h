@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Material.h"
+#include "Shader.h"
 #include <glm/glm.hpp>
 #include <map>
 #include <memory>
@@ -36,6 +37,16 @@ public:
     void SetUniformMatrix3f(const std::string &name, glm::mat3 value);
     void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
+
+    std::shared_ptr<Material> GetMaterial() const
+    {
+        return m_material;
+    }
+
+    std::shared_ptr<Shader> GetShader()
+    {
+        return m_material->GetShader();
+    }
 
 private:
     std::shared_ptr<Material> m_material;

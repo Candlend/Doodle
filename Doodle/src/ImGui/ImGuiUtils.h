@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pch.h"
 #include <imgui.h>
 
 #include "ImGuiUtils.Feature.h"
@@ -42,6 +43,18 @@ inline ImColor GetColor(ImU32 hex)
     auto b = (hex >> 8) & 0xFF;  // 提取蓝色
     auto a = hex & 0xFF;         // 提取透明度
     return IM_COL32(r, g, b, a);
+}
+
+inline bool InputText(const char *label, std::string &str, ImGuiInputTextFlags flags = 0)
+{
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer), "%s", str.c_str());
+    if (ImGui::InputText(label, buffer, sizeof(buffer), flags))
+    {
+        str = buffer;
+        return true;
+    }
+    return false;
 }
 
 } // namespace ImGuiUtils

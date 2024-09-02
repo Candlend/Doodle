@@ -50,6 +50,11 @@ public:
     void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
 
+    std::shared_ptr<Shader> GetShader() const
+    {
+        return m_shader;
+    }
+
 private:
     std::shared_ptr<Shader> m_shader;
     std::map<std::string, std::shared_ptr<Texture>> m_textures;

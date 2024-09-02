@@ -44,10 +44,41 @@ Entity Scene::CreateEntity(const std::string &name)
 {
     auto entity = Entity::Create(this);
     entity.AddComponent<IDComponent>();
+    m_entityMap[entity.GetComponent<IDComponent>()] = entity;
+    m_entityComponents[entity.GetComponent<IDComponent>()] = {&entity.GetComponent<IDComponent>()};
     entity.AddComponent<TagComponent>(name);
     entity.AddComponent<TransformComponent>();
-    m_entityMap[entity.GetComponent<IDComponent>()] = entity;
     return entity;
+}
+
+Entity Scene::FindEntity(const std::string &name) const
+{
+    auto view = m_registry.view<TagComponent>();
+    for (auto entity : view)
+    {
+        std::string tag = view.get<TagComponent>(entity);
+        if (tag == name)
+        {
+            return Entity(this, entity);
+        }
+    }
+    return {};
+}
+
+std::vector<Entity> Scene::GetEntities() const
+{
+    std::vector<Entity> entities;
+    auto view = m_registry.view<IDComponent>();
+    for (auto entity : view)
+    {
+        entities.push_back(Entity(this, entity));
+    }
+    return entities;
+}
+
+std::vector<BaseComponent *> Scene::GetComponents(const UUID &id) const
+{
+    return m_entityComponents.at(id);
 }
 
 void Scene::AddEntity(const Entity &entity)
@@ -59,6 +90,7 @@ void Scene::RemoveEntity(const UUID &id)
 {
     m_registry.destroy(m_entityMap[id].GetEntityHandle());
     m_entityMap.erase(id);
+    m_entityComponents.erase(id);
 }
 
 void Scene::DestroyEntity(const Entity &entity)
@@ -66,6 +98,7 @@ void Scene::DestroyEntity(const Entity &entity)
     m_registry.destroy(entity.GetEntityHandle());
     UUID id = entity.GetComponent<IDComponent>();
     m_entityMap.erase(id);
+    m_entityComponents.erase(id);
 }
 
 void Scene::BeginScene()

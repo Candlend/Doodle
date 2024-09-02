@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/fwd.hpp>
+#include <string>
 
 #include "ApplicationRunner.h"
 #include "Component.h"
@@ -14,6 +15,11 @@ using namespace Doodle;
 class CameraController : public Scriptable
 {
 public:
+    std::string GetName() const override
+    {
+        return "相机控制器";
+    }
+
     void Initialize() override
     {
         m_moveSpeed = 2.0f;
@@ -25,7 +31,7 @@ public:
 
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
 
-        EventManager::Get()->AddListener(this, &CameraController::OnWindowResizeEvent);
+        EventManager::Get()->AddListener(this, &CameraController::OnWindowResize);
     }
 
     void OnUpdate() override
@@ -93,10 +99,10 @@ public:
 
     void Deinitialize() override
     {
-        EventManager::Get()->RemoveListener(this, &CameraController::OnWindowResizeEvent);
+        EventManager::Get()->RemoveListener(this, &CameraController::OnWindowResize);
     }
 
-    bool OnWindowResizeEvent(const WindowResizeEvent &event)
+    bool OnWindowResize(const WindowResizeEvent &event)
     {
         int width = event.GetWidth();
         int height = event.GetHeight();

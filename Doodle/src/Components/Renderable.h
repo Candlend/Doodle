@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "SceneCamera.h"
 #include "VertexArray.h"
+#include "imgui.h"
 
 namespace Doodle
 {
@@ -21,6 +22,16 @@ struct VAOComponent : public IRenderable
     {
         VAO->Render();
     }
+
+    std::string GetName() const override
+    {
+        return "顶点数组";
+    }
+
+    void OnInspectorLayout() override
+    {
+        ImGui::LabelText("Renderer ID", "%d", VAO->GetRendererID());
+    }
 };
 
 struct MeshComponent : public IRenderable
@@ -34,6 +45,16 @@ struct MeshComponent : public IRenderable
     void Render() const override
     {
         Mesh->Render();
+    }
+
+    std::string GetName() const override
+    {
+        return "网格";
+    }
+
+    void OnInspectorLayout() override
+    {
+        ImGui::LabelText("Mesh Path", "%s", Mesh->GetPath().c_str());
     }
 };
 

@@ -53,6 +53,11 @@ public:
         });
     }
 
+    uint32_t GetRendererID() const override
+    {
+        return m_rendererId;
+    }
+
     void Bind() const override
     {
         Renderer::Submit([this]() {

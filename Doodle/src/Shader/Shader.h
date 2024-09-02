@@ -13,6 +13,8 @@ class DOO_API Shader
 {
 public:
     static std::shared_ptr<Shader> Create(const std::string &filepath);
+
+    virtual std::string GetPath() const = 0;
     virtual void Reload() = 0;
     virtual void Bind() = 0;
     virtual uint32_t GetUniformLocation(const std::string &name) = 0;

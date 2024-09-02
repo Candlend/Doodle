@@ -29,6 +29,10 @@ public:
     Mesh(const std::string &filename);
     ~Mesh();
 
+    const std::string &GetPath() const
+    {
+        return m_filePath;
+    }
     void Render();
 
 private:

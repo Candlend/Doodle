@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Log.h"
+#include "Scene.h"
 #include "UUID.h"
 #include "pch.h"
 #include <entt/entt.hpp>
@@ -10,7 +11,6 @@ namespace Doodle
 {
 class BaseComponent;
 class Scriptable;
-class Scene;
 class DOO_API Entity
 {
 public:
@@ -31,12 +31,33 @@ public:
     UUID GetUUID() const;
     Scene *GetScene() const;
 
+    template <typename T> void OnComponentAdded()
+    {
+        DOO_CORE_DEBUG("Component added <{}>", typeid(T).name());
+        Scene *scene = GetScene();
+        scene->m_entityComponents[GetUUID()].push_back(&GetComponent<T>());
+    }
+
+    template <typename T> void OnComponentRemoved()
+    {
+        DOO_CORE_DEBUG("Component removed");
+        Scene *scene = GetScene();
+        auto &components = scene->m_entityComponents[GetUUID()];
+        auto it = std::find_if(components.begin(), components.end(),
+                               [](BaseComponent *comp) { return dynamic_cast<T *>(comp); });
+        if (it != components.end())
+        {
+            components.erase(it);
+        }
+    }
+
     template <typename T, typename... Args> T &AddComponent(Args &&...args)
     {
         DOO_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");
         static_assert(std::is_base_of_v<BaseComponent, T>, "T must derive from BaseComponent");
         T &comp = GetRegistry().emplace<T>(GetEntityHandle(), std::forward<Args>(args)...);
         comp.m_entity = *this;
+        comp.m_entity.template OnComponentAdded<T>();
         if constexpr (std::is_base_of_v<Scriptable, T>)
         {
             comp.OnAdded();
