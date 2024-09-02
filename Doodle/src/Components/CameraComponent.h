@@ -20,7 +20,7 @@ struct CameraComponent : public BaseComponent
 
     std::string GetName() const override
     {
-        return "相机";
+        return "Camera";
     }
 
     glm::mat4 GetProjectionMatrix() const

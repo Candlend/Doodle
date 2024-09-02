@@ -116,7 +116,7 @@ void SelectionManager::DeselectAll(SelectionContext contextID)
 UUID SelectionManager::GetSelection(SelectionContext context, size_t index)
 {
     auto &contextSelections = s_Contexts[context];
-    DOO_CORE_ASSERT(0 <= index < contextSelections.size(), "Index out of bounds!");
+    DOO_CORE_ASSERT(0 <= index && index < contextSelections.size(), "Index out of bounds!");
     return contextSelections[index];
 }
 

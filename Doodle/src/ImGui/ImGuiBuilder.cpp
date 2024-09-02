@@ -48,6 +48,11 @@ void ImGuiBuilder::RegisterFont(int sizeInPixels, std::string englishFont, std::
     m_fonts.push_back(font);
 }
 
+ImFont *ImGuiBuilder::GetFont(FontType type)
+{
+    return m_fonts[type];
+}
+
 void ImGuiBuilder::Initialize()
 {
     IMGUI_CHECKVERSION();
@@ -66,9 +71,16 @@ void ImGuiBuilder::Initialize()
     // Setup Dear ImGui style
     SetupImGuiStyle();
     const int SIZE_IN_PIXELS = 20;
-    RegisterFont(SIZE_IN_PIXELS, "MiSans-Light.ttf", "MiSans-Light.ttf", "fa-light-300.ttf", "fa-brands-400.ttf");
     RegisterFont(SIZE_IN_PIXELS, "MiSans-Regular.ttf", "MiSans-Regular.ttf", "fa-regular-400.ttf", "fa-brands-400.ttf");
+    RegisterFont(SIZE_IN_PIXELS, "MiSans-Light.ttf", "MiSans-Light.ttf", "fa-light-300.ttf", "fa-brands-400.ttf");
     RegisterFont(SIZE_IN_PIXELS, "MiSans-Bold.ttf", "MiSans-Bold.ttf", "fa-solid-900.ttf", "fa-brands-400.ttf");
+    const int MONO_SIZE_IN_PIXELS = 18;
+    RegisterFont(MONO_SIZE_IN_PIXELS, "JetBrainsMono-Medium.ttf", "JetBrainsMono-Medium.ttf", "fa-regular-400.ttf",
+                 "fa-brands-400.ttf");
+    RegisterFont(MONO_SIZE_IN_PIXELS, "JetBrainsMono-Light.ttf", "JetBrainsMono-Light.ttf", "fa-light-300.ttf",
+                 "fa-brands-400.ttf");
+    RegisterFont(MONO_SIZE_IN_PIXELS, "JetBrainsMono-Bold.ttf", "JetBrainsMono-Bold.ttf", "fa-solid-900.ttf",
+                 "fa-brands-400.ttf");
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular
     // ones.

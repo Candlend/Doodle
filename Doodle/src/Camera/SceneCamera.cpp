@@ -20,7 +20,7 @@ SceneCamera::SceneCamera(ProjectionType type) : m_projectionType(type)
         SetOrthographic(10.0f, -1.0f, 1.0f);
         break;
     }
-    SetViewportSize(1280, 720);
+    SetViewportSize(1920, 1080);
 }
 
 void SceneCamera::SetPerspective(float degVerticalFov, float nearClip, float farClip)

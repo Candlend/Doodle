@@ -15,7 +15,7 @@ namespace Doodle
 class DOO_API SceneHierarchyPanel : public ImGuiPanel
 {
 public:
-    SceneHierarchyPanel() : ImGuiPanel("层级")
+    SceneHierarchyPanel() : ImGuiPanel("Hierarchy")
     {
     }
     void OnUpdate() override;

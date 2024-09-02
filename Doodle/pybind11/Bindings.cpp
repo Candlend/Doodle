@@ -8,7 +8,7 @@ BIND_MODULE(Window)
 {
     py::class_<WindowProps>(m, "WindowProps")
         .def(py::init<const std::string &, unsigned int, unsigned int>(), py::arg("title") = "Doodle",
-             py::arg("width") = 1280, py::arg("height") = 720)
+             py::arg("width") = 1920, py::arg("height") = 1080)
         .def_readwrite("Title", &WindowProps::Title)
         .def_readwrite("Width", &WindowProps::Width)
         .def_readwrite("Height", &WindowProps::Height);

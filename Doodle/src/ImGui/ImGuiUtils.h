@@ -47,6 +47,7 @@ inline ImColor GetColor(ImU32 hex)
 
 inline bool InputText(const char *label, std::string &str, ImGuiInputTextFlags flags = 0)
 {
+    // TODO 好像无法编辑
     char buffer[1024];
     snprintf(buffer, sizeof(buffer), "%s", str.c_str());
     if (ImGui::InputText(label, buffer, sizeof(buffer), flags))
@@ -55,6 +56,27 @@ inline bool InputText(const char *label, std::string &str, ImGuiInputTextFlags f
         return true;
     }
     return false;
+}
+
+inline void ReadOnlyInputText(const char *label, std::string str)
+{
+    ImGuiUtils::StyleColorScope sc{ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]};
+    ImGui::BeginDisabled();
+    ImGui::InputText(label, const_cast<char *>(str.c_str()), str.size(), ImGuiInputTextFlags_ReadOnly);
+    ImGui::EndDisabled();
+}
+
+template <typename... Args>
+inline void ReadOnlyInputText(const char *label, fmt::format_string<Args...> format, Args &&...args)
+{
+    // DisabledScope ds;
+    std::string str = fmt::format(format, std::forward<Args>(args)...);
+    std::vector<char> buffer(str.begin(), str.end());
+    buffer.push_back('\0');
+    ImGuiUtils::StyleColorScope sc{ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]};
+    ImGui::BeginDisabled();
+    ImGui::InputText(label, buffer.data(), buffer.size(), ImGuiInputTextFlags_ReadOnly);
+    ImGui::EndDisabled();
 }
 
 } // namespace ImGuiUtils

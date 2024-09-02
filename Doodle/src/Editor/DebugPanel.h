@@ -15,7 +15,7 @@ namespace Doodle
 class DOO_API DebugPanel : public ImGuiPanel
 {
 public:
-    DebugPanel() : ImGuiPanel("调试")
+    DebugPanel() : ImGuiPanel("Debug")
     {
     }
     void OnUpdate() override;

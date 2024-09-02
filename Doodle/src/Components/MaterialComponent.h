@@ -5,6 +5,7 @@
 
 #include "BaseComponent.h"
 #include "MaterialInstance.h"
+#include "ImGuiUtils.h"
 
 namespace Doodle
 {
@@ -34,12 +35,12 @@ struct MaterialComponent : public BaseComponent
 
     std::string GetName() const override
     {
-        return "材质";
+        return "Material";
     }
 
     void OnInspectorLayout() override
     {
-        ImGui::LabelText("Shader Path", "%s", MaterialInstance->GetMaterial()->GetShader()->GetPath().c_str());
+        ImGuiUtils::ReadOnlyInputText("Shader Path", MaterialInstance->GetShader()->GetPath());
         // TODO
     }
 };

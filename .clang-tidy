@@ -54,7 +54,6 @@ Checks: '-*,
     readability-uniqueptr-delete-release,
     readability-redundant-member-init,
     readability-simplify-subscript-expr,
-    readability-simplify-boolean-expr,
     readability-inconsistent-declaration-parameter-name,
     readability-identifier-naming,
 

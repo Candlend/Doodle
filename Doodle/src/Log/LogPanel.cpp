@@ -1,6 +1,8 @@
 #include <imgui.h>
 
 #include "IconsFontAwesome6Pro.h"
+#include "ImGuiBuilder.h"
+#include "ImGuiUtils.Feature.h"
 #include "ImGuiUtils.h"
 #include "LogPanel.h"
 #include "Utils.h"
@@ -36,7 +38,7 @@ bool LogPanel::ShouldSkip(const LogInfo &logInfo)
 
 void LogPanel::OnPanelLayout()
 {
-    if (ImGui::Button("清空"))
+    if (ImGui::Button("Clear"))
     {
         Log::Clear();
     }
@@ -45,36 +47,39 @@ void LogPanel::OnPanelLayout()
     ImGui::InputText(ICON_FA_MAGNIFYING_GLASS, m_filter, sizeof(m_filter));
     ImGui::SameLine();
 
-    ImGui::Checkbox("折叠", &m_collapse);
+    ImGui::Checkbox("Collapse", &m_collapse);
 
     ImGui::SameLine();
-
-    ImColor grayColor = ImGuiUtils::GetColor(0x808080);
     {
-        ImGuiUtils::StyleColorScope sc(ImGuiCol_Text,
-                                       m_logCount > 0 ? ImGuiUtils::GetColor(m_colorMap[LogType::Trace]) : grayColor);
-        std::string label =
-            std::format("{} {}", ICON_FA_CIRCLE_INFO, m_logCount > 99 ? "99+" : std::to_string(m_logCount));
-        ImGuiUtils::ToggleButton(label.c_str(), m_showLog);
+        ImGuiUtils::FontScope fs(ImGuiBuilder::Get()->GetFont(FontType::Bold));
+        ImColor grayColor = ImGuiUtils::GetColor(0x808080);
+        {
+            ImGuiUtils::StyleColorScope sc(
+                ImGuiCol_Text, m_logCount > 0 ? ImGuiUtils::GetColor(m_colorMap[LogType::Trace]) : grayColor);
+            std::string label =
+                std::format("{} {}", ICON_FA_CIRCLE_INFO, m_logCount > 99 ? "99+" : std::to_string(m_logCount));
+            ImGuiUtils::ToggleButton(label.c_str(), m_showLog);
+        }
+        ImGui::SameLine(0, 2);
+        {
+            ImGuiUtils::StyleColorScope sc(
+                ImGuiCol_Text, m_warningCount > 0 ? ImGuiUtils::GetColor(m_colorMap[LogType::Warning]) : grayColor);
+            std::string label = std::format("{} {}", ICON_FA_TRIANGLE_EXCLAMATION,
+                                            m_warningCount > 99 ? "99+" : std::to_string(m_warningCount));
+            ImGuiUtils::ToggleButton(label.c_str(), m_showWarning);
+        }
+        ImGui::SameLine(0, 2);
+        {
+            ImGuiUtils::StyleColorScope sc(
+                ImGuiCol_Text, m_errorCount > 0 ? ImGuiUtils::GetColor(m_colorMap[LogType::Error]) : grayColor);
+            std::string label =
+                std::format("{} {}", ICON_FA_BUG, m_errorCount > 99 ? "99+" : std::to_string(m_errorCount));
+            ImGuiUtils::ToggleButton(label.c_str(), m_showError);
+        }
     }
-    ImGui::SameLine(0, 2);
-    {
-        ImGuiUtils::StyleColorScope sc(
-            ImGuiCol_Text, m_warningCount > 0 ? ImGuiUtils::GetColor(m_colorMap[LogType::Warning]) : grayColor);
-        std::string label = std::format("{} {}", ICON_FA_TRIANGLE_EXCLAMATION,
-                                        m_warningCount > 99 ? "99+" : std::to_string(m_warningCount));
-        ImGuiUtils::ToggleButton(label.c_str(), m_showWarning);
-    }
-    ImGui::SameLine(0, 2);
-    {
-        ImGuiUtils::StyleColorScope sc(ImGuiCol_Text,
-                                       m_errorCount > 0 ? ImGuiUtils::GetColor(m_colorMap[LogType::Error]) : grayColor);
-        std::string label = std::format("{} {}", ICON_FA_BUG, m_errorCount > 99 ? "99+" : std::to_string(m_errorCount));
-        ImGuiUtils::ToggleButton(label.c_str(), m_showError);
-    }
-
     ImGui::Separator();
     {
+        ImGuiUtils::FontScope fs(ImGuiBuilder::Get()->GetFont(FontType::MonospaceLight));
         ImGuiUtils::ChildWindowScope cws("scrolling", ImVec2(0, 0), ImGuiWindowFlags_HorizontalScrollbar);
         if (cws.IsOpened())
         {
@@ -85,10 +90,13 @@ void LogPanel::OnPanelLayout()
                 {
                     if (ShouldSkip(logInfo))
                         continue;
-                    std::string label = FormatTimePoint(logInfo.Time) + " -" + "###" + std::to_string(logInfo.Hash);
-                    if (ImGui::Selectable(label.c_str(), false))
+                    std::string label = FormatTimePoint(logInfo.Time) + " " + "###" + std::to_string(logInfo.Hash);
                     {
-                        ImGui::SetClipboardText((logInfo.Message + "\n" + logInfo.Stacktrace).c_str());
+                        ImGuiUtils::FontScope fs(ImGuiBuilder::Get()->GetFont(FontType::MonospaceBold));
+                        if (ImGui::Selectable(label.c_str(), false))
+                        {
+                            ImGui::SetClipboardText((logInfo.Message + "\n" + logInfo.Stacktrace).c_str());
+                        }
                     }
                     if (ImGui::IsItemHovered() && !logInfo.Stacktrace.empty())
                     {
@@ -123,10 +131,13 @@ void LogPanel::OnPanelLayout()
                 {
                     if (ShouldSkip(logInfo))
                         continue;
-                    std::string label = FormatTimePoint(logInfo.Time) + " -" + "###" + std::to_string(logInfo.Hash);
-                    if (ImGui::Selectable(label.c_str(), false))
+                    std::string label = FormatTimePoint(logInfo.Time) + " " + "###" + std::to_string(logInfo.Hash);
                     {
-                        ImGui::SetClipboardText((logInfo.Message + "\n" + logInfo.Stacktrace).c_str());
+                        ImGuiUtils::FontScope fs(ImGuiBuilder::Get()->GetFont(FontType::MonospaceBold));
+                        if (ImGui::Selectable(label.c_str(), false))
+                        {
+                            ImGui::SetClipboardText((logInfo.Message + "\n" + logInfo.Stacktrace).c_str());
+                        }
                     }
                     if (ImGui::IsItemHovered() && !logInfo.Stacktrace.empty())
                     {

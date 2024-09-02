@@ -5,9 +5,9 @@ namespace Doodle
 
 void DebugPanel::OnPanelLayout()
 {
-    ImGui::LabelText("时间", "%f", Application::Time::GetTime());
-    ImGui::LabelText("帧率", "%f", Application::Time::GetFPS());
-    ImGui::Checkbox("线框模式", &m_useWireframe);
+    ImGuiUtils::ReadOnlyInputText("Time", "{}", Application::Time::GetTime());
+    ImGuiUtils::ReadOnlyInputText("FPS", "{}", Application::Time::GetFPS());
+    ImGui::Checkbox("Wireframe Mode", &m_useWireframe);
 }
 
 void DebugPanel::OnUpdate()

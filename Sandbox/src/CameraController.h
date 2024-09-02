@@ -17,7 +17,7 @@ class CameraController : public Scriptable
 public:
     std::string GetName() const override
     {
-        return "相机控制器";
+        return "Camera Controller";
     }
 
     void Initialize() override
@@ -82,19 +82,12 @@ public:
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
     }
 
-    void OnLayout() override
+    void OnInspectorLayout() override
     {
         auto &transform = GetComponent<TransformComponent>();
 
-        ImGui::Begin("相机控制器");
-        ImGui::SliderFloat("移动速度", &m_moveSpeed, 0.1f, 10.0f);
-        ImGui::SliderFloat("旋转速度", &m_rotateSpeed, 1.0f, 100.0f);
-        if (ImGui::Button("重置相机"))
-        {
-            transform.Reset();
-            transform.Position.z = 3.0f;
-        }
-        ImGui::End();
+        ImGui::SliderFloat("Move Speed", &m_moveSpeed, 0.1f, 10.0f);
+        ImGui::SliderFloat("Rotate Speed", &m_rotateSpeed, 1.0f, 100.0f);
     }
 
     void Deinitialize() override

@@ -38,7 +38,7 @@ struct IDComponent : public BaseComponent
 
     void OnInspectorLayout() override
     {
-        ImGui::Text("ID: %s", ID.ToString().c_str());
+        ImGuiUtils::ReadOnlyInputText("ID", ID);
     }
 };
 
@@ -64,12 +64,12 @@ struct TagComponent : public BaseComponent
 
     std::string GetName() const override
     {
-        return "标签";
+        return "Tag";
     }
 
     void OnInspectorLayout() override
     {
-        ImGuiUtils::InputText("Tag", Tag);
+        ImGuiUtils::ReadOnlyInputText("Tag", Tag);
     }
 };
 
@@ -85,7 +85,7 @@ struct TransformComponent : public BaseComponent
 
     std::string GetName() const override
     {
-        return "变换";
+        return "Transform";
     }
 
     glm::quat GetRotation() const

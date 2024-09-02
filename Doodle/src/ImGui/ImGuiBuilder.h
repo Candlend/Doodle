@@ -11,6 +11,16 @@
 namespace Doodle
 {
 
+enum FontType
+{
+    Regular = 0,
+    Light,
+    Bold,
+    Monospace,
+    MonospaceLight,
+    MonospaceBold,
+};
+
 class DOO_API ImGuiBuilder : public Singleton<ImGuiBuilder>
 {
 public:
@@ -29,6 +39,8 @@ public:
 
     void RegisterFont(int sizeInPixels, std::string englishFont, std::string chineseFont, std::string iconFont,
                       std::string brandFont);
+
+    ImFont *GetFont(FontType type);
 
 protected:
     void BeginFrame();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseComponent.h"
+#include "ImGuiUtils.h"
 #include "Mesh.h"
 #include "SceneCamera.h"
 #include "VertexArray.h"
@@ -25,12 +26,12 @@ struct VAOComponent : public IRenderable
 
     std::string GetName() const override
     {
-        return "顶点数组";
+        return "VAO";
     }
 
     void OnInspectorLayout() override
     {
-        ImGui::LabelText("Renderer ID", "%d", VAO->GetRendererID());
+        ImGuiUtils::ReadOnlyInputText("Renderer ID", "{}", VAO->GetRendererID());
     }
 };
 
@@ -49,12 +50,12 @@ struct MeshComponent : public IRenderable
 
     std::string GetName() const override
     {
-        return "网格";
+        return "Mesh";
     }
 
     void OnInspectorLayout() override
     {
-        ImGui::LabelText("Mesh Path", "%s", Mesh->GetPath().c_str());
+        ImGuiUtils::ReadOnlyInputText("Mesh Path", "{}", Mesh->GetPath().c_str());
     }
 };
 

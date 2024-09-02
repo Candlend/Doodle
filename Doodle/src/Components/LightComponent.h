@@ -15,7 +15,7 @@ struct DirectionalLightComponent : public BaseComponent
 
     std::string GetName() const override
     {
-        return "平行光源";
+        return "Directional Light";
     }
 
     void OnInspectorLayout() override
@@ -36,7 +36,7 @@ struct PointLightComponent : public BaseComponent
 
     std::string GetName() const override
     {
-        return "点光源";
+        return "Point Light";
     }
 
     void OnInspectorLayout() override
@@ -61,7 +61,7 @@ struct SpotLightComponent : public BaseComponent
 
     std::string GetName() const override
     {
-        return "聚焦光源";
+        return "Spot Light";
     }
 
     void OnInspectorLayout() override
