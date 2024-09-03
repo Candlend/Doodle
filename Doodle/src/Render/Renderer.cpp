@@ -4,6 +4,7 @@
 #include "Log.h"
 #include "pch.h"
 #include <functional>
+#include <memory>
 
 namespace Doodle
 {
@@ -22,6 +23,8 @@ void Renderer::Deinitialize()
 {
     EventManager::Get()->RemoveListener<AppRenderEvent>(this, &Renderer::WaitAndRender);
 }
+
+
 
 void Renderer::Clear(float r, float g, float b, float a)
 {

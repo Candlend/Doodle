@@ -8,21 +8,6 @@
 namespace Doodle
 {
 
-void PrintBinary(const void *ptr, size_t size)
-{
-    uint8_t *bytePtr = reinterpret_cast<uint8_t *>(const_cast<void *>(ptr)); // 将 void * 转换为 uint8_t *
-    std::ostringstream oss;
-    for (size_t i = 0; i < size; i++)
-    {
-        for (int j = 7; j >= 0; j--)
-        { // 从高位到低位输出每个字节
-            oss << ((bytePtr[i] & (1 << j)) ? '1' : '0');
-        }
-        oss << ' '; // 每个字节之间加个空格
-    }
-    DOO_CORE_TRACE("Binary: {0}", oss.str());
-}
-
 SceneRenderer::SceneRenderer(Scene *scene) : m_scene(scene), m_registry(scene->m_registry)
 {
     m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
@@ -120,7 +105,6 @@ void SceneRenderer::Render()
     }
     UBOScene sceneData = {};
     sceneData.DirectionalLight = m_lightEnvironment.DirectionalLights[0];
-    // PrintBinary(&sceneData, sizeof(UBOScene));
     m_sceneUBO->SetSubData(&sceneData, sizeof(UBOScene));
 
     UBOPointLights pointLightData = {};

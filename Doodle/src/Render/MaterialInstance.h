@@ -2,6 +2,7 @@
 
 #include "Material.h"
 #include "Shader.h"
+#include "UUID.h"
 #include <glm/glm.hpp>
 #include <map>
 #include <memory>
@@ -50,18 +51,18 @@ public:
 
 private:
     std::shared_ptr<Material> m_material;
-    std::map<std::string, std::shared_ptr<Texture>> m_instanceTextures;
-    std::map<std::string, uint32_t> m_instanceTextureSlots;
-    std::map<std::string, float> m_instanceUniforms1f;
-    std::map<std::string, glm::vec2> m_instanceUniforms2f;
-    std::map<std::string, glm::vec3> m_instanceUniforms3f;
-    std::map<std::string, glm::vec4> m_instanceUniforms4f;
-    std::map<std::string, int> m_instanceUniforms1i;
-    std::map<std::string, glm::ivec2> m_instanceUniforms2i;
-    std::map<std::string, glm::ivec3> m_instanceUniforms3i;
-    std::map<std::string, glm::ivec4> m_instanceUniforms4i;
-    std::map<std::string, glm::mat3> m_instanceUniforms3m;
-    std::map<std::string, glm::mat4> m_instanceUniforms4m;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> m_instanceTextures;
+    std::unordered_map<UUID, uint32_t> m_instanceTextureSlots;
+    std::unordered_map<std::string, float> m_instanceUniforms1f;
+    std::unordered_map<std::string, glm::vec2> m_instanceUniforms2f;
+    std::unordered_map<std::string, glm::vec3> m_instanceUniforms3f;
+    std::unordered_map<std::string, glm::vec4> m_instanceUniforms4f;
+    std::unordered_map<std::string, int> m_instanceUniforms1i;
+    std::unordered_map<std::string, glm::ivec2> m_instanceUniforms2i;
+    std::unordered_map<std::string, glm::ivec3> m_instanceUniforms3i;
+    std::unordered_map<std::string, glm::ivec4> m_instanceUniforms4i;
+    std::unordered_map<std::string, glm::mat3> m_instanceUniforms3m;
+    std::unordered_map<std::string, glm::mat4> m_instanceUniforms4m;
 
     // 应用实例特定的统一值到 Shader 的方法
     void ApplyInstanceUniforms();

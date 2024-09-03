@@ -33,3 +33,18 @@ std::string FormatTimePoint(const std::chrono::time_point<std::chrono::system_cl
     return fmt::format("{:04}-{:02}-{:02} {:02}:{:02}:{:02}", ltm.tm_year + 1900, ltm.tm_mon + 1, ltm.tm_mday,
                        ltm.tm_hour, ltm.tm_min, ltm.tm_sec);
 }
+
+DOO_API void PrintBinary(const void *ptr, size_t size)
+{
+    uint8_t *bytePtr = reinterpret_cast<uint8_t *>(const_cast<void *>(ptr)); // 将 void * 转换为 uint8_t *
+    std::ostringstream oss;
+    for (size_t i = 0; i < size; i++)
+    {
+        for (int j = 7; j >= 0; j--)
+        { // 从高位到低位输出每个字节
+            oss << ((bytePtr[i] & (1 << j)) ? '1' : '0');
+        }
+        oss << ' '; // 每个字节之间加个空格
+    }
+    DOO_CORE_TRACE("Binary: {0}", oss.str());
+}

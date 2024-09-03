@@ -49,12 +49,14 @@ struct TextureParams
     TextureFormat Format = TextureFormat::RGBA8;
     TextureWrap Wrap = TextureWrap::Repeat;
     TextureFilter Filter = TextureFilter::Linear;
+    uint32_t Width = 1;
+    uint32_t Height = 1;
 
     std::string ToString() const
     {
         std::ostringstream oss;
         oss << "Format=" << TextureFormatToString(Format) << ", Wrap=" << TextureWrapToString(Wrap)
-            << ", Filter=" << TextureFilterToString(Filter);
+            << ", Filter=" << TextureFilterToString(Filter) << ", Width=" << Width << ", Height=" << Height;
         return oss.str();
     }
 };

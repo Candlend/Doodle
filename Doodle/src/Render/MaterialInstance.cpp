@@ -68,15 +68,23 @@ void MaterialInstance::SetUniformMatrix3f(const std::string &name, glm::mat3 val
 
 void MaterialInstance::SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value)
 {
+    // 找到则跳过，否则添加到纹理槽中
+    if (!m_material->m_textureSlots.contains(value->GetUUID()))
+    {
+        m_instanceTextureSlots[value->GetUUID()] = m_material->m_textureSlots.size() + m_instanceTextureSlots.size();
+    }
     m_instanceTextures[name] = value;
-    m_instanceTextureSlots[name] = m_material->m_textureSlots[name];
 }
 
 void MaterialInstance::ApplyInstanceUniforms()
 {
     for (auto &[name, texture] : m_instanceTextures)
     {
-        m_material->m_shader->SetUniformTexture(name, texture, m_instanceTextureSlots[name]);
+        if (!m_instanceTextureSlots.contains(texture->GetUUID()))
+        {
+            continue;
+        }
+        m_material->m_shader->SetUniformTexture(name, texture, m_instanceTextureSlots[texture->GetUUID()]);
     }
     for (const auto &[name, value] : m_instanceUniforms1f)
     {

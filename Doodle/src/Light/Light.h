@@ -7,10 +7,10 @@
 
 struct DirectionalLight
 {
-    glm::vec3 Direction; // 12 bytes
+    glm::vec3 Direction{0.0f}; // 12 bytes
     float Padding;      // 4 bytes to align to 16 bytes
-    glm::vec3 Radiance;  // 12 bytes
-    float Intensity;     // 4 bytes
+    glm::vec3 Radiance{1.0f}; // 12 bytes
+    float Intensity = 0.0f;   // 4 bytes
 
     DirectionalLight() = default;
 
@@ -67,6 +67,8 @@ struct SpotLight
 struct UBOScene
 {
     DirectionalLight DirectionalLight;
+    glm::vec3 AmbientRadiance{0.0f};
+    float Padding; // 4 bytes to align to 16 bytes
 
     ~UBOScene()
     {
@@ -78,14 +80,14 @@ struct UBOPointLights
 {
     uint32_t Count;
     float Padding[3];
-    PointLight PointLights[512];
+    PointLight PointLights[256];
 };
 
 struct UBOSpotLights
 {
     uint32_t Count;
     float Padding[3];
-    SpotLight SpotLights[512];
+    SpotLight SpotLights[256];
 };
 
 struct LightEnvironment

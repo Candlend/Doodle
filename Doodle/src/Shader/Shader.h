@@ -32,7 +32,8 @@ public:
             func(location, args...);
             std::ostringstream oss;
             (void)std::initializer_list<int>{(oss << args << ", ", 0)...};
-            DOO_CORE_TRACE("Shader uniform set: <{0}> {1}", location, name);
+            if (location != -1)
+                DOO_CORE_TRACE("Shader uniform set: <{0}> {1}", location, name);
         });
     }
 

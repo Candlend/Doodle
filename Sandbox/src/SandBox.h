@@ -8,8 +8,10 @@
 #include "LogPanel.h"
 #include "PanelManager.h"
 #include "SceneHierarchyPanel.h"
+#include "Texture.h"
 #include "imgui.h"
 #include <Doodle.h>
+#include <cstdint>
 #include <memory>
 
 
@@ -40,27 +42,21 @@ public:
 
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();
-        Renderer::SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
+        Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.f);
+        ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
         BuildScene();
     }
-
     void BuildScene()
     {
-
-        ShaderLibrary::Get()->LoadShader("Test", "assets/shaders/shader.glsl");
         TextureParams params;
-        params.Format = TextureFormat::SRGB8ALPHA8;
-        auto albedoTexture = Texture2D::Create("assets/textures/cerberus/cerberus_A.png", params);
-        auto normalTexture = Texture2D::Create("assets/textures/cerberus/cerberus_N.png", params);
-        auto metallicTexture = Texture2D::Create("assets/textures/cerberus/cerberus_M.png", params);
-        auto roughnessTexture = Texture2D::Create("assets/textures/cerberus/cerberus_R.png", params);
+        params.Format = TextureFormat::RGBA8;
 
-        auto material = Material::Create("Test");
+        auto material = StandardMaterial::Create();
 
-        material->SetUniformTexture("u_AlbedoTexture", albedoTexture);
-        material->SetUniformTexture("u_NormalTexture", normalTexture);
-        material->SetUniformTexture("u_MetallicTexture", metallicTexture);
-        material->SetUniformTexture("u_RoughnessTexture", roughnessTexture);
+        material->LoadAlbedoTexture("assets/textures/cerberus/cerberus_A.png", params);
+        // material->LoadNormalTexture("assets/textures/cerberus/cerberus_N.png");
+        // material->LoadMetallicTexture("assets/textures/cerberus/cerberus_M.png");
+        // material->LoadRoughnessTexture("assets/textures/cerberus/cerberus_R.png");
 
         auto cerberus = m_scene->CreateEntity("Cerberus");
         cerberus.AddComponent<MeshComponent>("assets/models/cerberus.fbx");

@@ -10,6 +10,7 @@ namespace Doodle
 class DOO_API ShaderLibrary : public Singleton<ShaderLibrary>
 {
 public:
+    void LoadShadersFromDirectory(const std::string &directory);
     void AddShader(const std::string &name, std::shared_ptr<Shader> shader);
     std::shared_ptr<Shader> LoadShader(const std::string &name, const std::string &filepath);
     std::shared_ptr<Shader> GetShader(const std::string &name);

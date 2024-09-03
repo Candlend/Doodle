@@ -19,7 +19,7 @@ public:
     }
 
     // 从字符串构造 UUID
-    UUID(const std::string &uuidStr)
+    explicit UUID(const std::string &uuidStr)
     {
         m_uuid = boost::uuids::string_generator()(uuidStr);
     }

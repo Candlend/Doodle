@@ -1,5 +1,6 @@
 
 #include "Material.h"
+#include "Log.h"
 #include <cstdint>
 
 namespace Doodle
@@ -57,7 +58,10 @@ void Material::SetUniformMatrix3f(const std::string &name, glm::mat3 value)
 
 void Material::SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value)
 {
-    m_textureSlots[name] = m_textures.size();
+    if (!m_textureSlots.contains(value->GetUUID()))
+    {
+        m_textureSlots[value->GetUUID()] = m_textureSlots.size();
+    }
     m_textures[name] = value;
 }
 
@@ -66,7 +70,9 @@ void Material::Bind()
     m_shader->Bind();
     for (auto &[name, texture] : m_textures)
     {
-        m_shader->SetUniformTexture(name, texture, m_textureSlots[name]);
+        DOO_CORE_DEBUG("Material texture: {0} {1} {2}", name, texture->GetUUID().ToString(),
+                       m_textureSlots[texture->GetUUID()]);
+        m_shader->SetUniformTexture(name, texture, m_textureSlots[texture->GetUUID()]);
     }
     for (auto &[name, value] : m_uniforms1f)
     {

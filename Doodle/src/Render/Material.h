@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 #include "Shader.h"
 #include "ShaderLibrary.h"
@@ -57,18 +58,119 @@ public:
 
 private:
     std::shared_ptr<Shader> m_shader;
-    std::map<std::string, std::shared_ptr<Texture>> m_textures;
-    std::map<std::string, uint32_t> m_textureSlots;
-    std::map<std::string, float> m_uniforms1f;
-    std::map<std::string, glm::vec2> m_uniforms2f;
-    std::map<std::string, glm::vec3> m_uniforms3f;
-    std::map<std::string, glm::vec4> m_uniforms4f;
-    std::map<std::string, float> m_uniforms1i;
-    std::map<std::string, glm::ivec2> m_uniforms2i;
-    std::map<std::string, glm::ivec3> m_uniforms3i;
-    std::map<std::string, glm::ivec4> m_uniforms4i;
-    std::map<std::string, glm::mat3> m_uniforms3m;
-    std::map<std::string, glm::mat4> m_uniforms4m;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
+    std::unordered_map<UUID, uint32_t> m_textureSlots;
+    std::unordered_map<std::string, float> m_uniforms1f;
+    std::unordered_map<std::string, glm::vec2> m_uniforms2f;
+    std::unordered_map<std::string, glm::vec3> m_uniforms3f;
+    std::unordered_map<std::string, glm::vec4> m_uniforms4f;
+    std::unordered_map<std::string, float> m_uniforms1i;
+    std::unordered_map<std::string, glm::ivec2> m_uniforms2i;
+    std::unordered_map<std::string, glm::ivec3> m_uniforms3i;
+    std::unordered_map<std::string, glm::ivec4> m_uniforms4i;
+    std::unordered_map<std::string, glm::mat3> m_uniforms3m;
+    std::unordered_map<std::string, glm::mat4> m_uniforms4m;
+};
+
+class DOO_API StandardMaterial : public Material
+{
+public:
+    static std::shared_ptr<StandardMaterial> Create()
+    {
+        return std::make_shared<StandardMaterial>();
+    }
+
+    StandardMaterial() : Material("standard")
+    {
+        SetAlbedoTexture(Texture2D::GetWhiteTexture());
+        SetNormalTexture(Texture2D::GetWhiteTexture());
+        SetMetallicTexture(Texture2D::GetBlackTexture());
+        SetRoughnessTexture(Texture2D::GetWhiteTexture());
+        SetAlbedoColor(glm::vec4(1.0f));
+        SetNormalScale(1.0f);
+        SetMetallic(0.0f);
+        SetRoughness(1.0f);
+    }
+
+    void SetAlbedoTexture(std::shared_ptr<Texture> albedoTexture)
+    {
+        SetUniformTexture("u_AlbedoTexture", albedoTexture);
+    }
+
+    void SetNormalTexture(std::shared_ptr<Texture> normalTexture)
+    {
+        SetUniformTexture("u_NormalTexture", normalTexture);
+    }
+
+    void SetMetallicTexture(std::shared_ptr<Texture> metallicTexture)
+    {
+        SetUniformTexture("u_MetallicTexture", metallicTexture);
+    }
+
+    void SetRoughnessTexture(std::shared_ptr<Texture> roughnessTexture)
+    {
+        SetUniformTexture("u_RoughnessTexture", roughnessTexture);
+    }
+
+    void SetAlbedoColor(const glm::vec4 &color)
+    {
+        SetUniform4f("u_AlbedoColor", color);
+    }
+
+    void SetNormalScale(float scale)
+    {
+        SetUniform1f("u_NormalScale", scale);
+    }
+
+    void SetMetallic(float metallic)
+    {
+        SetUniform1f("u_Metallic", metallic);
+    }
+
+    void SetRoughness(float roughness)
+    {
+        SetUniform1f("u_Roughness", roughness);
+    }
+
+    void LoadAlbedoTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetAlbedoTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadNormalTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetNormalTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadMetallicTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetMetallicTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadRoughnessTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetRoughnessTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadAlbedoTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetAlbedoTexture(Texture2D::Create(buffer, params));
+    }
+
+    void LoadNormalTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetNormalTexture(Texture2D::Create(buffer, params));
+    }
+
+    void LoadMetallicTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetMetallicTexture(Texture2D::Create(buffer, params));
+    }
+
+    void LoadRoughnessTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetRoughnessTexture(Texture2D::Create(buffer, params));
+    }
 };
 
 } // namespace Doodle

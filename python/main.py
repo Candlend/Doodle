@@ -41,7 +41,7 @@ class Sandbox(Application):
 def main():
     Log.Initialize()
     runner = ApplicationRunner.Get()
-    props = WindowProps("Doodle", 1280, 720)
+    props = WindowProps("Doodle", 1920, 1080)
     runner.CreateApp(Sandbox, props)
     runner.Run()
 

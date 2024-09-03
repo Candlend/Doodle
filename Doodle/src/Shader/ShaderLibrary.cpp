@@ -1,8 +1,27 @@
+#include "pch.h"
+#include <filesystem>
+
 #include "ShaderLibrary.h"
-#include "Log.h"
 
 namespace Doodle
 {
+
+void ShaderLibrary::LoadShadersFromDirectory(const std::string &directory)
+{
+    DOO_CORE_TRACE("ShaderLibrary: Loading shaders from directory <{0}>", directory);
+    for (const auto &entry : std::filesystem::directory_iterator(directory))
+    {
+        if (entry.is_regular_file())
+        {
+            const auto &path = entry.path();
+            auto filename = path.filename().string();
+            auto extension = path.extension().string();
+            auto name = filename.substr(0, filename.size() - extension.size());
+            if (extension == ".glsl")
+                LoadShader(name, path.string());
+        }
+    }
+}
 
 void ShaderLibrary::AddShader(const std::string &name, std::shared_ptr<Shader> shader)
 {
