@@ -365,7 +365,7 @@ public:
     OpenGLTextureCube(const std::array<std::string, 6> &facePaths, const TextureParams &params)
         : m_facePaths(facePaths), m_params(params)
     {
-        stbi_set_flip_vertically_on_load(true);
+        stbi_set_flip_vertically_on_load(false);
         m_hdr = stbi_is_hdr(m_facePaths[0].c_str());
 
         int width, height, channels, desiredChannels = 0;

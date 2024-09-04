@@ -11,9 +11,10 @@
 #include "Texture.h"
 #include "imgui.h"
 #include <Doodle.h>
+#include <array>
 #include <cstdint>
 #include <memory>
-
+#include <string>
 
 using namespace Doodle;
 
@@ -44,7 +45,25 @@ public:
         m_scene->BeginScene();
         Renderer::SetClearColor(0.3f, 0.3f, 0.3f, 1.f);
         ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
+        BuildSkybox();
         BuildScene();
+    }
+
+    void BuildSkybox()
+    {
+        auto skyboxMaterial = SkyboxMaterial::Create();
+
+        std::array<std::string, 6> faces = {
+            "assets/textures/skybox/right.jpg",  "assets/textures/skybox/left.jpg",  "assets/textures/skybox/top.jpg",
+            "assets/textures/skybox/bottom.jpg", "assets/textures/skybox/front.jpg", "assets/textures/skybox/back.jpg",
+        };
+
+        skyboxMaterial->LoadSkyboxTexture(faces);
+
+        auto skybox = m_scene->CreateEntity("Skybox");
+        skybox.AddComponent<MaterialComponent>(skyboxMaterial);
+        skybox.AddComponent<MeshComponent>("assets/models/test_cube.obj");
+        skybox.GetComponent<TransformComponent>().Scale = glm::vec3(100.f);
     }
     void BuildScene()
     {
