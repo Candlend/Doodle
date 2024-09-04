@@ -83,33 +83,13 @@ public:
     StandardMaterial() : Material("standard")
     {
         SetAlbedoTexture(Texture2D::GetWhiteTexture());
-        SetNormalTexture(Texture2D::GetWhiteTexture());
+        SetNormalTexture(Texture2D::GetDefaultNormalTexture());
         SetMetallicTexture(Texture2D::GetBlackTexture());
         SetRoughnessTexture(Texture2D::GetWhiteTexture());
         SetAlbedoColor(glm::vec4(1.0f));
         SetNormalScale(1.0f);
-        SetMetallic(0.0f);
+        SetMetallic(0.5f);
         SetRoughness(1.0f);
-    }
-
-    void SetAlbedoTexture(std::shared_ptr<Texture> albedoTexture)
-    {
-        SetUniformTexture("u_AlbedoTexture", albedoTexture);
-    }
-
-    void SetNormalTexture(std::shared_ptr<Texture> normalTexture)
-    {
-        SetUniformTexture("u_NormalTexture", normalTexture);
-    }
-
-    void SetMetallicTexture(std::shared_ptr<Texture> metallicTexture)
-    {
-        SetUniformTexture("u_MetallicTexture", metallicTexture);
-    }
-
-    void SetRoughnessTexture(std::shared_ptr<Texture> roughnessTexture)
-    {
-        SetUniformTexture("u_RoughnessTexture", roughnessTexture);
     }
 
     void SetAlbedoColor(const glm::vec4 &color)
@@ -130,6 +110,26 @@ public:
     void SetRoughness(float roughness)
     {
         SetUniform1f("u_Roughness", roughness);
+    }
+
+    void SetAlbedoTexture(std::shared_ptr<Texture> albedoTexture)
+    {
+        SetUniformTexture("u_AlbedoTexture", albedoTexture);
+    }
+
+    void SetNormalTexture(std::shared_ptr<Texture> normalTexture)
+    {
+        SetUniformTexture("u_NormalTexture", normalTexture);
+    }
+
+    void SetMetallicTexture(std::shared_ptr<Texture> metallicTexture)
+    {
+        SetUniformTexture("u_MetallicTexture", metallicTexture);
+    }
+
+    void SetRoughnessTexture(std::shared_ptr<Texture> roughnessTexture)
+    {
+        SetUniformTexture("u_RoughnessTexture", roughnessTexture);
     }
 
     void LoadAlbedoTexture(const std::string &filepath, const TextureParams &params = TextureParams())

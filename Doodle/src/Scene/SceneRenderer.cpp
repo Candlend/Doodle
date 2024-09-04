@@ -105,6 +105,8 @@ void SceneRenderer::Render()
     }
     UBOScene sceneData = {};
     sceneData.DirectionalLight = m_lightEnvironment.DirectionalLights[0];
+    sceneData.AmbientRadiance = glm::vec3(0.3f);
+    sceneData.CameraPosition = cameraEntity.GetComponent<TransformComponent>().Position;
     m_sceneUBO->SetSubData(&sceneData, sizeof(UBOScene));
 
     UBOPointLights pointLightData = {};

@@ -307,10 +307,8 @@ std::shared_ptr<Texture2D> Texture2D::GetWhiteTexture()
 {
     if (!s_WhiteTexture)
     {
-        uint32_t whiteTextureData = 0xffffffff;
-        Buffer buffer;
-        buffer.Allocate(sizeof(uint32_t));
-        buffer.Write(&whiteTextureData, sizeof(whiteTextureData));
+        uint32_t data = 0xffffffff;
+        Buffer buffer = Buffer::Copy(&data, sizeof(data));
         s_WhiteTexture = Texture2D::Create(buffer, TextureParams());
     }
     return s_WhiteTexture;
@@ -320,17 +318,46 @@ std::shared_ptr<Texture2D> Texture2D::GetBlackTexture()
 {
     if (!s_BlackTexture)
     {
-        uint32_t blackTextureData = 0xff000000;
-        Buffer buffer;
-        buffer.Allocate(sizeof(uint32_t));
-        buffer.Write(&blackTextureData, sizeof(blackTextureData));
+        uint32_t data = 0xff000000;
+        Buffer buffer = Buffer::Copy(&data, sizeof(data));
         s_BlackTexture = Texture2D::Create(buffer, TextureParams());
     }
     return s_BlackTexture;
 }
 
+std::shared_ptr<Texture2D> Texture2D::GetDefaultNormalTexture()
+{
+    if (!s_DefaultNormalTexture)
+    {
+        uint32_t data = 0xffff8080;
+        Buffer buffer = Buffer::Copy(&data, sizeof(data));
+        s_DefaultNormalTexture = Texture2D::Create(buffer, TextureParams());
+    }
+    return s_DefaultNormalTexture;
+}
+
+std::shared_ptr<Texture2D> Texture2D::GetCheckerboardTexture()
+{
+    if (!s_CheckerboardTexture)
+    {
+        uint32_t checkerboard[4][4] = {{0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000},
+                                       {0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF},
+                                       {0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000},
+                                       {0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF}};
+        TextureParams params;
+        params.Width = 4;
+        params.Height = 4;
+        params.Filter = TextureFilter::Nearest;
+        Buffer buffer = Buffer::Copy(&checkerboard, sizeof(checkerboard));
+        s_CheckerboardTexture = Texture2D::Create(buffer, params);
+    }
+    return s_CheckerboardTexture;
+}
+
 std::shared_ptr<Texture2D> Texture2D::s_WhiteTexture = nullptr;
 std::shared_ptr<Texture2D> Texture2D::s_BlackTexture = nullptr;
+std::shared_ptr<Texture2D> Texture2D::s_DefaultNormalTexture = nullptr;
+std::shared_ptr<Texture2D> Texture2D::s_CheckerboardTexture = nullptr;
 
 class OpenGLTextureCube : public TextureCube
 {
@@ -548,8 +575,8 @@ std::shared_ptr<TextureCube> TextureCube::GetWhiteTexture()
 {
     if (!s_WhiteTexture)
     {
-        uint32_t whiteTextureData = 0xffffffff;
-        Buffer buffer(&whiteTextureData, sizeof(whiteTextureData));
+        uint32_t data = 0xffffffff;
+        Buffer buffer(&data, sizeof(data));
         std::array<Buffer, 6> faceBuffers;
         faceBuffers[0] = faceBuffers[1] = faceBuffers[2] = faceBuffers[3] = faceBuffers[4] = faceBuffers[5] = buffer;
         s_WhiteTexture = TextureCube::Create(faceBuffers, TextureParams());
@@ -561,8 +588,8 @@ std::shared_ptr<TextureCube> TextureCube::GetBlackTexture()
 {
     if (!s_BlackTexture)
     {
-        uint32_t blackTextureData = 0xff000000;
-        Buffer buffer(&blackTextureData, sizeof(blackTextureData));
+        uint32_t data = 0xff000000;
+        Buffer buffer(&data, sizeof(data));
         std::array<Buffer, 6> faceBuffers;
         faceBuffers[0] = faceBuffers[1] = faceBuffers[2] = faceBuffers[3] = faceBuffers[4] = faceBuffers[5] = buffer;
         s_BlackTexture = TextureCube::Create(faceBuffers, TextureParams());

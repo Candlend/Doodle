@@ -42,32 +42,58 @@ public:
 
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();
-        Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.f);
+        Renderer::SetClearColor(0.3f, 0.3f, 0.3f, 1.f);
         ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
         BuildScene();
     }
     void BuildScene()
     {
-        TextureParams params;
-        params.Format = TextureFormat::RGBA8;
 
         auto material = StandardMaterial::Create();
-
-        material->LoadAlbedoTexture("assets/textures/cerberus/cerberus_A.png", params);
-        // material->LoadNormalTexture("assets/textures/cerberus/cerberus_N.png");
-        // material->LoadMetallicTexture("assets/textures/cerberus/cerberus_M.png");
-        // material->LoadRoughnessTexture("assets/textures/cerberus/cerberus_R.png");
 
         auto cerberus = m_scene->CreateEntity("Cerberus");
         cerberus.AddComponent<MeshComponent>("assets/models/cerberus.fbx");
         cerberus.AddComponent<MaterialComponent>(material);
         cerberus.GetComponent<TransformComponent>().Scale = glm::vec3(0.01f);
+        auto &cerberusMat = cerberus.GetComponent<MaterialComponent>().MaterialInstance;
+        TextureParams params;
+        params.Format = TextureFormat::RGBA8;
+        cerberusMat->LoadAlbedoTexture("assets/textures/cerberus/cerberus_A.png", params);
+        cerberusMat->LoadNormalTexture("assets/textures/cerberus/cerberus_N.png");
+        cerberusMat->LoadMetallicTexture("assets/textures/cerberus/cerberus_M.png");
+        cerberusMat->LoadRoughnessTexture("assets/textures/cerberus/cerberus_R.png");
 
         auto cube = m_scene->CreateEntity("Cube");
-        cube.AddComponent<MeshComponent>("assets/models/Cube.fbx");
+        cube.AddComponent<MeshComponent>("assets/models/test_cube.obj");
         cube.AddComponent<MaterialComponent>(material);
-        cube.GetComponent<TransformComponent>().Position = glm::vec3(0.5f, 0.f, 0.f);
-        cube.GetComponent<TransformComponent>().Scale = glm::vec3(0.01f);
+        cube.GetComponent<TransformComponent>().Position = glm::vec3(2.f, 0.f, 0.f);
+        auto &cubeMat = cube.GetComponent<MaterialComponent>().MaterialInstance;
+        cubeMat->LoadAlbedoTexture("assets/textures/test_cube/test_cube_diffuse.tga");
+
+        auto sphere = m_scene->CreateEntity("Sphere");
+        sphere.AddComponent<MeshComponent>("assets/models/sphere.obj");
+        sphere.AddComponent<MaterialComponent>(material);
+        sphere.GetComponent<TransformComponent>().Position = glm::vec3(-2.f, 0.f, 0.f);
+        auto &sphereMat = sphere.GetComponent<MaterialComponent>().MaterialInstance;
+        sphereMat->LoadAlbedoTexture("assets/textures/rusted_iron/base_color.tga");
+        sphereMat->LoadNormalTexture("assets/textures/rusted_iron/normal.tga");
+        sphereMat->LoadMetallicTexture("assets/textures/rusted_iron/metallic.tga");
+        sphereMat->LoadRoughnessTexture("assets/textures/rusted_iron/roughness.tga");
+
+        auto suzanne = m_scene->CreateEntity("Suzanne");
+        suzanne.AddComponent<MeshComponent>("assets/models/suzanne.obj");
+        suzanne.AddComponent<MaterialComponent>(material);
+        suzanne.GetComponent<TransformComponent>().Position = glm::vec3(0.f, 0.f, 2.f);
+
+        auto cutFish = m_scene->CreateEntity("CutFish");
+        cutFish.AddComponent<MeshComponent>("assets/models/cut_fish.obj");
+        cutFish.AddComponent<MaterialComponent>(material);
+        cutFish.GetComponent<TransformComponent>().Position = glm::vec3(0.f, 0.f, -5.f);
+        auto &cutFishMat = cutFish.GetComponent<MaterialComponent>().MaterialInstance;
+        cutFishMat->LoadAlbedoTexture("assets/textures/cut_fish/base_color.tga");
+        cutFishMat->LoadNormalTexture("assets/textures/cut_fish/normal.tga");
+        cutFishMat->LoadMetallicTexture("assets/textures/cut_fish/metallic.tga");
+        cutFishMat->LoadRoughnessTexture("assets/textures/cut_fish/roughness.tga");
 
         auto mainCamera = m_scene->CreateEntity("MainCamera");
         mainCamera.AddComponent<CameraComponent>();
@@ -77,8 +103,8 @@ public:
         // 创建方向光
         auto directionalLight = m_scene->CreateEntity("DirectionalLight");
         auto &dirLight = directionalLight.AddComponent<DirectionalLightComponent>();
-        dirLight.Intensity = 0.5f;
-        dirLight.Radiance = glm::vec3(1.0f, 1.0f, 1.0f); // 白色光
+        dirLight.Intensity = 1.0f;
+        dirLight.Radiance = glm::vec3(1.0f, 0.9f, 0.8f); // 白色光
 
         // 设置方向光的 TransformComponent
         auto &transform = directionalLight.GetComponent<TransformComponent>();
@@ -89,7 +115,7 @@ public:
         auto pointLight = m_scene->CreateEntity("PointLight");
         auto &pLight = pointLight.AddComponent<PointLightComponent>();
         pLight.Intensity = 0.8f;
-        pLight.Radiance = glm::vec3(1.0f, 0.5f, 0.5f);                                         // 暖色光
+        pLight.Radiance = glm::vec3(0.5f, 1.0f, 0.8f);                                         // 暖色光
         pointLight.GetComponent<TransformComponent>().Position = glm::vec3(2.0f, 1.0f, 0.0f);  // 光源位置
         pLight.Radius = 5.0f;                                                                  // 光照半径
         pLight.Falloff = 1.0f;                                                                 // 衰减系数
@@ -112,8 +138,6 @@ public:
     {
         auto cerberus = m_scene->FindEntity("Cerberus");
         cerberus.GetComponent<TransformComponent>().Rotation.y += 100.f * Time::GetDeltaTime();
-        auto directionalLight = m_scene->FindEntity("DirectionalLight");
-        directionalLight.GetComponent<TransformComponent>().Rotation.x += 50.f * Time::GetDeltaTime();
     }
 
     void Deinitialize() override

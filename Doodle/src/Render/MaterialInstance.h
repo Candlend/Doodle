@@ -39,6 +39,86 @@ public:
     void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
 
+    void SetAlbedoColor(const glm::vec4 &color)
+    {
+        SetUniform4f("u_AlbedoColor", color);
+    }
+
+    void SetNormalScale(float scale)
+    {
+        SetUniform1f("u_NormalScale", scale);
+    }
+
+    void SetMetallic(float metallic)
+    {
+        SetUniform1f("u_Metallic", metallic);
+    }
+
+    void SetRoughness(float roughness)
+    {
+        SetUniform1f("u_Roughness", roughness);
+    }
+
+    void SetAlbedoTexture(std::shared_ptr<Texture> albedoTexture)
+    {
+        SetUniformTexture("u_AlbedoTexture", albedoTexture);
+    }
+
+    void SetNormalTexture(std::shared_ptr<Texture> normalTexture)
+    {
+        SetUniformTexture("u_NormalTexture", normalTexture);
+    }
+
+    void SetMetallicTexture(std::shared_ptr<Texture> metallicTexture)
+    {
+        SetUniformTexture("u_MetallicTexture", metallicTexture);
+    }
+
+    void SetRoughnessTexture(std::shared_ptr<Texture> roughnessTexture)
+    {
+        SetUniformTexture("u_RoughnessTexture", roughnessTexture);
+    }
+
+    void LoadAlbedoTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetAlbedoTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadNormalTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetNormalTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadMetallicTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetMetallicTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadRoughnessTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    {
+        SetRoughnessTexture(Texture2D::Create(filepath, params));
+    }
+
+    void LoadAlbedoTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetAlbedoTexture(Texture2D::Create(buffer, params));
+    }
+
+    void LoadNormalTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetNormalTexture(Texture2D::Create(buffer, params));
+    }
+
+    void LoadMetallicTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetMetallicTexture(Texture2D::Create(buffer, params));
+    }
+
+    void LoadRoughnessTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    {
+        SetRoughnessTexture(Texture2D::Create(buffer, params));
+    }
+
     std::shared_ptr<Material> GetMaterial() const
     {
         return m_material;

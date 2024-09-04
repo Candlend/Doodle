@@ -43,6 +43,10 @@ in vec3 v_Normal;
 in vec3 v_Position;
 in mat3 v_TBN;
 
+uniform vec4 u_AlbedoColor;
+uniform float u_NormalScale;
+uniform float u_Metallic;
+uniform float u_Roughness;
 uniform sampler2D u_AlbedoTexture;
 uniform sampler2D u_NormalTexture;
 uniform sampler2D u_MetallicTexture;
@@ -59,6 +63,7 @@ layout(std140, binding = 0) uniform SceneData
 {
     DirectionalLight DirectionalLight;
     vec3 AmbientRadiance;
+    vec3 CameraPosition;
 } u_Scene;
 
 struct PointLight
@@ -96,11 +101,88 @@ layout(std140, binding = 2) uniform SpotLightData
     SpotLight Lights[256];
 } u_SpotLights;
 
+// Function to calculate the Fresnel-Schlick approximation
+vec3 FresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+// Function to compute the Specular reflection using the Cook-Torrance model
+vec3 CookTorranceBRDF(vec3 normal, vec3 viewDir, vec3 lightDir, float metallic, float roughness)
+{
+    // Compute half-vector
+    vec3 halfDir = normalize(lightDir + viewDir);
+    float NdotH = max(dot(normal, halfDir), 0.0);
+    float NdotL = max(dot(normal, lightDir), 0.0);
+    float NdotV = max(dot(normal, viewDir), 0.0);
+    
+    // Calculate the Fresnel reflectance at normal incidence
+    vec3 F0 = mix(vec3(0.04), u_AlbedoColor.rgb, metallic);
+    vec3 F = FresnelSchlick(NdotV, F0);
+    
+    // Calculate D (the normal distribution)
+    float alpha = roughness * roughness;
+    float D = (alpha * alpha) / (3.141592 * pow(NdotH * NdotH * (alpha * alpha - 1.0) + 1.0, 2.0));
+    
+    // Calculate G (the geometric attenuation)
+    float G = min(1.0, min((2.0 * NdotH * NdotV) / dot(viewDir, halfDir), (2.0 * NdotH * NdotL) / dot(lightDir, halfDir)));
+    
+    // Calculate the specular color
+    return (D * G * F) / max(3.14 * NdotV * NdotL, 0.00390625);;
+}
+
 void main()
 {
-    vec3 albedo = texture(u_AlbedoTexture, v_TexCoord).rgb;
-    vec3 normal = texture(u_NormalTexture, v_TexCoord).rgb;
-    float metallic = texture(u_MetallicTexture, v_TexCoord).r;
-    float roughness = texture(u_RoughnessTexture, v_TexCoord).r;
-    finalColor = vec4(albedo, 1.0);
+    // Sample textures
+    vec4 albedo = texture(u_AlbedoTexture, v_TexCoord) * u_AlbedoColor;
+    float metallic = texture(u_MetallicTexture, v_TexCoord).r * u_Metallic;
+    float roughness = texture(u_RoughnessTexture, v_TexCoord).r * u_Roughness;
+
+    // Transform normal from tangent space to world space
+    vec3 normal = normalize(v_TBN * (texture(u_NormalTexture, v_TexCoord).xyz * 2.0 - 1.0) * u_NormalScale);
+    
+    // Calculate view direction
+    vec3 viewDir = normalize(u_Scene.CameraPosition - v_Position);
+    
+    // Initialize color
+    vec3 color = vec3(0.0);
+    
+    // Ambient lighting
+    color += u_Scene.AmbientRadiance * albedo.rgb;
+
+    // Directional light contribution
+    vec3 lightDir = normalize(-u_Scene.DirectionalLight.Direction);
+    color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * u_Scene.DirectionalLight.Radiance * u_Scene.DirectionalLight.Intensity;
+
+    // Point lights
+    for (uint i = 0; i < u_PointLights.LightCount; ++i)
+    {
+        PointLight light = u_PointLights.Lights[i];
+        vec3 lightDir = normalize(light.Position - v_Position);
+        float distance = length(light.Position - v_Position);
+        
+        // Attenuation
+        float attenuation = clamp(1.0 - (distance - light.MinRadius) / (light.Radius - light.MinRadius), 0.0, 1.0);
+        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * light.Radiance * light.Intensity * attenuation;
+    }
+
+    // Spot lights
+    for (uint i = 0; i < u_SpotLights.LightCount; ++i)
+    {
+        SpotLight light = u_SpotLights.Lights[i];
+        vec3 lightDir = normalize(light.Position - v_Position);
+        float distance = length(light.Position - v_Position);
+        
+        // Attenuation
+        float attenuation = clamp(1.0 - (distance) / (light.Range), 0.0, 1.0);
+        
+        // Angle attenuation
+        float angleAttenuation = smoothstep(cos(light.Angle), 1.0, dot(-lightDir, normalize(light.Direction)));
+        attenuation *= angleAttenuation;
+        
+        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * light.Radiance * light.Intensity * attenuation;
+    }
+
+    // Final color output
+    finalColor = vec4(color, 1.0);
 }

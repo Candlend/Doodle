@@ -51,8 +51,15 @@ public:
 
     static std::shared_ptr<Texture2D> GetBlackTexture();
 
+    static std::shared_ptr<Texture2D> GetDefaultNormalTexture();
+
+    static std::shared_ptr<Texture2D> GetCheckerboardTexture();
+
+private:
     static std::shared_ptr<Texture2D> s_WhiteTexture;
     static std::shared_ptr<Texture2D> s_BlackTexture;
+    static std::shared_ptr<Texture2D> s_DefaultNormalTexture;
+    static std::shared_ptr<Texture2D> s_CheckerboardTexture;
 };
 
 class DOO_API TextureCube : public Texture

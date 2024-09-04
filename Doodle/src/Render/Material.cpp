@@ -70,8 +70,6 @@ void Material::Bind()
     m_shader->Bind();
     for (auto &[name, texture] : m_textures)
     {
-        DOO_CORE_DEBUG("Material texture: {0} {1} {2}", name, texture->GetUUID().ToString(),
-                       m_textureSlots[texture->GetUUID()]);
         m_shader->SetUniformTexture(name, texture, m_textureSlots[texture->GetUUID()]);
     }
     for (auto &[name, value] : m_uniforms1f)
