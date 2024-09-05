@@ -22,14 +22,14 @@ void main()
     v_TexCoord = a_TexCoord;
     
     // Transform normal to world space
-    v_Normal = normalize(mat3(u_Model) * a_Normal);
-    
+    normalMatrix = mat3(transpose(inverse(u_Model))); // TODO 放在CPU端计算
+    v_Normal = normalMatrix * aNormal; 
     // Transform position to world space
     v_Position = vec3(u_Model * vec4(a_Position, 1.0));
     
     // Compute TBN matrix
-    vec3 T = normalize(mat3(u_Model) * a_Tangent);
-    vec3 B = normalize(mat3(u_Model) * a_Binormal);
+    vec3 T = normalMatrix * a_Tangent;
+    vec3 B = normalMatrix * a_Binormal;
     v_TBN = mat3(T, B, v_Normal);
 }
 
@@ -73,8 +73,8 @@ struct PointLight
     float Intensity;
     float MinRadius;
     float Radius;
-    float Falloff;
-    float SourceSize;
+    float Falloff; // TODO 未使用
+    float SourceSize; // TODO 未使用
 };
 
 layout(std140, binding = 1) uniform PointLightData
@@ -92,7 +92,7 @@ struct SpotLight
     float AngleAttenuation;
     float Range;
     float Angle;
-    float Falloff;
+    float Falloff; // TODO 未使用
 };
 
 layout(std140, binding = 2) uniform SpotLightData
