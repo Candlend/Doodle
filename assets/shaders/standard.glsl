@@ -158,11 +158,12 @@ void main()
     for (uint i = 0; i < u_PointLights.LightCount; ++i)
     {
         PointLight light = u_PointLights.Lights[i];
-        vec3 lightDir = normalize(light.Position - v_Position);
         float distance = length(light.Position - v_Position);
-        
+        if (distance > light.Radius)
+            continue;
+        vec3 lightDir = normalize(light.Position - v_Position);
         // Attenuation
-        float attenuation = clamp(1.0 - (distance - light.MinRadius) / (light.Radius - light.MinRadius), 0.0, 1.0);
+        float attenuation = clamp(1.0 - (distance - light.MinRadius) / (light.Radius - light.MinRadius), 0.0, 1.0); // TODO 参数可以调整
         color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * light.Radiance * light.Intensity * attenuation;
     }
 
@@ -170,14 +171,15 @@ void main()
     for (uint i = 0; i < u_SpotLights.LightCount; ++i)
     {
         SpotLight light = u_SpotLights.Lights[i];
-        vec3 lightDir = normalize(light.Position - v_Position);
         float distance = length(light.Position - v_Position);
-        
+        if (distance > light.Range)
+            continue;
+        vec3 lightDir = normalize(light.Position - v_Position);
         // Attenuation
         float attenuation = clamp(1.0 - (distance) / (light.Range), 0.0, 1.0);
         
         // Angle attenuation
-        float angleAttenuation = smoothstep(cos(light.Angle), 1.0, dot(-lightDir, normalize(light.Direction)));
+        float angleAttenuation = smoothstep(cos(light.Angle), 1.0, dot(-lightDir, normalize(light.Direction)));  // TODO 参数可以调整
         attenuation *= angleAttenuation;
         
         color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * light.Radiance * light.Intensity * attenuation;
