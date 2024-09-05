@@ -47,6 +47,9 @@ void RendererAPI::Initialize()
         DOO_CORE_ERROR("OpenGL Error {0}", error);
         error = glGetError();
     }
+
+    DOO_CORE_INFO("OpenGL Initialized with Vendor: {0}, Renderer: {1}, Version: {2}", caps.Vendor, caps.Renderer,
+                  caps.Version);
 }
 
 void RendererAPI::Clear(float r, float g, float b, float a)
