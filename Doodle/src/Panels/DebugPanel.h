@@ -6,16 +6,16 @@
 #include <ImGuizmo.h>
 
 #include "Application.h"
-#include "ImGuiPanel.h"
+#include "EditorPanel.h"
 #include "Renderer.h"
 
 namespace Doodle
 {
 
-class DOO_API DebugPanel : public ImGuiPanel
+class DOO_API DebugPanel : public EditorPanel
 {
 public:
-    DebugPanel() : ImGuiPanel("Debug")
+    DebugPanel() : EditorPanel("Debug")
     {
     }
     void OnUpdate() override;

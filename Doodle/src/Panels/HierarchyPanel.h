@@ -6,16 +6,16 @@
 #include <ImGuizmo.h>
 
 #include "Application.h"
-#include "ImGuiPanel.h"
+#include "EditorPanel.h"
 #include "Renderer.h"
 
 namespace Doodle
 {
 
-class DOO_API SceneHierarchyPanel : public ImGuiPanel
+class DOO_API HierarchyPanel : public EditorPanel
 {
 public:
-    SceneHierarchyPanel() : ImGuiPanel("Hierarchy")
+    HierarchyPanel() : EditorPanel("Hierarchy")
     {
     }
     void OnUpdate() override;

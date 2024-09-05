@@ -16,7 +16,7 @@ namespace Doodle
 {
 
 struct PanelData;
-struct ImGuiPanel;
+struct EditorPanel;
 
 class DOO_API PanelManager : public Singleton<PanelManager>
 {
@@ -34,7 +34,7 @@ public:
 
     template <typename T> void AddPanel(const std::string &name, std::shared_ptr<T> panel)
     {
-        m_panelMap[name] = std::dynamic_pointer_cast<ImGuiPanel>(panel);
+        m_panelMap[name] = std::dynamic_pointer_cast<EditorPanel>(panel);
     }
 
     void RemovePanel(const std::string &name)
@@ -62,7 +62,7 @@ public:
     void SetPanelData(uint32_t id, const PanelData &data);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<ImGuiPanel>> m_panelMap;
+    std::unordered_map<std::string, std::shared_ptr<EditorPanel>> m_panelMap;
     std::unordered_map<std::string, uint32_t> m_panelIdMap;
     std::unordered_map<uint32_t, PanelData> m_panelDataMap;
     uint32_t m_focusedPanelID = 0;

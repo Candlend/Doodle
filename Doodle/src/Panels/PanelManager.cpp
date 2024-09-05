@@ -1,5 +1,5 @@
 #include "PanelManager.h"
-#include "ImGuiPanel.h"
+#include "EditorPanel.h"
 
 namespace Doodle
 {

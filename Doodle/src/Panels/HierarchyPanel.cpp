@@ -1,13 +1,14 @@
-#include "SceneHierarchyPanel.h"
 #include "Component.h"
 #include "Entity.h"
+#include "HierarchyPanel.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
+
 
 namespace Doodle
 {
 
-void SceneHierarchyPanel::OnPanelLayout()
+void HierarchyPanel::OnPanelLayout()
 {
     auto scene = SceneManager::Get()->GetActiveScene();
     auto entities = scene->GetEntities();
@@ -22,7 +23,7 @@ void SceneHierarchyPanel::OnPanelLayout()
     }
 }
 
-void SceneHierarchyPanel::OnUpdate()
+void HierarchyPanel::OnUpdate()
 {
 }
 

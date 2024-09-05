@@ -3,11 +3,11 @@
 #include "CameraController.h"
 #include "Component.h"
 #include "DebugPanel.h"
+#include "HierarchyPanel.h"
 #include "InspectorPanel.h"
 #include "Log.h"
 #include "LogPanel.h"
 #include "PanelManager.h"
-#include "SceneHierarchyPanel.h"
 #include "Texture.h"
 #include "imgui.h"
 #include <Doodle.h>
@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+
 
 using namespace Doodle;
 
@@ -37,7 +38,7 @@ public:
         Application::Initialize();
         ActivateImGuiContext();
         PanelManager::Get()->CreatePanel<LogPanel>();
-        PanelManager::Get()->CreatePanel<SceneHierarchyPanel>();
+        PanelManager::Get()->CreatePanel<HierarchyPanel>();
         PanelManager::Get()->CreatePanel<DebugPanel>();
         PanelManager::Get()->CreatePanel<InspectorPanel>();
 

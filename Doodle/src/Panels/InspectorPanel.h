@@ -4,11 +4,11 @@
 #include "SceneEvent.h"
 #include "pch.h"
 
-#include "ImGuiPanel.h"
+#include "EditorPanel.h"
 
 namespace Doodle
 {
-class DOO_API InspectorPanel : public ImGuiPanel
+class DOO_API InspectorPanel : public EditorPanel
 {
 public:
     InspectorPanel();

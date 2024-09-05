@@ -44,11 +44,11 @@ struct DOO_API PanelData
     static PanelData GetCurrentPanelData(uint32_t id, ImGuiWindowFlags flags, bool opened);
 };
 
-class DOO_API ImGuiPanel
+class DOO_API EditorPanel
 {
 public:
-    ImGuiPanel(const std::string &panelName, ImGuiWindowFlags flags = ImGuiWindowFlags_None);
-    ~ImGuiPanel();
+    EditorPanel(const std::string &panelName, ImGuiWindowFlags flags = ImGuiWindowFlags_None);
+    ~EditorPanel();
 
     void OnLayout();
 

@@ -7,7 +7,7 @@
 namespace Doodle
 {
 
-InspectorPanel::InspectorPanel() : ImGuiPanel("Inspector")
+InspectorPanel::InspectorPanel() : EditorPanel("Inspector")
 {
 }
 

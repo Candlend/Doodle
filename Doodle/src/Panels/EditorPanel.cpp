@@ -1,4 +1,4 @@
-#include "ImGuiPanel.h"
+#include "EditorPanel.h"
 
 namespace Doodle
 {
@@ -65,19 +65,19 @@ PanelData PanelData::GetCurrentPanelData(uint32_t id, ImGuiWindowFlags flags, bo
     return currentData;
 }
 
-ImGuiPanel::ImGuiPanel(const std::string &panelName, ImGuiWindowFlags flags) : m_panelName(panelName), m_flags(flags)
+EditorPanel::EditorPanel(const std::string &panelName, ImGuiWindowFlags flags) : m_panelName(panelName), m_flags(flags)
 {
-    EventManager::Get()->AddListener<AppLayoutEvent>(this, &ImGuiPanel::OnLayout);
-    EventManager::Get()->AddListener<AppUpdateEvent>(this, &ImGuiPanel::OnUpdate);
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &EditorPanel::OnLayout);
+    EventManager::Get()->AddListener<AppUpdateEvent>(this, &EditorPanel::OnUpdate);
 }
 
-ImGuiPanel::~ImGuiPanel()
+EditorPanel::~EditorPanel()
 {
-    EventManager::Get()->RemoveListener<AppLayoutEvent>(this, &ImGuiPanel::OnLayout);
-    EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &ImGuiPanel::OnUpdate);
+    EventManager::Get()->RemoveListener<AppLayoutEvent>(this, &EditorPanel::OnLayout);
+    EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &EditorPanel::OnUpdate);
 }
 
-void ImGuiPanel::OnLayout()
+void EditorPanel::OnLayout()
 {
     ImGuiUtils::WindowScope scope(m_panelName.c_str(), &m_open, m_flags);
     uint32_t id = ImGui::GetID(m_panelName.c_str());

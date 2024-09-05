@@ -4,15 +4,15 @@
 #include "pch.h"
 #include <imgui.h>
 
-#include "ImGuiPanel.h"
+#include "EditorPanel.h"
 
 namespace Doodle
 {
 
-class DOO_API LogPanel : public ImGuiPanel
+class DOO_API LogPanel : public EditorPanel
 {
 public:
-    LogPanel() : ImGuiPanel("Log")
+    LogPanel() : EditorPanel("Log")
     {
     }
     void OnUpdate() override;
