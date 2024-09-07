@@ -5,6 +5,7 @@
 #include <entt/entt.hpp>
 
 #include "Camera.h"
+#include "FrameBuffer.h"
 #include "Light.h"
 #include "UniformBuffer.h"
 
@@ -46,6 +47,7 @@ private:
     std::shared_ptr<UniformBuffer> m_pointLightsUBO;
     std::shared_ptr<UniformBuffer> m_spotLightsUBO;
     LightEnvironment m_lightEnvironment;
+    std::shared_ptr<FrameBuffer> m_frameBuffer;
 };
 
 } // namespace Doodle

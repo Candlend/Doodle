@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "Entity.h"
 #include "EventManager.h"
+#include "FrameBuffer.h"
 #include "Scene.h"
 
 namespace Doodle
@@ -13,6 +14,11 @@ SceneRenderer::SceneRenderer(Scene *scene) : m_scene(scene), m_registry(scene->m
     m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
     m_pointLightsUBO = UniformBuffer::Create(sizeof(UBOPointLights), true);
     m_spotLightsUBO = UniformBuffer::Create(sizeof(UBOSpotLights), true);
+    FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::RGBA8,
+                                                      FramebufferTextureFormat::RED_INTEGER,
+                                                      FramebufferTextureFormat::DEPTH24STENCIL8};
+    FramebufferSpecification spec = {1920, 1080, attachments};
+    m_frameBuffer = FrameBuffer::Create(spec);
 
     EventManager::Get()->AddListener<AppRenderEvent>(this, &SceneRenderer::Render);
 }
@@ -29,6 +35,7 @@ void SceneRenderer::Render()
     {
         return;
     }
+    m_frameBuffer->Bind();
 
     auto cameraEntity = m_scene->GetMainCameraEntity();
     if (!cameraEntity)
@@ -160,6 +167,8 @@ void SceneRenderer::Render()
         material.MaterialInstance->Bind();
         mesh.Render();
     }
+
+    m_frameBuffer->Unbind();
 }
 
 } // namespace Doodle

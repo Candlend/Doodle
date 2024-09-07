@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <cstdint>
 #include <memory>
 
 namespace Doodle
@@ -10,25 +11,42 @@ enum class FramebufferTextureFormat
 {
     None = 0,
     RGBA8,
-    RED_INTEGER,
+    RED_INTEGER, // NOLINT
     DEPTH24STENCIL8,
+
+    // Default
+    Depth = DEPTH24STENCIL8
 };
 
 struct FramebufferTextureSpecification
 {
-    FramebufferTextureFormat TextureFormat;
-    uint32_t Width, Height;
-    uint32_t Samples = 1;
+    FramebufferTextureSpecification() = default;
+    FramebufferTextureSpecification(FramebufferTextureFormat format) : TextureFormat(format)
+    {
+    }
+
+    FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::None;
+    // TODO: filtering/wrap
+};
+
+struct FramebufferAttachmentSpecification
+{
+    FramebufferAttachmentSpecification() = default;
+    FramebufferAttachmentSpecification(std::initializer_list<FramebufferTextureSpecification> attachments)
+        : Attachments(attachments)
+    {
+    }
+
+    std::vector<FramebufferTextureSpecification> Attachments;
 };
 
 struct FramebufferSpecification
 {
-    uint32_t Width, Height;
+    uint32_t Width = 0, Height = 0;
+    FramebufferAttachmentSpecification Attachments;
     uint32_t Samples = 1;
-    struct
-    {
-        std::vector<FramebufferTextureSpecification> Attachments;
-    } Attachments;
+
+    bool SwapChainTarget = false; // TODO 未使用
 };
 
 class FrameBuffer

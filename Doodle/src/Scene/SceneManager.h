@@ -8,6 +8,12 @@
 namespace Doodle
 {
 
+enum SceneState
+{
+    Editor,
+    Runtime,
+};
+
 class DOO_API SceneManager : public Singleton<SceneManager>
 {
     friend class Scene;

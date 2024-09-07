@@ -80,7 +80,7 @@ static GLenum GetGLFormat(FramebufferTextureFormat format)
     case FramebufferTextureFormat::RED_INTEGER:
         return GL_R32I;
     default:
-        DOO_CORE_ASSERT(false);
+        DOO_CORE_ASSERT(false, "Unknown texture format!");
         return 0;
     }
 }
@@ -135,7 +135,7 @@ public:
 
     uint32_t GetColorAttachmentRendererID(size_t index) const override
     {
-        DOO_CORE_ASSERT(index < m_colorAttachments.size());
+        DOO_CORE_ASSERT(index < m_colorAttachments.size(), "Index out of range!");
         return m_colorAttachments[index];
     }
     uint32_t GetDepthAttachmentRendererID() const override
@@ -153,7 +153,7 @@ public:
 
     void ClearAttachment(uint32_t attachmentIndex, int value) override
     {
-        DOO_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+        DOO_CORE_ASSERT(attachmentIndex < m_colorAttachments.size(), "Index out of range!");
 
         Renderer::Submit([this, attachmentIndex, value]() {
             auto &spec = m_colorAttachmentSpecifications[attachmentIndex];
@@ -223,7 +223,7 @@ private:
 
         if (m_colorAttachments.size() > 1)
         {
-            DOO_CORE_ASSERT(m_ColorAttachments.size() <= 4);
+            DOO_CORE_ASSERT(m_colorAttachments.size() <= 4, "Framebuffer only supports 4 attachments!");
             GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
                                  GL_COLOR_ATTACHMENT3};
             glDrawBuffers(static_cast<GLsizei>(m_colorAttachments.size()), buffers);
