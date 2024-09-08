@@ -14,7 +14,7 @@
 
 using namespace Doodle;
 
-class CameraController : public Scriptable
+class CameraController : public Scriptable, public IEventHandler<ViewportResizeEvent>
 {
 public:
     std::string GetName() const override
@@ -30,8 +30,6 @@ public:
         std::shared_ptr<SceneCamera> camera = GetComponent<CameraComponent>();
 
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
-
-        EventManager::Get()->AddListener(this, &CameraController::OnViewportResize);
     }
 
     void OnUpdate() override
@@ -94,10 +92,9 @@ public:
 
     void Deinitialize() override
     {
-        EventManager::Get()->RemoveListener(this, &CameraController::OnViewportResize);
     }
 
-    bool OnViewportResize(const ViewportResizeEvent &event)
+    bool OnEvent(ViewportResizeEvent &event) override
     {
         int width = event.GetWidth();
         int height = event.GetHeight();

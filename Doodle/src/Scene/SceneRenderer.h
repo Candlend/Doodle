@@ -7,6 +7,7 @@
 
 #include "Camera.h"
 #include "FrameBuffer.h"
+#include "IEventHandler.h"
 #include "Light.h"
 #include "SceneEvent.h"
 #include "UniformBuffer.h"
@@ -35,7 +36,8 @@ struct LightEnvironment
 
 class Scene;
 
-class DOO_API SceneRenderer : public Singleton<SceneRenderer>
+class DOO_API SceneRenderer : public Singleton<SceneRenderer>,
+                              public IEventHandler<ViewportResizeEvent, ExecutionOrder::First>
 {
 public:
     SceneRenderer();
@@ -47,7 +49,7 @@ public:
     }
 
 private:
-    bool OnViewportResize(const ViewportResizeEvent &e);
+    bool OnEvent(ViewportResizeEvent &e) override;
     std::shared_ptr<UniformBuffer> m_sceneUBO;
     std::shared_ptr<UniformBuffer> m_pointLightsUBO;
     std::shared_ptr<UniformBuffer> m_spotLightsUBO;

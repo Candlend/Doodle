@@ -24,8 +24,6 @@ void Renderer::Deinitialize()
     EventManager::Get()->RemoveListener<AppRenderEvent>(this, &Renderer::WaitAndRender);
 }
 
-
-
 void Renderer::Clear(float r, float g, float b, float a)
 {
     Renderer::Submit([r, g, b, a]() {

@@ -24,14 +24,11 @@ SceneRenderer::SceneRenderer()
     m_frameBuffer = FrameBuffer::Create(spec);
 
     EventManager::Get()->AddListener<AppRenderEvent>(this, &SceneRenderer::Render);
-    EventManager::Get()->AddListener(this, &SceneRenderer::OnViewportResize);
 }
 
 SceneRenderer::~SceneRenderer()
 {
     DOO_CORE_TRACE("SceneRenderer destroyed");
-    EventManager::Get()->RemoveListener<AppRenderEvent>(this, &SceneRenderer::Render);
-    EventManager::Get()->RemoveListener(this, &SceneRenderer::OnViewportResize);
 }
 
 void SceneRenderer::Render()
@@ -176,7 +173,7 @@ void SceneRenderer::Render()
     }
 }
 
-bool SceneRenderer::OnViewportResize(const ViewportResizeEvent &e)
+bool SceneRenderer::OnEvent(ViewportResizeEvent &e)
 {
     m_frameBuffer->Resize(e.GetWidth(), e.GetHeight());
     return false;

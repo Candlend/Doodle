@@ -6,6 +6,7 @@
 #include "ApplicationEvent.h"
 #include "Core.h"
 #include "EventManager.h"
+#include "IEventHandler.h"
 #include "ImGuiBuilder.h"
 #include "Singleton.h"
 #include "Window.h"
@@ -14,7 +15,9 @@ namespace Doodle
 {
 class ApplicationRunner;
 
-class DOO_API Application
+class DOO_API Application : public IEventHandler<WindowRefreshEvent, ExecutionOrder::First>,
+                            public IEventHandler<WindowMoveEvent, ExecutionOrder::First>,
+                            public IEventHandler<WindowCloseEvent, ExecutionOrder::First>
 {
 public:
     class DOO_API Time
@@ -47,11 +50,12 @@ public:
     virtual void BeforeRender() {};
     virtual void AfterRender() {};
 
+    bool OnEvent(WindowRefreshEvent &e) override;
+    bool OnEvent(WindowMoveEvent &e) override;
+    bool OnEvent(WindowCloseEvent &e) override;
+
 protected:
     void Run();
-    bool OnWindowRefresh(WindowRefreshEvent &e);
-    bool OnWindowMove(WindowMoveEvent &e);
-    bool OnWindowClose(WindowCloseEvent &e);
     bool m_running = true;
 };
 
