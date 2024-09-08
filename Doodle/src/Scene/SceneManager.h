@@ -8,7 +8,7 @@
 namespace Doodle
 {
 
-enum SceneState
+enum class SceneState
 {
     Editor,
     Runtime,

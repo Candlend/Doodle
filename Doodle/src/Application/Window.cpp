@@ -151,7 +151,7 @@ private:
         });
 
         glfwSetCharCallback(m_window, [](GLFWwindow * /*window*/, unsigned int keycode) {
-            EventManager::Get()->Dispatch<CharInputEvent>(static_cast<KeyCode>(keycode));
+            EventManager::Get()->Dispatch<CharInputEvent>(keycode);
         });
 
         glfwSetMouseButtonCallback(m_window, [](GLFWwindow * /*window*/, int button, int action, int /*mods*/) {

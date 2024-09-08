@@ -30,6 +30,7 @@ public:
     void BeforeLayout() override
     {
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+        ImGui::ShowDemoWindow();
     }
 
     void Initialize() override

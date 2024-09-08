@@ -11,7 +11,7 @@
 namespace Doodle
 {
 
-enum FontType
+enum class FontType
 {
     Regular = 0,
     Light,

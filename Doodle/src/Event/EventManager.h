@@ -199,5 +199,4 @@ enum ExecutionOrder
     Late = 1000,
     Last = std::numeric_limits<int>::max()
 };
-
 } // namespace Doodle

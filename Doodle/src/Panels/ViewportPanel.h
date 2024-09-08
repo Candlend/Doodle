@@ -18,7 +18,7 @@ class DOO_API ViewportPanel : public EditorPanel
 {
 public:
     PANEL_CLASS_TYPE(Viewport)
-    ViewportPanel()
+    ViewportPanel() : EditorPanel(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)
     {
         m_sceneRenderer = SceneRenderer::Get();
     }
