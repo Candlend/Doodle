@@ -80,7 +80,6 @@ EditorPanel::~EditorPanel()
 
 void EditorPanel::OnLayout()
 {
-    DOO_CORE_DEBUG("{0} {1}", GetName(), m_open);
     if (!m_open)
         return;
     if (ImGui::Begin(GetName(), &m_open, m_flags))

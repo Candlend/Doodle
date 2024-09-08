@@ -21,6 +21,12 @@ void InspectorPanel::OnPanelLayout()
         return;
     }
 
+    if (uuids.size() > 1)
+    {
+        ImGui::TextDisabled("Multiple entities selected");
+        return;
+    }
+
     for (auto &uuid : uuids)
     {
         auto components = SceneManager::Get()->GetActiveScene()->GetComponents(uuid);

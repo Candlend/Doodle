@@ -65,6 +65,11 @@ Entity Scene::FindEntity(const std::string &name) const
     return {};
 }
 
+Entity Scene::GetEntity(const UUID &id) const
+{
+    return m_entityMap.at(id);
+}
+
 std::vector<Entity> Scene::GetEntities() const
 {
     std::vector<Entity> entities;
