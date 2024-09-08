@@ -86,12 +86,9 @@ void Application::Run()
         Time::Update();
         auto window = ApplicationRunner::GetWindow();
         window->PollEvents();
-        AppUpdateEvent updateEvent;
-        EventManager::Get()->Dispatch(updateEvent);
-        AppRenderEvent renderEvent;
-        EventManager::Get()->Dispatch(renderEvent);
-        AppLayoutEvent layoutEvent;
-        EventManager::Get()->Dispatch(layoutEvent);
+        EventManager::Get()->Dispatch<AppUpdateEvent>();
+        EventManager::Get()->Dispatch<AppRenderEvent>();
+        EventManager::Get()->Dispatch<AppLayoutEvent>();
         window->SwapBuffers();
     }
 }
@@ -106,10 +103,8 @@ bool Application::OnWindowRefresh(WindowRefreshEvent & /*e*/)
 {
     Time::Freeze();
     auto window = ApplicationRunner::GetWindow();
-    AppRenderEvent renderEvent;
-    EventManager::Get()->Dispatch(renderEvent);
-    AppLayoutEvent layoutEvent;
-    EventManager::Get()->Dispatch(layoutEvent);
+    EventManager::Get()->Dispatch<AppRenderEvent>();
+    EventManager::Get()->Dispatch<AppLayoutEvent>();
     window->SwapBuffers();
     return false;
 }

@@ -44,10 +44,6 @@ enum EventCategory
     EventCategoryScene = 1 << 5,
 };
 
-#define INSTANTIATE_EVENT_MANAGER_LISTENER(eventType)                                                                  \
-    template void EventManager::AddListener<eventType>(EventCallback);                                                 \
-    template void EventManager::RemoveListener<eventType>(EventCallback);
-
 #define EVENT_CLASS_TYPE(type)                                                                                         \
     static EventType GetStaticType()                                                                                   \
     {                                                                                                                  \

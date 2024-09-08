@@ -106,8 +106,7 @@ void Scene::BeginScene()
     m_active = true;
     SceneManager::Get()->m_activeScene = shared_from_this();
     DOO_CORE_TRACE("Scene <{0}> Activated", m_name);
-    SceneActivateEvent event(*this);
-    EventManager::Get()->Dispatch(event);
+    EventManager::Get()->Dispatch<SceneActivateEvent>(*this);
 }
 
 void Scene::EndScene()
@@ -116,8 +115,7 @@ void Scene::EndScene()
     if (SceneManager::Get()->m_activeScene == shared_from_this())
         SceneManager::Get()->m_activeScene = nullptr;
     DOO_CORE_TRACE("Scene <{0}> Deactivated", m_name);
-    SceneDeactivateEvent event(*this);
-    EventManager::Get()->Dispatch(event);
+    EventManager::Get()->Dispatch<SceneDeactivateEvent>(*this);
 }
 
 } // namespace Doodle
