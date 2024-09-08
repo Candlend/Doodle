@@ -25,6 +25,7 @@ public:
     void OnUpdate() override;
 
     void OnPanelLayout() override;
+    void OnLayout() override;
 
 private:
     SceneRenderer *m_sceneRenderer;

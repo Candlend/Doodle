@@ -50,7 +50,7 @@ public:
     EditorPanel(ImGuiWindowFlags flags = ImGuiWindowFlags_None);
     ~EditorPanel();
 
-    void OnLayout();
+    virtual void OnLayout();
 
     virtual void OnUpdate() = 0;
     virtual void OnPanelLayout() = 0;
@@ -58,12 +58,12 @@ public:
 
     uint32_t GetWidth() const
     {
-        return m_panelData.PanelSize.x;
+        return m_panelData.ContentSize.x;
     }
 
     uint32_t GetHeight() const
     {
-        return m_panelData.PanelSize.y;
+        return m_panelData.ContentSize.y;
     }
 
     bool IsShowOnTop() const
