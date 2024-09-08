@@ -24,6 +24,7 @@ enum class EventType
     SceneActivate,
     SceneDeactivate,
     SelectionChanged,
+    ViewportResize,
     KeyPressed,
     KeyReleased,
     CharInput,

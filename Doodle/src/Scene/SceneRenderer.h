@@ -3,10 +3,12 @@
 #include "Log.h"
 #include "pch.h"
 #include <entt/entt.hpp>
+#include <memory>
 
 #include "Camera.h"
 #include "FrameBuffer.h"
 #include "Light.h"
+#include "SceneEvent.h"
 #include "UniformBuffer.h"
 
 namespace Doodle
@@ -33,16 +35,19 @@ struct LightEnvironment
 
 class Scene;
 
-class DOO_API SceneRenderer // for each scene
+class DOO_API SceneRenderer : public Singleton<SceneRenderer>
 {
 public:
-    SceneRenderer(Scene *scene);
+    SceneRenderer();
     ~SceneRenderer();
     void Render();
+    std::shared_ptr<FrameBuffer> GetFrameBuffer() const
+    {
+        return m_frameBuffer;
+    }
 
 private:
-    Scene *m_scene;
-    entt::registry &m_registry;
+    bool OnViewportResize(const ViewportResizeEvent &e);
     std::shared_ptr<UniformBuffer> m_sceneUBO;
     std::shared_ptr<UniformBuffer> m_pointLightsUBO;
     std::shared_ptr<UniformBuffer> m_spotLightsUBO;

@@ -1,20 +1,20 @@
 #pragma once
 
 #include "pch.h"
+#include <entt/entt.hpp>
 
 #include "ApplicationEvent.h"
 #include "Camera.h"
 #include "EventManager.h"
-#include "SceneRenderer.h"
 #include "UUID.h"
 #include "UniformBuffer.h"
-#include <unordered_map>
 
 namespace Doodle
 {
 
 class Entity;
 class BaseComponent;
+class SceneRenderer;
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
@@ -59,7 +59,6 @@ private:
     std::unordered_map<UUID, Entity> m_entityMap;
     std::unordered_map<UUID, std::vector<BaseComponent *>> m_entityComponents;
     entt::registry m_registry;
-    SceneRenderer m_sceneRenderer{this};
 };
 
 } // namespace Doodle

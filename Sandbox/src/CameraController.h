@@ -8,7 +8,9 @@
 #include "Input.h"
 #include "KeyCode.h"
 #include "Log.h"
+#include "PanelManager.h"
 #include "SceneManager.h"
+#include "ViewportPanel.h"
 
 using namespace Doodle;
 
@@ -26,16 +28,16 @@ public:
         m_rotateSpeed = 20.0f;
 
         std::shared_ptr<SceneCamera> camera = GetComponent<CameraComponent>();
-        camera->SetViewportSize(ApplicationRunner::GetWindow()->GetWidth(),
-                                ApplicationRunner::GetWindow()->GetHeight());
 
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
 
-        EventManager::Get()->AddListener(this, &CameraController::OnWindowResize);
+        EventManager::Get()->AddListener(this, &CameraController::OnViewportResize);
     }
 
     void OnUpdate() override
     {
+        if (!PanelManager::Get()->GetPanel<ViewportPanel>()->IsShowOnTop())
+            return;
         auto &transform = GetComponent<TransformComponent>();
 
         float deltaTime = Application::Time::GetDeltaTime();
@@ -92,10 +94,10 @@ public:
 
     void Deinitialize() override
     {
-        EventManager::Get()->RemoveListener(this, &CameraController::OnWindowResize);
+        EventManager::Get()->RemoveListener(this, &CameraController::OnViewportResize);
     }
 
-    bool OnWindowResize(const WindowResizeEvent &event)
+    bool OnViewportResize(const ViewportResizeEvent &event)
     {
         int width = event.GetWidth();
         int height = event.GetHeight();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.h"
 #include "pch.h"
 #include <memory>
 
@@ -9,29 +10,11 @@ namespace Doodle
 template <typename T> class RenderScope
 {
 public:
-    // 支持 std::shared_ptr
-    RenderScope(std::shared_ptr<T> object) : m_object(object)
-    {
-        if (m_object)
-        {
-            m_object->Bind();
-        }
-    }
-
-    // 支持 std::unique_ptr
-    RenderScope(std::unique_ptr<T> &object) : m_object(std::move(object))
-    {
-        if (m_object)
-        {
-            m_object->Bind();
-        }
-    }
-
-    // 支持原始指针
     RenderScope(T *object) : m_object(object)
     {
         if (m_object)
         {
+            DOO_CORE_TRACE("RenderScope: Binding object");
             m_object->Bind();
         }
     }
@@ -40,6 +23,7 @@ public:
     {
         if (m_object)
         {
+            DOO_CORE_TRACE("RenderScope: Unbinding object");
             m_object->Unbind();
         }
     }

@@ -1,6 +1,7 @@
 
 #include "SceneCamera.h"
-#include <memory>
+#include "PanelManager.h"
+#include "ViewportPanel.h"
 
 namespace Doodle
 {

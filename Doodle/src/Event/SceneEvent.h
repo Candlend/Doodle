@@ -81,4 +81,26 @@ private:
     bool m_selected;
 };
 
+class DOO_API ViewportResizeEvent : public Event
+{
+public:
+    ViewportResizeEvent(uint32_t width, uint32_t height) : m_width(width), m_height(height)
+    {
+    }
+
+    uint32_t GetWidth() const
+    {
+        return m_width;
+    }
+    uint32_t GetHeight() const
+    {
+        return m_height;
+    }
+
+    EVENT_CLASS_TYPE(ViewportResize)
+    EVENT_CLASS_CATEGORY(EventCategoryScene)
+private:
+    uint32_t m_width, m_height;
+};
+
 } // namespace Doodle

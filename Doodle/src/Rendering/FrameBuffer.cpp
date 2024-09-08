@@ -127,6 +127,8 @@ public:
             DOO_CORE_WARN("Attempted to resize framebuffer to {0}, {1}", width, height);
             return;
         }
+        if (width == m_specification.Width && height == m_specification.Height)
+            return;
         m_specification.Width = width;
         m_specification.Height = height;
 

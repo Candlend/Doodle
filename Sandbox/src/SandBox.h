@@ -9,13 +9,13 @@
 #include "LogPanel.h"
 #include "PanelManager.h"
 #include "Texture.h"
+#include "ViewportPanel.h"
 #include "imgui.h"
 #include <Doodle.h>
 #include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
-
 
 using namespace Doodle;
 
@@ -29,8 +29,7 @@ public:
 
     void BeforeLayout() override
     {
-        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-        ImGui::ShowDemoWindow();
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
     }
 
     void Initialize() override
@@ -41,6 +40,7 @@ public:
         PanelManager::Get()->CreatePanel<HierarchyPanel>();
         PanelManager::Get()->CreatePanel<DebugPanel>();
         PanelManager::Get()->CreatePanel<InspectorPanel>();
+        PanelManager::Get()->CreatePanel<ViewportPanel>();
 
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();

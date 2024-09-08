@@ -4,12 +4,15 @@
 #include "Entity.h"
 #include "EventManager.h"
 #include "FrameBuffer.h"
-#include "Scene.h"
+#include "PanelManager.h"
+#include "RenderScope.h"
+#include "SceneManager.h"
+#include "ViewportPanel.h"
 
 namespace Doodle
 {
 
-SceneRenderer::SceneRenderer(Scene *scene) : m_scene(scene), m_registry(scene->m_registry)
+SceneRenderer::SceneRenderer()
 {
     m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
     m_pointLightsUBO = UniformBuffer::Create(sizeof(UBOPointLights), true);
@@ -21,23 +24,27 @@ SceneRenderer::SceneRenderer(Scene *scene) : m_scene(scene), m_registry(scene->m
     m_frameBuffer = FrameBuffer::Create(spec);
 
     EventManager::Get()->AddListener<AppRenderEvent>(this, &SceneRenderer::Render);
+    EventManager::Get()->AddListener(this, &SceneRenderer::OnViewportResize);
 }
 
 SceneRenderer::~SceneRenderer()
 {
     DOO_CORE_TRACE("SceneRenderer destroyed");
     EventManager::Get()->RemoveListener<AppRenderEvent>(this, &SceneRenderer::Render);
+    EventManager::Get()->RemoveListener(this, &SceneRenderer::OnViewportResize);
 }
 
 void SceneRenderer::Render()
 {
-    if (!m_scene->IsActive())
+    RenderScope<FrameBuffer> renderScope(m_frameBuffer.get());
+    Renderer::Clear();
+    auto scene = SceneManager::Get()->GetActiveScene();
+    if (!scene || !scene->IsActive())
     {
         return;
     }
-    m_frameBuffer->Bind();
 
-    auto cameraEntity = m_scene->GetMainCameraEntity();
+    auto cameraEntity = scene->GetMainCameraEntity();
     if (!cameraEntity)
     {
         return;
@@ -50,7 +57,7 @@ void SceneRenderer::Render()
         m_lightEnvironment = LightEnvironment();
         // Directional Lights
         {
-            auto lights = m_registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
+            auto lights = scene->m_registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
             uint32_t directionalLightIndex = 0;
             for (auto e : lights)
             {
@@ -68,12 +75,12 @@ void SceneRenderer::Render()
             }
             // Point Lights
             {
-                auto pointLights = m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
+                auto pointLights = scene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
                 m_lightEnvironment.PointLights.resize(pointLights.size());
                 uint32_t pointLightIndex = 0;
                 for (auto e : pointLights)
                 {
-                    Entity entity(m_scene, e);
+                    Entity entity(scene.get(), e);
                     auto [transformComponent, lightComponent] =
                         pointLights.get<TransformComponent, PointLightComponent>(e);
                     m_lightEnvironment.PointLights[pointLightIndex++] = {
@@ -85,12 +92,12 @@ void SceneRenderer::Render()
             }
             // Spot Lights
             {
-                auto spotLights = m_registry.group<SpotLightComponent>(entt::get<TransformComponent>);
+                auto spotLights = scene->m_registry.group<SpotLightComponent>(entt::get<TransformComponent>);
                 m_lightEnvironment.SpotLights.resize(spotLights.size());
                 uint32_t spotLightIndex = 0;
                 for (auto e : spotLights)
                 {
-                    Entity entity(m_scene, e);
+                    Entity entity(scene.get(), e);
                     auto [transformComponent, lightComponent] =
                         spotLights.get<TransformComponent, SpotLightComponent>(e);
                     glm::vec3 direction =
@@ -132,7 +139,7 @@ void SceneRenderer::Render()
     m_pointLightsUBO->Bind(1);
     m_spotLightsUBO->Bind(2);
 
-    auto vaoView = m_registry.view<TransformComponent, VAOComponent, MaterialComponent>();
+    auto vaoView = scene->m_registry.view<TransformComponent, VAOComponent, MaterialComponent>();
     for (auto entity : vaoView)
     {
         const auto &transform = vaoView.get<TransformComponent>(entity);
@@ -150,7 +157,7 @@ void SceneRenderer::Render()
         vao.Render();
     }
 
-    auto meshView = m_registry.view<TransformComponent, MeshComponent, MaterialComponent>();
+    auto meshView = scene->m_registry.view<TransformComponent, MeshComponent, MaterialComponent>();
     for (auto entity : meshView)
     {
 
@@ -167,8 +174,12 @@ void SceneRenderer::Render()
         material.MaterialInstance->Bind();
         mesh.Render();
     }
+}
 
-    m_frameBuffer->Unbind();
+bool SceneRenderer::OnViewportResize(const ViewportResizeEvent &e)
+{
+    m_frameBuffer->Resize(e.GetWidth(), e.GetHeight());
+    return false;
 }
 
 } // namespace Doodle
