@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "DebugPanel.h"
 #include "HierarchyPanel.h"
+#include "ImGuiMenu.h"
 #include "ImGuiUtils.Feature.h"
 #include "InspectorPanel.h"
 #include "Log.h"
@@ -28,20 +29,37 @@ public:
         return std::make_shared<Sandbox>();
     }
 
-    void BeforeLayout() override
+    void InitializeLayout()
     {
-        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+        auto fileMenuItem = std::make_shared<ParentMenuItem>("File");
+        fileMenuItem->AddSubItem<ClickableMenuItem>(
+            "Exit", []() { ApplicationRunner::Get()->GetApplication()->Shutdown(); }, "Ctrl+Q");
+
+        m_mainMenu = std::make_shared<ImGuiMenu>();
+        m_mainMenu->AddMenuItem<ParentMenuItem>(fileMenuItem);
+
+        PanelManager::Get()->CreatePanel<LogPanel>();
+        PanelManager::Get()->CreatePanel<HierarchyPanel>();
+        PanelManager::Get()->CreatePanel<DebugPanel>();
+        PanelManager::Get()->CreatePanel<InspectorPanel>();
+        PanelManager::Get()->CreatePanel<ViewportPanel>();
+
+        auto layoutMenuItem = std::make_shared<ParentMenuItem>("Layout");
+        for (const auto &[name, panel] : PanelManager::Get()->GetPanels())
+        {
+            layoutMenuItem->AddSubItem<SelectableMenuItem>(
+                name, [panel](bool selected) { panel->SetOpened(selected); }, panel->GetShortcut(),
+                [panel]() { return panel->IsOpened(); });
+        }
+        m_mainMenu->AddMenuItem<ParentMenuItem>(layoutMenuItem);
+        m_mainMenu->RegisterShortcuts();
     }
 
     void Initialize() override
     {
         Application::Initialize();
         ActivateImGuiContext();
-        PanelManager::Get()->CreatePanel<LogPanel>();
-        PanelManager::Get()->CreatePanel<HierarchyPanel>();
-        PanelManager::Get()->CreatePanel<DebugPanel>();
-        PanelManager::Get()->CreatePanel<InspectorPanel>();
-        PanelManager::Get()->CreatePanel<ViewportPanel>();
+        InitializeLayout();
 
         m_scene = SceneManager::Get()->CreateScene("Main");
         m_scene->BeginScene();
@@ -49,6 +67,14 @@ public:
         ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
         BuildSkybox();
         BuildScene();
+    }
+
+    void BeforeLayout() override
+    {
+        ImGui::BeginMainMenuBar();
+        m_mainMenu->OnLayout();
+        ImGui::EndMainMenuBar();
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
     }
 
     void BuildSkybox()
@@ -169,4 +195,5 @@ public:
 
 private:
     std::shared_ptr<Scene> m_scene;
+    std::shared_ptr<ImGuiMenu> m_mainMenu;
 };

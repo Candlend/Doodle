@@ -71,6 +71,21 @@ public:
         return m_panelData.IsShowOnTop();
     }
 
+    void SetOpened(bool opened)
+    {
+        m_open = opened;
+    }
+
+    bool IsOpened() const
+    {
+        return m_open;
+    }
+
+    virtual std::string GetShortcut() const
+    {
+        return "";
+    }
+
 protected:
     PanelData m_panelData;
     bool m_open = true;

@@ -71,6 +71,16 @@ public:
 
     void SetPanelData(uint32_t id, const PanelData &data);
 
+    std::unordered_map<uint32_t, PanelData> &GetPanelDataMap()
+    {
+        return m_panelDataMap;
+    }
+
+    std::unordered_map<std::string, std::shared_ptr<EditorPanel>> &GetPanels()
+    {
+        return m_panelMap;
+    }
+
 private:
     std::unordered_map<std::string, std::shared_ptr<EditorPanel>> m_panelMap;
     std::unordered_map<std::string, uint32_t> m_panelIdMap;

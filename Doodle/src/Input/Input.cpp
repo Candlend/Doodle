@@ -92,13 +92,12 @@ void Input::BeginFrame()
                 controller.HatStates[i] = hats[i];
         }
     }
-
-    TransitionPressedKeys();
-    TransitionPressedButtons();
 }
 
 void Input::EndFrame()
 {
+    TransitionPressedKeys();
+    TransitionPressedButtons();
     ClearReleasedKeys();
 }
 

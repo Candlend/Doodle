@@ -49,7 +49,10 @@ public:
     virtual void AfterLayout() {};
     virtual void BeforeRender() {};
     virtual void AfterRender() {};
-
+    virtual void Shutdown()
+    {
+        m_running = false;
+    };
     bool OnEvent(WindowRefreshEvent &e) override;
     bool OnEvent(WindowMoveEvent &e) override;
     bool OnEvent(WindowCloseEvent &e) override;

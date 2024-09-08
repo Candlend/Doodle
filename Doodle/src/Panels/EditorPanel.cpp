@@ -1,4 +1,5 @@
 #include "EditorPanel.h"
+#include "Log.h"
 
 namespace Doodle
 {
@@ -79,11 +80,17 @@ EditorPanel::~EditorPanel()
 
 void EditorPanel::OnLayout()
 {
-    ImGuiUtils::WindowScope scope(GetName(), &m_open, m_flags);
-    uint32_t id = ImGui::GetID(GetName());
-    m_panelData = PanelData::GetCurrentPanelData(id, m_flags, m_open);
-    PanelManager::Get()->SetPanelData(id, m_panelData);
-    OnPanelLayout();
+    DOO_CORE_DEBUG("{0} {1}", GetName(), m_open);
+    if (!m_open)
+        return;
+    if (ImGui::Begin(GetName(), &m_open, m_flags))
+    {
+        uint32_t id = ImGui::GetID(GetName());
+        m_panelData = PanelData::GetCurrentPanelData(id, m_flags, m_open);
+        PanelManager::Get()->SetPanelData(id, m_panelData);
+        OnPanelLayout();
+    }
+    ImGui::End();
 }
 
 } // namespace Doodle
