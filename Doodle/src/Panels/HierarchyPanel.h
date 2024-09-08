@@ -15,9 +15,7 @@ namespace Doodle
 class DOO_API HierarchyPanel : public EditorPanel
 {
 public:
-    HierarchyPanel() : EditorPanel("Hierarchy")
-    {
-    }
+    PANEL_CLASS_TYPE(Hierarchy)
     void OnUpdate() override;
 
     void OnPanelLayout() override;

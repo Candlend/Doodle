@@ -13,7 +13,6 @@ void DebugPanel::OnPanelLayout()
 void DebugPanel::OnUpdate()
 {
     Renderer::UseWireframe(m_useWireframe);
-    Renderer::Clear();
 }
 
 } // namespace Doodle

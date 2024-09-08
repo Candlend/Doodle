@@ -7,10 +7,6 @@
 namespace Doodle
 {
 
-InspectorPanel::InspectorPanel() : EditorPanel("Inspector")
-{
-}
-
 void InspectorPanel::OnUpdate()
 {
 }

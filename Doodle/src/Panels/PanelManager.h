@@ -28,7 +28,7 @@ public:
     template <typename T> std::shared_ptr<T> CreatePanel()
     {
         std::shared_ptr<T> panel = std::make_shared<T>();
-        m_panelMap[panel->GetPanelName()] = panel;
+        m_panelMap[panel->GetName()] = panel;
         return panel;
     }
 
@@ -42,9 +42,14 @@ public:
         m_panelMap.erase(name);
     }
 
-    template <typename T> std::shared_ptr<T> GetPanel(const std::string &name)
+    template <typename T> std::shared_ptr<T> GetPanel()
     {
-        return std::dynamic_pointer_cast<T>(m_panelMap[name]);
+        return std::dynamic_pointer_cast<T>(m_panelMap[T::GetStaticName()]);
+    }
+
+    std::shared_ptr<EditorPanel> GetPanel(const std::string &name)
+    {
+        return m_panelMap[name];
     }
 
     uint32_t GetFocusedPanelID() const
@@ -58,6 +63,11 @@ public:
     }
 
     PanelData *GetPanelData(uint32_t id);
+
+    PanelData *GetPanelData(const std::string &name)
+    {
+        return GetPanelData(m_panelIdMap[name]);
+    }
 
     void SetPanelData(uint32_t id, const PanelData &data);
 

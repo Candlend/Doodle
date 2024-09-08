@@ -11,7 +11,7 @@ namespace Doodle
 class DOO_API InspectorPanel : public EditorPanel
 {
 public:
-    InspectorPanel();
+    PANEL_CLASS_TYPE(Inspector)
     void OnUpdate() override;
 
     void OnPanelLayout() override;

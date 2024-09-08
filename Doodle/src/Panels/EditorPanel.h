@@ -38,7 +38,7 @@ struct DOO_API PanelData
 
     inline bool IsShowOnTop() const
     {
-        return Opened && Focused && !Collapsed && !Docked;
+        return Opened && Focused && !Collapsed;
     }
 
     static PanelData GetCurrentPanelData(uint32_t id, ImGuiWindowFlags flags, bool opened);
@@ -47,24 +47,44 @@ struct DOO_API PanelData
 class DOO_API EditorPanel
 {
 public:
-    EditorPanel(const std::string &panelName, ImGuiWindowFlags flags = ImGuiWindowFlags_None);
+    EditorPanel(ImGuiWindowFlags flags = ImGuiWindowFlags_None);
     ~EditorPanel();
 
     void OnLayout();
 
     virtual void OnUpdate() = 0;
     virtual void OnPanelLayout() = 0;
+    virtual const char *GetName() const = 0;
 
-    inline std::string GetPanelName()
+    uint32_t GetWidth() const
     {
-        return m_panelName;
+        return m_panelData.PanelSize.x;
+    }
+
+    uint32_t GetHeight() const
+    {
+        return m_panelData.PanelSize.y;
+    }
+
+    bool IsShowOnTop() const
+    {
+        return m_panelData.IsShowOnTop();
     }
 
 protected:
     PanelData m_panelData;
-    std::string m_panelName;
     bool m_open = true;
     ImGuiWindowFlags m_flags = ImGuiWindowFlags_None;
 };
+
+#define PANEL_CLASS_TYPE(type)                                                                                         \
+    static const char *GetStaticName()                                                                                 \
+    {                                                                                                                  \
+        return #type;                                                                                                  \
+    }                                                                                                                  \
+    virtual const char *GetName() const override                                                                       \
+    {                                                                                                                  \
+        return GetStaticName();                                                                                        \
+    }
 
 } // namespace Doodle

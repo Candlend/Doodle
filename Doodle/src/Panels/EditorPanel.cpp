@@ -65,7 +65,7 @@ PanelData PanelData::GetCurrentPanelData(uint32_t id, ImGuiWindowFlags flags, bo
     return currentData;
 }
 
-EditorPanel::EditorPanel(const std::string &panelName, ImGuiWindowFlags flags) : m_panelName(panelName), m_flags(flags)
+EditorPanel::EditorPanel(ImGuiWindowFlags flags) : m_flags(flags)
 {
     EventManager::Get()->AddListener<AppLayoutEvent>(this, &EditorPanel::OnLayout);
     EventManager::Get()->AddListener<AppUpdateEvent>(this, &EditorPanel::OnUpdate);
@@ -79,8 +79,8 @@ EditorPanel::~EditorPanel()
 
 void EditorPanel::OnLayout()
 {
-    ImGuiUtils::WindowScope scope(m_panelName.c_str(), &m_open, m_flags);
-    uint32_t id = ImGui::GetID(m_panelName.c_str());
+    ImGuiUtils::WindowScope scope(GetName(), &m_open, m_flags);
+    uint32_t id = ImGui::GetID(GetName());
     m_panelData = PanelData::GetCurrentPanelData(id, m_flags, m_open);
     PanelManager::Get()->SetPanelData(id, m_panelData);
     OnPanelLayout();

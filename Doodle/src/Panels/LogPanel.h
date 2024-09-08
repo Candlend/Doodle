@@ -12,9 +12,7 @@ namespace Doodle
 class DOO_API LogPanel : public EditorPanel
 {
 public:
-    LogPanel() : EditorPanel("Log")
-    {
-    }
+    PANEL_CLASS_TYPE(Log)
     void OnUpdate() override;
     void OnPanelLayout() override;
 

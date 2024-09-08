@@ -15,9 +15,7 @@ namespace Doodle
 class DOO_API DebugPanel : public EditorPanel
 {
 public:
-    DebugPanel() : EditorPanel("Debug")
-    {
-    }
+    PANEL_CLASS_TYPE(Debug)
     void OnUpdate() override;
 
     void OnPanelLayout() override;

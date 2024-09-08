@@ -1,9 +1,11 @@
 #pragma once
 
+#include "SceneRenderer.h"
 #include "pch.h"
 #include <imgui.h>
 
 #include <ImGuizmo.h>
+#include <memory>
 
 #include "Application.h"
 #include "EditorPanel.h"
@@ -15,12 +17,17 @@ namespace Doodle
 class DOO_API ViewportPanel : public EditorPanel
 {
 public:
-    ViewportPanel() : EditorPanel("Viewport")
+    PANEL_CLASS_TYPE(Viewport)
+    ViewportPanel()
     {
+        m_sceneRenderer = SceneRenderer::Get();
     }
     void OnUpdate() override;
 
     void OnPanelLayout() override;
+
+private:
+    SceneRenderer *m_sceneRenderer;
 };
 
 } // namespace Doodle
