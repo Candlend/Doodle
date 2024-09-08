@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Event.h"
-#include "MouseButtonCode.h"
+#include "MouseButton.h"
 
 namespace Doodle {
 
@@ -56,7 +56,7 @@ namespace Doodle {
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
-        MouseButtonEvent(MouseButtonCode button) : m_button(button)
+        MouseButtonEvent(MouseButton button) : m_button(button)
         {
         }
 
@@ -66,7 +66,7 @@ namespace Doodle {
 	class DOO_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-        MouseButtonPressedEvent(MouseButtonCode button) : MouseButtonEvent(button)
+        MouseButtonPressedEvent(MouseButton button) : MouseButtonEvent(button)
         {
         }
 
@@ -83,7 +83,7 @@ namespace Doodle {
 	class DOO_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-        MouseButtonReleasedEvent(MouseButtonCode button) : MouseButtonEvent(button)
+        MouseButtonReleasedEvent(MouseButton button) : MouseButtonEvent(button)
         {
         }
 

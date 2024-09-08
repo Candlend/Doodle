@@ -2,7 +2,8 @@
 
 #include <imgui.h>
 
-enum MouseButtonCode {
+enum MouseButton
+{
     Mouse1 = 0,
     Mouse2 = 1,
     Mouse3 = 2,

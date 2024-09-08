@@ -129,4 +129,12 @@ enum class KeyCode
     Menu = 348
 };
 
+enum class KeyState
+{
+    None = -1,
+    Pressed,
+    Held,
+    Released
+};
+
 } // namespace Doodle
