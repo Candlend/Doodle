@@ -22,8 +22,8 @@ void main()
     v_TexCoord = a_TexCoord;
     
     // Transform normal to world space
-    normalMatrix = mat3(transpose(inverse(u_Model))); // TODO 放在CPU端计算
-    v_Normal = normalMatrix * aNormal; 
+    mat3 normalMatrix = mat3(transpose(inverse(u_Model))); // TODO 放在CPU端计算
+    v_Normal = normalMatrix * a_Normal; 
     // Transform position to world space
     v_Position = vec3(u_Model * vec4(a_Position, 1.0));
     
