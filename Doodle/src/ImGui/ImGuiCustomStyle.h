@@ -17,9 +17,9 @@ void SetupImGuiStyle()
 	style.WindowPadding = ImVec2(12.0f, 12.0f);
 	style.WindowRounding = 5.0f;
 	style.WindowBorderSize = 1.0f;
-	style.WindowMinSize = ImVec2(200.0f, 200.0f);
-	style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-	style.WindowMenuButtonPosition = ImGuiDir_Right;
+    style.WindowMinSize = ImVec2(100.0f, 100.0f);
+    style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
+    style.WindowMenuButtonPosition = ImGuiDir_Right;
 	style.ChildRounding = 5.0f;
 	style.ChildBorderSize = 1.0f;
 	style.PopupRounding = 5.0f;
@@ -96,5 +96,6 @@ void SetupImGuiStyle()
 	style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f);
 	style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f);
 	style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f);
+    style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.15f, 0.15f, 0.17f, 1.0f);
 }
 } // namespace Doodle

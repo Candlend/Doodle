@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "DebugPanel.h"
 #include "HierarchyPanel.h"
+#include "ImGuiUtils.Feature.h"
 #include "InspectorPanel.h"
 #include "Log.h"
 #include "LogPanel.h"
@@ -30,7 +31,6 @@ public:
     void BeforeLayout() override
     {
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
-        ImGui::ShowDemoWindow();
     }
 
     void Initialize() override
