@@ -67,8 +67,6 @@ public:
     }
 
 private:
-    std::unordered_map<KeyCode, int> m_keyRepeatCounts;
-
     struct WindowData
     {
         std::string Title;
@@ -127,55 +125,6 @@ private:
 
         glfwSetWindowCloseCallback(m_window,
                                    [](GLFWwindow * /*window*/) { EventManager::Get()->Dispatch<WindowCloseEvent>(); });
-
-        glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int /*scancode*/, int action, int /*mods*/) {
-            WindowsWindow &appWindow = *static_cast<WindowsWindow *>(glfwGetWindowUserPointer(window));
-            KeyCode keycode = static_cast<KeyCode>(key);
-            switch (action)
-            {
-            case GLFW_PRESS: {
-                EventManager::Get()->Dispatch<KeyPressedEvent>(keycode, 0);
-                break;
-            }
-            case GLFW_RELEASE: {
-                EventManager::Get()->Dispatch<KeyReleasedEvent>(keycode);
-                appWindow.m_keyRepeatCounts.erase(keycode); // 移除按键的重复计数
-                break;
-            }
-            case GLFW_REPEAT: {
-                appWindow.m_keyRepeatCounts[keycode]++; // 增加重复计数
-                EventManager::Get()->Dispatch<KeyPressedEvent>(keycode, appWindow.m_keyRepeatCounts[keycode]);
-                break;
-            }
-            }
-        });
-
-        glfwSetCharCallback(m_window, [](GLFWwindow * /*window*/, unsigned int keycode) {
-            EventManager::Get()->Dispatch<CharInputEvent>(keycode);
-        });
-
-        glfwSetMouseButtonCallback(m_window, [](GLFWwindow * /*window*/, int button, int action, int /*mods*/) {
-            MouseButtonCode btn = static_cast<MouseButtonCode>(button);
-            switch (action)
-            {
-            case GLFW_PRESS: {
-                EventManager::Get()->Dispatch<MouseButtonPressedEvent>(btn);
-                break;
-            }
-            case GLFW_RELEASE: {
-                EventManager::Get()->Dispatch<MouseButtonReleasedEvent>(btn);
-                break;
-            }
-            }
-        });
-
-        glfwSetScrollCallback(m_window, [](GLFWwindow * /*window*/, double xOffset, double yOffset) {
-            EventManager::Get()->Dispatch<MouseScrolledEvent>(static_cast<float>(xOffset), static_cast<float>(yOffset));
-        });
-
-        glfwSetCursorPosCallback(m_window, [](GLFWwindow * /*window*/, double xPos, double yPos) {
-            EventManager::Get()->Dispatch<MouseMovedEvent>(static_cast<float>(xPos), static_cast<float>(yPos));
-        });
     }
 
     void Shutdown()

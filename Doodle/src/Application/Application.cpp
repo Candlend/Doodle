@@ -6,6 +6,7 @@
 #include "ApplicationRunner.h"
 #include "EventManager.h"
 #include "ImGuiBuilder.h"
+#include "Input.h"
 #include "Log.h"
 #include "Renderer.h"
 #include "Window.h"
@@ -68,6 +69,7 @@ Application::~Application()
 void Application::Initialize()
 {
     DOO_CORE_INFO("Application initialized");
+    Input::Get()->Initialize();
     Renderer::Get()->Initialize();
     ImGuiBuilder::Get()->Initialize();
 }
@@ -77,6 +79,7 @@ void Application::Deinitialize()
     DOO_CORE_INFO("Application deinitialized");
     Renderer::Get()->Deinitialize();
     ImGuiBuilder::Get()->Deinitialize();
+    Input::Get()->Deinitialize();
 }
 
 void Application::Run()

@@ -26,25 +26,25 @@ protected:
 class DOO_API KeyPressedEvent : public KeyEvent
 {
 public:
-    KeyPressedEvent(KeyCode keycode, int repeatCount) : KeyEvent(keycode), m_repeatCount(repeatCount)
+    KeyPressedEvent(KeyCode keycode, bool repeated) : KeyEvent(keycode), m_repeated(repeated)
     {
     }
 
-    inline int GetRepeatCount() const
+    inline int IsRepeated() const
     {
-        return m_repeatCount;
+        return m_repeated;
     }
 
     std::string ToString() const override
     {
         std::stringstream ss;
-        ss << "KeyPressedEvent: " << static_cast<int>(m_keyCode) << " (" << m_repeatCount << " repeats)";
+        ss << "KeyPressedEvent: " << static_cast<int>(m_keyCode) << m_repeated;
         return ss.str();
     }
 
     EVENT_CLASS_TYPE(KeyPressed)
 private:
-    int m_repeatCount;
+    bool m_repeated;
 };
 
 class DOO_API KeyReleasedEvent : public KeyEvent

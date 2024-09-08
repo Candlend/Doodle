@@ -27,7 +27,6 @@ protected:
     Singleton() = default;
     virtual ~Singleton()
     {
-        DOO_CORE_DEBUG("{0} Destroy", typeid(T).name());
         m_destroyed = true;
     };
 
