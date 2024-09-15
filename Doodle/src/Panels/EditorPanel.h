@@ -66,6 +66,11 @@ public:
         return m_panelData.ContentSize.y;
     }
 
+    uint32_t GetID() const
+    {
+        return m_panelData.ID;
+    }
+
     bool IsShowOnTop() const
     {
         return m_panelData.IsShowOnTop();

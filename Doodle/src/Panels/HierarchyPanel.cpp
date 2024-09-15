@@ -1,9 +1,10 @@
+#include "HierarchyPanel.h"
 #include "Component.h"
 #include "Entity.h"
-#include "HierarchyPanel.h"
+#include "PanelManager.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
-
+#include "imgui.h"
 
 namespace Doodle
 {
@@ -19,6 +20,7 @@ void HierarchyPanel::OnPanelLayout()
         {
             SelectionManager::DeselectAll(SelectionContext::Global);
             SelectionManager::Select(SelectionContext::Global, entity.GetUUID());
+            ImGui::SetWindowFocus("Viewport");
         }
     }
 }
