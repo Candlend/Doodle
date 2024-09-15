@@ -2542,6 +2542,13 @@ void DrawGrid(const float *view, const float *projection, const float *matrix, c
     ComputeFrustumPlanes(frustum, viewProjection.m16);
     matrix_t res = *(matrix_t *)matrix * viewProjection;
 
+    // 从视图矩阵中提取摄像机位置
+    vec_t cameraPosition;
+    cameraPosition.x = -view[12]; // 视图矩阵的第四列（平移部分）
+    cameraPosition.y = -view[13];
+    cameraPosition.z = -view[14];
+    cameraPosition.w = 1.0f; // 设定为 1.0 以便于后续计算
+
     for (float f = -gridSize; f <= gridSize; f += 1.f)
     {
         for (int dir = 0; dir < 2; dir++)
@@ -2577,15 +2584,42 @@ void DrawGrid(const float *view, const float *projection, const float *matrix, c
             }
             if (visible)
             {
-                ImU32 col = 0xFF808080;
-                col = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 0xFF909090 : col;
-                col = (fabsf(f) < FLT_EPSILON) ? 0xFF404040 : col;
+                // 计算到摄像机的距离
+                float distanceA = (ptA - cameraPosition).Length();
+                float distanceB = (ptB - cameraPosition).Length();
+
+                // 计算透明度，距离越远透明度越高
+                float alphaA = fmax(0.f, 1.f - (distanceA / gridSize)); // 归一化到 [0, 1]
+                float alphaB = fmax(0.f, 1.f - (distanceB / gridSize)); // 归一化到 [0, 1]
+
+                const float power = 5.f;
+
+                // 使用pow函数调整透明度
+                alphaA = pow(alphaA, power);
+                alphaB = pow(alphaB, power);
+
+                const float minAlpha = 0.0f;
+                const float maxAlpha = 0.3f;
+
+                // 限制透明度范围
+                alphaA = minAlpha + (alphaA * (maxAlpha - minAlpha));
+                alphaB = minAlpha + (alphaB * (maxAlpha - minAlpha));
+
+                // 计算颜色
+                ImU32 colA = 0xFF808080; // 默认颜色
+                colA = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 0xFF909090 : colA;
+                colA = (fabsf(f) < FLT_EPSILON) ? 0xFF404040 : colA;
+
+                ImU32 colB = colA;                                        // 颜色一致
+                colA = (colA & 0x00FFFFFF) | ((int)(alphaA * 255) << 24); // 设置透明度
+                colB = (colB & 0x00FFFFFF) | ((int)(alphaB * 255) << 24); // 设置透明度
 
                 float thickness = 1.f;
                 thickness = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 1.5f : thickness;
                 thickness = (fabsf(f) < FLT_EPSILON) ? 2.3f : thickness;
 
-                gContext.mDrawList->AddLine(worldToPos(ptA, res), worldToPos(ptB, res), col, thickness);
+                // 绘制线条
+                gContext.mDrawList->AddLine(worldToPos(ptA, res), worldToPos(ptB, res), colA, thickness);
             }
         }
     }

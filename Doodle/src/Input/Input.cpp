@@ -19,13 +19,13 @@ namespace Doodle
 void Input::Initialize()
 {
     EventManager::Get()->AddListener<AppUpdateEvent>(this, &Input::BeginFrame, ExecutionOrder::First);
-    EventManager::Get()->AddListener<AppRenderEvent>(this, &Input::EndFrame, ExecutionOrder::Last);
+    EventManager::Get()->AddListener<AppLayoutEvent>(this, &Input::EndFrame, ExecutionOrder::Last);
 }
 
 void Input::Deinitialize()
 {
     EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &Input::BeginFrame);
-    EventManager::Get()->RemoveListener<AppRenderEvent>(this, &Input::EndFrame);
+    EventManager::Get()->RemoveListener<AppLayoutEvent>(this, &Input::EndFrame);
 }
 
 void Input::BeginFrame()
