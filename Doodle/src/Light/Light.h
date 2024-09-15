@@ -68,7 +68,7 @@ struct SpotLight
 struct UBOScene
 {
     DirectionalLight DirectionalLight;
-    glm::vec3 AmbientRadiance{0.1f};
+    glm::vec3 AmbientRadiance{0.03f};
     float Padding1; // 4 bytes to align to 16 bytes
     glm::vec3 CameraPosition{0.0f};
     float Padding2; // 4 bytes to align to 16 bytes

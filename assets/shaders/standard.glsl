@@ -52,6 +52,8 @@ uniform sampler2D u_NormalTexture;
 uniform sampler2D u_MetallicTexture;
 uniform sampler2D u_RoughnessTexture;
 
+const float PI = 3.14159265359;
+
 struct DirectionalLight
 {
     vec3 Direction;
@@ -101,14 +103,48 @@ layout(std140, binding = 2) uniform SpotLightData
     SpotLight Lights[256];
 } u_SpotLights;
 
-// Function to calculate the Fresnel-Schlick approximation
 vec3 FresnelSchlick(float cosTheta, vec3 F0)
 {
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a      = roughness*roughness;
+    float a2     = a*a;
+    float NdotH  = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH*NdotH;
+
+    float num   = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return num / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
+
+    float num   = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return num / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
 }
 
 // Function to compute the Specular reflection using the Cook-Torrance model
-vec3 CookTorranceBRDF(vec3 normal, vec3 viewDir, vec3 lightDir, float metallic, float roughness)
+vec3 CookTorranceBRDF(vec3 normal, vec3 viewDir, vec3 lightDir, float metallic, float roughness, vec4 albedo)
 {
     // Compute half-vector
     vec3 halfDir = normalize(lightDir + viewDir);
@@ -117,18 +153,32 @@ vec3 CookTorranceBRDF(vec3 normal, vec3 viewDir, vec3 lightDir, float metallic, 
     float NdotV = max(dot(normal, viewDir), 0.0);
     
     // Calculate the Fresnel reflectance at normal incidence
-    vec3 F0 = mix(vec3(0.04), u_AlbedoColor.rgb, metallic);
-    vec3 F = FresnelSchlick(NdotV, F0);
-    
-    // Calculate D (the normal distribution)
-    float alpha = roughness * roughness;
-    float D = (alpha * alpha) / (3.141592 * pow(NdotH * NdotH * (alpha * alpha - 1.0) + 1.0, 2.0));
-    
-    // Calculate G (the geometric attenuation)
-    float G = min(1.0, min((2.0 * NdotH * NdotV) / dot(viewDir, halfDir), (2.0 * NdotH * NdotL) / dot(lightDir, halfDir)));
+    vec3 F0 = mix(vec3(0.04), albedo.rgb, metallic);
+    vec3 F = FresnelSchlick(NdotH, F0);
+
+    // Calculate the microfacet distribution
+    float D = DistributionGGX(normal, halfDir, roughness);
+
+    // Calculate the geometric attenuation
+    float G = GeometrySmith(normal, viewDir, lightDir, roughness);
     
     // Calculate the specular color
-    return (D * G * F) / max(3.14 * NdotV * NdotL, 0.00390625);;
+    vec3 nominator = D * G * F;
+    float denominator = max(4.0 * NdotV * NdotL, 0.00390625); 
+    vec3 specular = nominator / denominator; 
+
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+
+    kD *= 1.0 - metallic;   
+
+    // Calculate the diffuse color
+    vec3 diffuse = kD * albedo.rgb / PI;
+
+    // Calculate the final color
+    vec3 color = (diffuse + specular) * NdotL;
+
+    return color;
 }
 
 void main()
@@ -152,7 +202,7 @@ void main()
 
     // Directional light contribution
     vec3 lightDir = normalize(-u_Scene.DirectionalLight.Direction);
-    color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * u_Scene.DirectionalLight.Radiance * u_Scene.DirectionalLight.Intensity;
+    color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * u_Scene.DirectionalLight.Radiance * u_Scene.DirectionalLight.Intensity;
 
     // Point lights
     for (uint i = 0; i < u_PointLights.LightCount; ++i)
@@ -164,7 +214,7 @@ void main()
         vec3 lightDir = normalize(light.Position - v_Position);
         // Attenuation
         float attenuation = clamp(1.0 - (distance - light.MinRadius) / (light.Radius - light.MinRadius), 0.0, 1.0); // TODO 参数可以调整
-        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * light.Radiance * light.Intensity * attenuation;
+        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * attenuation;
     }
 
     // Spot lights
@@ -182,7 +232,7 @@ void main()
         float angleAttenuation = smoothstep(cos(light.Angle), 1.0, dot(-lightDir, normalize(light.Direction)));  // TODO 参数可以调整
         attenuation *= angleAttenuation;
         
-        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness) * light.Radiance * light.Intensity * attenuation;
+        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * attenuation;
     }
 
     // Final color output

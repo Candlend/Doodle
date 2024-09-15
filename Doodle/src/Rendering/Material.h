@@ -88,7 +88,7 @@ public:
         SetRoughnessTexture(Texture2D::GetWhiteTexture());
         SetAlbedoColor(glm::vec4(1.0f));
         SetNormalScale(1.0f);
-        SetMetallic(0.5f);
+        SetMetallic(1.0f);
         SetRoughness(1.0f);
     }
 
