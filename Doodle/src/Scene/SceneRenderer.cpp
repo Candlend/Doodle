@@ -1,3 +1,6 @@
+#include "pch.h"
+#include <glad/glad.h>
+
 #include "SceneRenderer.h"
 #include "ApplicationEvent.h"
 #include "Component.h"

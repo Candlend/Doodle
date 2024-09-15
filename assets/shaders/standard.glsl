@@ -234,7 +234,8 @@ void main()
         
         color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * attenuation;
     }
-
+    color = color / (color + vec3(1.0));
+    color = pow(color, vec3(1.0/2.2)); 
     // Final color output
     finalColor = vec4(color, 1.0);
 }

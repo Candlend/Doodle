@@ -1,10 +1,10 @@
-#include "Renderer.h"
+#include "pch.h"
+#include <glad/glad.h>
+
 #include "ApplicationEvent.h"
 #include "EventManager.h"
 #include "Log.h"
-#include "pch.h"
-#include <functional>
-#include <memory>
+#include "Renderer.h"
 
 namespace Doodle
 {
@@ -16,12 +16,23 @@ void Renderer::Initialize()
         DOO_CORE_TRACE("Renderer initialized");
     });
 
-    EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::WaitAndRender, ExecutionOrder::Last);
+    EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::BeginFrame, ExecutionOrder::First);
+    EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::EndFrame, ExecutionOrder::Last);
 }
 
 void Renderer::Deinitialize()
 {
-    EventManager::Get()->RemoveListener<AppRenderEvent>(this, &Renderer::WaitAndRender);
+    EventManager::Get()->RemoveListener<AppRenderEvent>(this, &Renderer::BeginFrame);
+    EventManager::Get()->RemoveListener<AppRenderEvent>(this, &Renderer::EndFrame);
+}
+
+void Renderer::BeginFrame()
+{
+}
+
+void Renderer::EndFrame()
+{
+    Renderer::WaitAndRender();
 }
 
 void Renderer::Clear(float r, float g, float b, float a)

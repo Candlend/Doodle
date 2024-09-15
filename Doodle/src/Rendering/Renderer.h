@@ -37,6 +37,8 @@ public:
     void Deinitialize();
 
 private:
+    void BeginFrame();
+    void EndFrame();
     void WaitAndRender();
 
     RenderCommandQueue m_commandQueue;

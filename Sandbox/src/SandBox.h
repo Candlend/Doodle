@@ -85,8 +85,9 @@ public:
             "assets/textures/skybox/right.jpg",  "assets/textures/skybox/left.jpg",  "assets/textures/skybox/top.jpg",
             "assets/textures/skybox/bottom.jpg", "assets/textures/skybox/front.jpg", "assets/textures/skybox/back.jpg",
         };
-
-        skyboxMaterial->LoadSkyboxTexture(faces);
+        TextureParams params;
+        params.Format = TextureFormat::SRGB8;
+        skyboxMaterial->LoadSkyboxTexture(faces, params);
 
         auto skybox = m_scene->CreateEntity("Skybox");
         skybox.AddComponent<MaterialComponent>(skyboxMaterial);
@@ -104,7 +105,7 @@ public:
         cerberus.GetComponent<TransformComponent>().Scale = glm::vec3(0.01f);
         auto &cerberusMat = cerberus.GetComponent<MaterialComponent>().MaterialInstance;
         TextureParams params;
-        params.Format = TextureFormat::RGBA8;
+        params.Format = TextureFormat::SRGB8;
         cerberusMat->LoadAlbedoTexture("assets/textures/cerberus/cerberus_A.png", params);
         cerberusMat->LoadNormalTexture("assets/textures/cerberus/cerberus_N.png");
         cerberusMat->LoadMetallicTexture("assets/textures/cerberus/cerberus_M.png");
@@ -115,14 +116,14 @@ public:
         cube.AddComponent<MaterialComponent>(material);
         cube.GetComponent<TransformComponent>().Position = glm::vec3(2.f, 0.f, 0.f);
         auto &cubeMat = cube.GetComponent<MaterialComponent>().MaterialInstance;
-        cubeMat->LoadAlbedoTexture("assets/textures/test_cube/test_cube_diffuse.tga");
+        cubeMat->LoadAlbedoTexture("assets/textures/test_cube/test_cube_diffuse.tga", params);
 
         auto sphere = m_scene->CreateEntity("Sphere");
         sphere.AddComponent<MeshComponent>("assets/models/sphere.obj");
         sphere.AddComponent<MaterialComponent>(material);
         sphere.GetComponent<TransformComponent>().Position = glm::vec3(-2.f, 0.f, 0.f);
         auto &sphereMat = sphere.GetComponent<MaterialComponent>().MaterialInstance;
-        sphereMat->LoadAlbedoTexture("assets/textures/rusted_iron/base_color.tga");
+        sphereMat->LoadAlbedoTexture("assets/textures/rusted_iron/base_color.tga", params);
         sphereMat->LoadNormalTexture("assets/textures/rusted_iron/normal.tga");
         sphereMat->LoadMetallicTexture("assets/textures/rusted_iron/metallic.tga");
         sphereMat->LoadRoughnessTexture("assets/textures/rusted_iron/roughness.tga");
@@ -137,7 +138,7 @@ public:
         cutFish.AddComponent<MaterialComponent>(material);
         cutFish.GetComponent<TransformComponent>().Position = glm::vec3(0.f, 0.f, -5.f);
         auto &cutFishMat = cutFish.GetComponent<MaterialComponent>().MaterialInstance;
-        cutFishMat->LoadAlbedoTexture("assets/textures/cut_fish/base_color.tga");
+        cutFishMat->LoadAlbedoTexture("assets/textures/cut_fish/base_color.tga", params);
         cutFishMat->LoadNormalTexture("assets/textures/cut_fish/normal.tga");
         cutFishMat->LoadMetallicTexture("assets/textures/cut_fish/metallic.tga");
         cutFishMat->LoadRoughnessTexture("assets/textures/cut_fish/roughness.tga");

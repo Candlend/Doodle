@@ -30,5 +30,8 @@ uniform samplerCube u_Skybox;
 void main()
 {
     // Sample the cube map texture using the fragment's position
-    finalColor = texture(u_Skybox, normalize(v_Position));
+    vec3 color = texture(u_Skybox, normalize(v_Position)).rgb;
+    color = color / (color + vec3(1.0));
+    color = pow(color, vec3(1.0/2.2)); 
+    finalColor = vec4(color, 1.0);
 }
