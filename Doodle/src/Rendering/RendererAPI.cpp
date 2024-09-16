@@ -21,6 +21,7 @@ static void OpenGLLogMessage(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, 
 void RendererAPI::Initialize()
 {
     glDebugMessageCallback(OpenGLLogMessage, nullptr);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 

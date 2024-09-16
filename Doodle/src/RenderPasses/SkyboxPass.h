@@ -12,7 +12,7 @@
 namespace Doodle
 {
 
-class SkyboxPass : public RenderPass
+class DOO_API SkyboxPass : public RenderPass
 {
 public:
     SkyboxPass(const RenderPassSpecification &specification) : RenderPass(specification)

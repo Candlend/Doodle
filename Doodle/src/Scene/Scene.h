@@ -45,7 +45,6 @@ struct CameraData
 
 struct SceneData
 {
-    glm::vec3 AmbientRadiance;
     CameraData CameraData;
     LightEnvironment LightEnvironment;
     Environment Environment;

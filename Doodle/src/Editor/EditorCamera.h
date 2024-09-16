@@ -22,7 +22,9 @@
 namespace Doodle
 {
 
-class EditorCamera : public SceneCamera, public IEventHandler<ViewportResizeEvent>, public Singleton<EditorCamera>
+class DOO_API EditorCamera : public SceneCamera,
+                             public IEventHandler<ViewportResizeEvent>,
+                             public Singleton<EditorCamera>
 {
 public:
     EditorCamera()

@@ -52,8 +52,8 @@ vec3 GetCubeMapTexCoord()
     vec3 ret;
     if (gl_GlobalInvocationID.z == 0)      ret = vec3(  1.0, uv.y, -uv.x);
     else if (gl_GlobalInvocationID.z == 1) ret = vec3( -1.0, uv.y,  uv.x);
-    else if (gl_GlobalInvocationID.z == 2) ret = vec3( uv.x, -1.0,  uv.y);
-    else if (gl_GlobalInvocationID.z == 3) ret = vec3( uv.x,  1.0, -uv.y);
+    else if (gl_GlobalInvocationID.z == 2) ret = vec3( uv.x,  1.0, -uv.y);
+    else if (gl_GlobalInvocationID.z == 3) ret = vec3( uv.x, -1.0,  uv.y);
     else if (gl_GlobalInvocationID.z == 4) ret = vec3( uv.x, uv.y,   1.0);
     else if (gl_GlobalInvocationID.z == 5) ret = vec3(-uv.x, uv.y,  -1.0);
     return normalize(ret);

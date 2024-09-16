@@ -5,15 +5,17 @@
 
 #include "Component.h"
 #include "RenderPass.h"
+#include <memory>
 
 namespace Doodle
 {
 
-class ShadingPass : public RenderPass
+class DOO_API ShadingPass : public RenderPass
 {
 public:
     ShadingPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
+        m_brdfLUT = Texture2D::Create("assets/textures/brdfLUT.tga");
     }
 
     void BeginScene() override
@@ -32,6 +34,8 @@ public:
 
         auto *scene = m_scene;
         auto &sceneData = scene->GetData();
+        auto irradienceMap = sceneData.Environment.IrradianceMap;
+        auto prefilterMap = sceneData.Environment.RadianceMap;
 
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
         for (auto entity : vaoView)
@@ -45,6 +49,9 @@ public:
             material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
             material.MaterialInstance->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
             material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
+            material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
+            material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
+            material.MaterialInstance->SetUniformTexture("u_brdfLUT", m_brdfLUT);
 
             material.MaterialInstance->Bind();
             vao.Render();
@@ -64,12 +71,18 @@ public:
             material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
             material.MaterialInstance->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
             material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
+            material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
+            material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
+            material.MaterialInstance->SetUniformTexture("u_brdfLUT", m_brdfLUT);
 
             material.MaterialInstance->Bind();
             mesh.Render();
             material.MaterialInstance->Unbind();
         }
     }
+
+private:
+    std::shared_ptr<Texture2D> m_brdfLUT;
 };
 
 } // namespace Doodle

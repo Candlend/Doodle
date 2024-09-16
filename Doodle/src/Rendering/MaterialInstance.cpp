@@ -1,4 +1,6 @@
 #include "MaterialInstance.h"
+#include "Log.h"
+#include <cstdint>
 
 namespace Doodle
 {
@@ -74,21 +76,27 @@ void MaterialInstance::SetUniformMatrix3f(const std::string &name, glm::mat3 val
 void MaterialInstance::SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value)
 {
     // 找到则跳过，否则添加到纹理槽中
-    if (!m_material->m_textureSlots.contains(value->GetUUID()))
+    if (!m_material->m_textureSlots.contains(value->GetUUID()) && !m_instanceTextureSlots.contains(value->GetUUID()))
     {
         m_instanceTextureSlots[value->GetUUID()] = m_material->m_textureSlots.size() + m_instanceTextureSlots.size();
     }
     m_instanceTextures[name] = value;
+    DOO_CORE_DEBUG("SetTexture {0} {1}", name, m_instanceTextureSlots[value->GetUUID()]);
 }
 
 void MaterialInstance::ApplyInstanceUniforms()
 {
     for (auto &[name, texture] : m_instanceTextures)
     {
-        if (!m_instanceTextureSlots.contains(texture->GetUUID()))
+        uint32_t slot;
+        // 如果该帖图在Material的纹理槽中，则直接使用Material的纹理槽
+        if (m_material->m_textureSlots.contains(texture->GetUUID()))
         {
-            continue;
+            DOO_CORE_ASSERT(!m_instanceTextureSlots.contains(texture->GetUUID()), "Texture already exists in Material");
+            slot = m_material->m_textureSlots[texture->GetUUID()];
         }
+        slot = m_instanceTextureSlots[texture->GetUUID()];
+        DOO_CORE_DEBUG("ApplyTexture {0} {1}", name, m_instanceTextureSlots[texture->GetUUID()]);
         m_material->m_shader->SetUniformTexture(name, texture, m_instanceTextureSlots[texture->GetUUID()]);
     }
     for (const auto &[name, value] : m_instanceUniforms1f)

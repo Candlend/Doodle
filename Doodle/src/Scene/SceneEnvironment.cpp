@@ -18,6 +18,7 @@ Environment Environment::Load(const std::string &filepath)
     params.Height = CUBEMAP_SIZE;
     params.Format = TextureFormat::RGBA16F;
     params.Wrap = TextureWrap::ClampToEdge;
+    params.Filter = TextureFilter::MipmapLinear;
 
     std::shared_ptr<TextureCube> envUnfiltered = TextureCube::Create(params);
     static std::shared_ptr<Shader> s_EquirectangularConversionShader, s_EnvFilteringShader, s_EnvIrradianceShader;
@@ -68,6 +69,7 @@ Environment Environment::Load(const std::string &filepath)
 
     params.Width = IRRADIANCE_MAP_SIZE;
     params.Height = IRRADIANCE_MAP_SIZE;
+    params.Filter = TextureFilter::Linear;
 
     std::shared_ptr<TextureCube> irradianceMap = TextureCube::Create(params);
     s_EnvIrradianceShader->Bind();
@@ -75,7 +77,6 @@ Environment Environment::Load(const std::string &filepath)
     Renderer::Submit([irradianceMap]() {
         glBindImageTexture(0, irradianceMap->GetRendererID(), 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
         glDispatchCompute(irradianceMap->GetWidth() / 32, irradianceMap->GetHeight() / 32, 6);
-        glGenerateTextureMipmap(irradianceMap->GetRendererID());
     });
 
     return {envFiltered, irradianceMap};

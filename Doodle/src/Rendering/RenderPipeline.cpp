@@ -57,7 +57,6 @@ void RenderPipeline::Execute()
     {
         static UBOScene s_UboScene = {};
         s_UboScene.DirectionalLight = sceneData.LightEnvironment.DirectionalLights[0];
-        s_UboScene.AmbientRadiance = glm::vec3(0.03f);
         s_UboScene.CameraPosition = sceneData.CameraData.Position;
         m_uniformBuffers["SceneData"]->SetSubData(&s_UboScene, sizeof(UBOScene));
 

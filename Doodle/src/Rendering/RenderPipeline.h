@@ -12,7 +12,7 @@ namespace Doodle
 
 class RenderPass;
 class RenderPassSpecification;
-class RenderPipeline : public Singleton<RenderPipeline>
+class DOO_API RenderPipeline : public Singleton<RenderPipeline>
 {
 public:
     RenderPipeline();

@@ -85,12 +85,12 @@ public:
     {
         SetAlbedoTexture(Texture2D::GetWhiteTexture());
         SetNormalTexture(Texture2D::GetDefaultNormalTexture());
-        SetMetallicTexture(Texture2D::GetBlackTexture());
+        SetMetallicTexture(Texture2D::GetWhiteTexture());
         SetRoughnessTexture(Texture2D::GetWhiteTexture());
         SetAlbedoColor(glm::vec4(1.0f));
         SetNormalScale(1.0f);
-        SetMetallic(1.0f);
-        SetRoughness(1.0f);
+        SetMetallic(0.5f);
+        SetRoughness(0.5f);
     }
 
     void SetAlbedoColor(const glm::vec4 &color)

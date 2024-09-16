@@ -52,6 +52,10 @@ uniform sampler2D u_NormalTexture;
 uniform sampler2D u_MetallicTexture;
 uniform sampler2D u_RoughnessTexture;
 
+uniform samplerCube u_IrradianceMap;
+uniform samplerCube u_PrefilterMap;
+uniform sampler2D u_BrdfLUT;
+
 const float PI = 3.14159265359;
 
 struct DirectionalLight
@@ -64,7 +68,6 @@ struct DirectionalLight
 layout(std140, binding = 0) uniform SceneData
 {
     DirectionalLight DirectionalLight;
-    vec3 AmbientRadiance;
     vec3 CameraPosition;
 } u_Scene;
 
@@ -106,6 +109,11 @@ layout(std140, binding = 2) uniform SpotLightData
 vec3 FresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
@@ -181,6 +189,28 @@ vec3 CookTorranceBRDF(vec3 normal, vec3 viewDir, vec3 lightDir, float metallic, 
     return color;
 }
 
+vec3 IBL(vec3 normal, vec3 viewDir, vec4 albedo, float metallic, float roughness)
+{
+    // IBL
+    vec3 N = normalize(normal);
+    vec3 V = normalize(viewDir);
+    vec3 R = reflect(-V, N);
+    vec3 F0 = mix(vec3(0.04), albedo.rgb, metallic);
+
+    vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness); 
+    vec3 kS = F;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - metallic;
+    vec3 irradiance = texture(u_IrradianceMap, N).rgb;
+    vec3 diffuse = irradiance * albedo.rgb;
+
+    vec3 prefilteredColor = textureLod(u_PrefilterMap, R, roughness * textureQueryLevels(u_PrefilterMap)).rgb;
+    vec2 envBRDF = texture(u_BrdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+    vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+
+    return kD * diffuse + specular;
+}
+
 void main()
 {
     // Sample textures
@@ -198,7 +228,7 @@ void main()
     vec3 color = vec3(0.0);
     
     // Ambient lighting
-    color += u_Scene.AmbientRadiance * albedo.rgb;
+    color += IBL(normal, viewDir, albedo, metallic, roughness);
 
     // Directional light contribution
     vec3 lightDir = normalize(-u_Scene.DirectionalLight.Direction);

@@ -166,8 +166,6 @@ public:
 
     void BeforeUpdate() override
     {
-        auto cerberus = m_scene->FindEntity("Cerberus");
-        cerberus.GetComponent<TransformComponent>().Rotation.y += 100.f * Time::GetDeltaTime();
     }
 
     void Deinitialize() override

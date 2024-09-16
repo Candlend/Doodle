@@ -7,7 +7,7 @@
 namespace Doodle
 {
 
-struct Environment
+struct DOO_API Environment
 {
     std::shared_ptr<TextureCube> RadianceMap;
     std::shared_ptr<TextureCube> IrradianceMap;
