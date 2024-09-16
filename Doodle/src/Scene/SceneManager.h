@@ -27,10 +27,15 @@ public:
     {
         return m_activeScene;
     }
+    SceneState GetState() const
+    {
+        return m_state;
+    }
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Scene>> m_scenes;
     std::shared_ptr<Scene> m_activeScene;
+    SceneState m_state = SceneState::Editor;
 };
 
 } // namespace Doodle

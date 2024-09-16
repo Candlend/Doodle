@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "Scene.h"
 #include "SceneEvent.h"
+#include "SceneManager.h"
 
 namespace Doodle
 {
@@ -21,7 +22,7 @@ Scriptable::~Scriptable()
 void Scriptable::OnAdded()
 {
     EventManager::Get()->AddListener(this, &Scriptable::OnSceneActivate);
-    if (IsValid() && GetScene()->IsActive())
+    if (IsValid() && GetScene()->IsActive() && SceneManager::Get()->GetState() == SceneState::Runtime)
     {
         EventManager::Get()->AddListener<AppUpdateEvent>(this, &Scriptable::OnUpdate);
         EventManager::Get()->AddListener<AppLayoutEvent>(this, &Scriptable::OnLayout);
