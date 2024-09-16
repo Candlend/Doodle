@@ -9,6 +9,7 @@
 #include "EventManager.h"
 #include "FrameBuffer.h"
 #include "PanelManager.h"
+#include "RenderPipeline.h"
 #include "RenderScope.h"
 #include "SceneManager.h"
 #include "SceneRenderer.h"
@@ -19,9 +20,6 @@ namespace Doodle
 
 SceneRenderer::SceneRenderer()
 {
-    m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
-    m_pointLightsUBO = UniformBuffer::Create(sizeof(UBOPointLights), true);
-    m_spotLightsUBO = UniformBuffer::Create(sizeof(UBOSpotLights), true);
     FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::RGBA8,
                                                       FramebufferTextureFormat::RED_INTEGER,
                                                       FramebufferTextureFormat::DEPTH24STENCIL8};
@@ -47,157 +45,27 @@ void SceneRenderer::Render()
         return;
     }
 
-    PrepareSceneData(scene);
-    {
-        UBOScene sceneData = {};
-        sceneData.DirectionalLight = m_sceneData.LightEnvironment.DirectionalLights[0];
-        sceneData.AmbientRadiance = glm::vec3(0.03f);
-        sceneData.CameraPosition = m_sceneData.CameraData.Position;
-        m_sceneUBO->SetSubData(&sceneData, sizeof(UBOScene));
-
-        UBOPointLights pointLightData = {};
-        const std::vector<PointLight> &pointLightsVec = m_sceneData.LightEnvironment.PointLights;
-        pointLightData.Count = pointLightsVec.size();
-        std::memcpy(pointLightData.PointLights, pointLightsVec.data(),
-                    m_sceneData.LightEnvironment.GetPointLightsSize());
-        m_pointLightsUBO->SetSubData(&pointLightData, sizeof(UBOPointLights));
-
-        UBOSpotLights spotLightData = {};
-        const std::vector<SpotLight> &spotLightsVec = m_sceneData.LightEnvironment.SpotLights;
-        spotLightData.Count = spotLightsVec.size();
-        std::memcpy(spotLightData.SpotLights, spotLightsVec.data(), m_sceneData.LightEnvironment.GetSpotLightsSize());
-        m_spotLightsUBO->SetSubData(&spotLightData, sizeof(UBOSpotLights));
-
-        m_sceneUBO->Bind(0);
-        m_pointLightsUBO->Bind(1);
-        m_spotLightsUBO->Bind(2);
-    }
-
-    auto vaoView = scene->m_registry.view<TransformComponent, VAOComponent, MaterialComponent>();
-    for (auto entity : vaoView)
-    {
-        const auto &transform = vaoView.get<TransformComponent>(entity);
-        const auto &vao = vaoView.get<VAOComponent>(entity);
-        const auto &material = vaoView.get<MaterialComponent>(entity);
-
-        glm::mat4 model = transform.GetModelMatrix();
-
-        material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-        material.MaterialInstance->SetUniformMatrix4f("u_View", m_sceneData.CameraData.View);
-        material.MaterialInstance->SetUniformMatrix4f("u_Projection", m_sceneData.CameraData.Projection);
-
-        material.MaterialInstance->Bind();
-
-        vao.Render();
-    }
-
-    auto meshView = scene->m_registry.view<TransformComponent, MeshComponent, MaterialComponent>();
-    for (auto entity : meshView)
-    {
-
-        const auto &transform = meshView.get<TransformComponent>(entity);
-        const auto &mesh = meshView.get<MeshComponent>(entity);
-        const auto &material = meshView.get<MaterialComponent>(entity);
-
-        glm::mat4 model = transform.GetModelMatrix();
-
-        material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-        material.MaterialInstance->SetUniformMatrix4f("u_View", m_sceneData.CameraData.View);
-        material.MaterialInstance->SetUniformMatrix4f("u_Projection", m_sceneData.CameraData.Projection);
-
-        material.MaterialInstance->Bind();
-        mesh.Render();
-    }
-}
-
-void SceneRenderer::PrepareSceneData(std::shared_ptr<Scene> scene)
-{
-    if (SceneManager::Get()->GetState() == SceneState::Editor)
-    {
-        auto *editorCamera = EditorCamera::Get();
-        m_sceneData.CameraData.Position = editorCamera->GetPosition();
-        m_sceneData.CameraData.View = editorCamera->GetViewMatrix();
-        m_sceneData.CameraData.Projection = editorCamera->GetProjectionMatrix();
-    }
-    else
-    {
-        auto cameraEntity = scene->GetMainCameraEntity();
-        if (!cameraEntity)
-        {
-            return;
-        }
-        m_sceneData.CameraData.Position = cameraEntity.GetComponent<TransformComponent>().Position;
-        m_sceneData.CameraData.View = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetModelMatrix());
-        m_sceneData.CameraData.Projection = cameraEntity.GetComponent<CameraComponent>().GetProjectionMatrix();
-    }
-
-    m_sceneData.CameraData.ViewProjection = m_sceneData.CameraData.Projection * m_sceneData.CameraData.View;
-
-    // Process lights
-    m_sceneData.LightEnvironment = LightEnvironment();
-    // Directional Lights
-    {
-        auto lights = scene->m_registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
-        uint32_t directionalLightIndex = 0;
-        for (auto e : lights)
-        {
-            auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(e);
-            glm::vec3 direction =
-                glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
-            DOO_CORE_ASSERT(directionalLightIndex < LightEnvironment::MAX_DIRECTIONAL_LIGHTS,
-                            "More than {} directional lights in scene!", LightEnvironment::MAX_DIRECTIONAL_LIGHTS);
-            m_sceneData.LightEnvironment.DirectionalLights[directionalLightIndex++] = {
-                direction,
-                lightComponent.Radiance,
-                lightComponent.Intensity,
-            };
-        }
-        // Point Lights
-        {
-            auto pointLights = scene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
-            m_sceneData.LightEnvironment.PointLights.resize(pointLights.size());
-            uint32_t pointLightIndex = 0;
-            for (auto e : pointLights)
-            {
-                Entity entity(scene.get(), e);
-                auto [transformComponent, lightComponent] = pointLights.get<TransformComponent, PointLightComponent>(e);
-                m_sceneData.LightEnvironment.PointLights[pointLightIndex++] = {
-                    transformComponent.Position, lightComponent.Radiance, lightComponent.Intensity,
-                    lightComponent.MinRadius,    lightComponent.Radius,   lightComponent.Falloff,
-                    lightComponent.SourceSize,
-                };
-            }
-        }
-        // Spot Lights
-        {
-            auto spotLights = scene->m_registry.group<SpotLightComponent>(entt::get<TransformComponent>);
-            m_sceneData.LightEnvironment.SpotLights.resize(spotLights.size());
-            uint32_t spotLightIndex = 0;
-            for (auto e : spotLights)
-            {
-                Entity entity(scene.get(), e);
-                auto [transformComponent, lightComponent] = spotLights.get<TransformComponent, SpotLightComponent>(e);
-                glm::vec3 direction =
-                    glm::normalize(glm::rotate(transformComponent.GetRotation(), glm::vec3(1.0f, 0.0f, 0.0f)));
-
-                m_sceneData.LightEnvironment.SpotLights[spotLightIndex++] = {
-                    transformComponent.Position,
-                    direction,
-                    lightComponent.Radiance,
-                    lightComponent.Intensity,
-                    lightComponent.AngleAttenuation,
-                    lightComponent.Range,
-                    lightComponent.Angle,
-                    lightComponent.Falloff,
-                };
-            }
-        }
-    }
+    scene->SetupSceneData();
+    RenderPipeline::Get()->Execute();
 }
 
 bool SceneRenderer::OnEvent(ViewportResizeEvent &e)
 {
     m_frameBuffer->Resize(e.GetWidth(), e.GetHeight());
+    return false;
+}
+
+bool SceneRenderer::OnEvent(SceneActivateEvent &e)
+{
+    auto *scene = e.GetScene();
+    RenderPipeline::Get()->BeginScene(scene);
+    return false;
+}
+
+bool SceneRenderer::OnEvent(SceneDeactivateEvent &e)
+{
+    auto *scene = e.GetScene();
+    RenderPipeline::Get()->EndScene();
     return false;
 }
 

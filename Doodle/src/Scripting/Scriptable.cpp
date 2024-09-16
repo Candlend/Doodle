@@ -33,7 +33,7 @@ void Scriptable::OnAdded()
 
 bool Scriptable::OnSceneActivate(const SceneActivateEvent &e)
 {
-    if (e.GetScene() == *GetScene() && IsValid())
+    if (e.GetScene() == GetScene() && IsValid())
     {
         EventManager::Get()->AddListener<AppUpdateEvent>(this, &Scriptable::OnUpdate);
         EventManager::Get()->AddListener<AppLayoutEvent>(this, &Scriptable::OnLayout);
@@ -45,7 +45,7 @@ bool Scriptable::OnSceneActivate(const SceneActivateEvent &e)
 
 bool Scriptable::OnSceneDeactivate(const SceneDeactivateEvent &e)
 {
-    if (e.GetScene() == *GetScene() && IsValid())
+    if (e.GetScene() == GetScene() && IsValid())
     {
         Deinitialize();
         EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &Scriptable::OnUpdate);

@@ -1,16 +1,52 @@
 #pragma once
 
+#include "entt/entity/fwd.hpp"
 #include "pch.h"
 #include <entt/entt.hpp>
 
 #include "ApplicationEvent.h"
 #include "Camera.h"
 #include "EventManager.h"
+#include "Light.h"
 #include "UUID.h"
 #include "UniformBuffer.h"
 
 namespace Doodle
 {
+
+struct LightEnvironment
+{
+    static constexpr size_t MAX_DIRECTIONAL_LIGHTS = 4;
+
+    DirectionalLight DirectionalLights[MAX_DIRECTIONAL_LIGHTS];
+    std::vector<PointLight> PointLights;
+    std::vector<SpotLight> SpotLights;
+
+    [[nodiscard]] uint32_t GetPointLightsSize() const
+    {
+        return static_cast<uint32_t>(PointLights.size() * sizeof(PointLight));
+    }
+
+    [[nodiscard]] uint32_t GetSpotLightsSize() const
+    {
+        return static_cast<uint32_t>(SpotLights.size() * sizeof(SpotLight));
+    }
+};
+
+struct CameraData
+{
+    glm::mat4 View;
+    glm::mat4 Projection;
+    glm::mat4 ViewProjection;
+    glm::vec3 Position;
+};
+
+struct SceneData
+{
+    glm::vec3 AmbientRadiance;
+    CameraData CameraData;
+    LightEnvironment LightEnvironment;
+};
 
 class Entity;
 class BaseComponent;
@@ -53,12 +89,26 @@ public:
     void BeginScene();
     void EndScene();
 
+    template <typename... Args> auto View()
+    {
+        return m_registry.view<Args...>();
+    }
+
+    SceneData &GetData()
+    {
+        return m_sceneData;
+    }
+
+    void SetupSceneData();
+
 private:
     std::string m_name;
     bool m_active = false;
     std::unordered_map<UUID, Entity> m_entityMap;
     std::unordered_map<UUID, std::vector<BaseComponent *>> m_entityComponents;
     entt::registry m_registry;
+
+    SceneData m_sceneData;
 };
 
 } // namespace Doodle
