@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SceneEnvironment.h"
 #include "Texture.h"
 #include "entt/entity/fwd.hpp"
 #include "pch.h"
@@ -16,7 +15,7 @@
 namespace Doodle
 {
 
-struct LightEnvironment
+struct LightData
 {
     static constexpr size_t MAX_DIRECTIONAL_LIGHTS = 4;
 
@@ -43,11 +42,19 @@ struct CameraData
     glm::vec3 Position;
 };
 
+struct EnvironmentData
+{
+    std::shared_ptr<TextureCube> RadianceMap;
+    std::shared_ptr<TextureCube> IrradianceMap;
+    float Intensity = 1.0f;
+    float Rotation = 0.0f;
+};
+
 struct SceneData
 {
     CameraData CameraData;
-    LightEnvironment LightEnvironment;
-    Environment Environment;
+    EnvironmentData EnvironmentData;
+    LightData LightData;
 };
 
 class Entity;

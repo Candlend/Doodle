@@ -67,14 +67,11 @@ struct SpotLight
 
 struct UBOScene
 {
-    DirectionalLight DirectionalLight;
+    DirectionalLight DirectionalLights[4];
     glm::vec3 CameraPosition{0.0f};
-    float Padding; // 4 bytes to align to 16 bytes
-
-    ~UBOScene()
-    {
-        DOO_CORE_TRACE("UBOScene destroyed");
-    }
+    float EnvironmentIntensity = 1.0f;
+    float EnvironmentRotation = 0.0f;
+    float Padding2[3];
 };
 
 struct UBOPointLights
@@ -91,7 +88,7 @@ struct UBOSpotLights
     SpotLight SpotLights[256];
 };
 
-struct LightEnvironment
+struct LightData
 {
     static constexpr size_t MAX_DIRECTIONAL_LIGHTS = 4;
 

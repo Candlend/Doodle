@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "LogPanel.h"
 #include "PanelManager.h"
+#include "SceneSettingsPanel.h"
 #include "Texture.h"
 #include "ViewportPanel.h"
 #include "imgui.h"
@@ -43,6 +44,7 @@ public:
         PanelManager::Get()->CreatePanel<DebugPanel>();
         PanelManager::Get()->CreatePanel<InspectorPanel>();
         PanelManager::Get()->CreatePanel<ViewportPanel>();
+        PanelManager::Get()->CreatePanel<SceneSettingsPanel>();
 
         auto layoutMenuItem = std::make_shared<ParentMenuItem>("Layout");
         for (const auto &[name, panel] : PanelManager::Get()->GetPanels())

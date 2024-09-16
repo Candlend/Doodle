@@ -19,9 +19,6 @@ public:
     void OnUpdate() override;
 
     void OnPanelLayout() override;
-
-private:
-    bool m_useWireframe = false; // TODO 需要移去其他地方
 };
 
 } // namespace Doodle

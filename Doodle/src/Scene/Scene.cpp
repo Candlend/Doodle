@@ -1,9 +1,12 @@
-#include "Scene.h"
+
+#include "pch.h"
+#include <glad/glad.h>
+
 #include "Component.h"
 #include "EditorCamera.h"
 #include "Entity.h"
 #include "EventManager.h"
-#include "Log.h"
+#include "Scene.h"
 #include "SceneEvent.h"
 #include "SceneManager.h"
 
@@ -112,7 +115,76 @@ void Scene::DestroyEntity(const Entity &entity)
 
 void Scene::LoadEnvironment(const std::string &filepath)
 {
-    m_sceneData.Environment = Environment::Load(filepath);
+    const uint32_t CUBEMAP_SIZE = 2048;
+    const uint32_t IRRADIANCE_MAP_SIZE = 32;
+
+    TextureParams params;
+    params.Width = CUBEMAP_SIZE;
+    params.Height = CUBEMAP_SIZE;
+    params.Format = TextureFormat::RGBA16F;
+    params.Wrap = TextureWrap::ClampToEdge;
+    params.Filter = TextureFilter::MipmapLinear;
+
+    std::shared_ptr<TextureCube> envUnfiltered = TextureCube::Create(params);
+    static std::shared_ptr<Shader> s_EquirectangularConversionShader, s_EnvFilteringShader, s_EnvIrradianceShader;
+    if (!s_EquirectangularConversionShader)
+        s_EquirectangularConversionShader = Shader::Create("assets/shaders/equirectangularToCubeMap.glsl");
+
+    TextureParams equirectParams;
+    equirectParams.Format = TextureFormat::RGBA16F;
+    std::shared_ptr<Texture2D> envEquirect = Texture2D::Create(filepath, equirectParams);
+    DOO_CORE_ASSERT(envEquirect->GetFormat() == TextureFormat::RGBA16F, "Texture is not HDR!");
+
+    s_EquirectangularConversionShader->Bind();
+    envEquirect->Bind();
+    Renderer::Submit([envUnfiltered, CUBEMAP_SIZE, envEquirect]() {
+        glBindImageTexture(0, envUnfiltered->GetRendererID(), 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+        glDispatchCompute(CUBEMAP_SIZE / 32, CUBEMAP_SIZE / 32, 6);
+        glGenerateTextureMipmap(envUnfiltered->GetRendererID());
+    });
+
+    if (!s_EnvFilteringShader)
+        s_EnvFilteringShader = Shader::Create("assets/shaders/environmentMipFilter.glsl");
+
+    std::shared_ptr<TextureCube> envFiltered = TextureCube::Create(params);
+
+    Renderer::Submit([envUnfiltered, envFiltered]() {
+        glCopyImageSubData(envUnfiltered->GetRendererID(), GL_TEXTURE_CUBE_MAP, 0, 0, 0, 0,
+                           envFiltered->GetRendererID(), GL_TEXTURE_CUBE_MAP, 0, 0, 0, 0, envFiltered->GetWidth(),
+                           envFiltered->GetHeight(), 6);
+    });
+
+    s_EnvFilteringShader->Bind();
+    envUnfiltered->Bind();
+
+    Renderer::Submit([envUnfiltered, envFiltered, CUBEMAP_SIZE]() {
+        const float DELTA_ROUGHNESS = 1.0f / glm::max((envFiltered->GetMipLevelCount() - 1.0f), 1.0f);
+        for (int level = 1, size = CUBEMAP_SIZE / 2; level < envFiltered->GetMipLevelCount();
+             level++, size /= 2) // <= ?
+        {
+            const GLuint NUM_GROUPS = glm::max(1, size / 32);
+            glBindImageTexture(0, envFiltered->GetRendererID(), level, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+            glProgramUniform1f(s_EnvFilteringShader->GetRendererID(), 0, level * DELTA_ROUGHNESS);
+            glDispatchCompute(NUM_GROUPS, NUM_GROUPS, 6);
+        }
+    });
+
+    if (!s_EnvIrradianceShader)
+        s_EnvIrradianceShader = Shader::Create("assets/shaders/environmentIrradiance.glsl");
+
+    params.Width = IRRADIANCE_MAP_SIZE;
+    params.Height = IRRADIANCE_MAP_SIZE;
+    params.Filter = TextureFilter::Linear;
+
+    std::shared_ptr<TextureCube> irradianceMap = TextureCube::Create(params);
+    s_EnvIrradianceShader->Bind();
+    envFiltered->Bind();
+    Renderer::Submit([irradianceMap]() {
+        glBindImageTexture(0, irradianceMap->GetRendererID(), 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+        glDispatchCompute(irradianceMap->GetWidth() / 32, irradianceMap->GetHeight() / 32, 6);
+    });
+
+    m_sceneData.EnvironmentData = {envFiltered, irradianceMap};
 }
 
 void Scene::BeginScene()
@@ -156,7 +228,7 @@ void Scene::SetupSceneData()
     m_sceneData.CameraData.ViewProjection = m_sceneData.CameraData.Projection * m_sceneData.CameraData.View;
 
     // Process lights
-    m_sceneData.LightEnvironment = LightEnvironment();
+    m_sceneData.LightData = LightData();
     // Directional Lights
     {
         auto lights = m_registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
@@ -166,9 +238,9 @@ void Scene::SetupSceneData()
             auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(e);
             glm::vec3 direction =
                 glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
-            DOO_CORE_ASSERT(directionalLightIndex < LightEnvironment::MAX_DIRECTIONAL_LIGHTS,
-                            "More than {} directional lights in scene!", LightEnvironment::MAX_DIRECTIONAL_LIGHTS);
-            m_sceneData.LightEnvironment.DirectionalLights[directionalLightIndex++] = {
+            DOO_CORE_ASSERT(directionalLightIndex < LightData::MAX_DIRECTIONAL_LIGHTS,
+                            "More than {} directional lights in scene!", LightData::MAX_DIRECTIONAL_LIGHTS);
+            m_sceneData.LightData.DirectionalLights[directionalLightIndex++] = {
                 direction,
                 lightComponent.Radiance,
                 lightComponent.Intensity,
@@ -177,13 +249,13 @@ void Scene::SetupSceneData()
         // Point Lights
         {
             auto pointLights = m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
-            m_sceneData.LightEnvironment.PointLights.resize(pointLights.size());
+            m_sceneData.LightData.PointLights.resize(pointLights.size());
             uint32_t pointLightIndex = 0;
             for (auto e : pointLights)
             {
                 Entity entity(this, e);
                 auto [transformComponent, lightComponent] = pointLights.get<TransformComponent, PointLightComponent>(e);
-                m_sceneData.LightEnvironment.PointLights[pointLightIndex++] = {
+                m_sceneData.LightData.PointLights[pointLightIndex++] = {
                     transformComponent.Position, lightComponent.Radiance, lightComponent.Intensity,
                     lightComponent.MinRadius,    lightComponent.Radius,   lightComponent.Falloff,
                     lightComponent.SourceSize,
@@ -193,7 +265,7 @@ void Scene::SetupSceneData()
         // Spot Lights
         {
             auto spotLights = m_registry.group<SpotLightComponent>(entt::get<TransformComponent>);
-            m_sceneData.LightEnvironment.SpotLights.resize(spotLights.size());
+            m_sceneData.LightData.SpotLights.resize(spotLights.size());
             uint32_t spotLightIndex = 0;
             for (auto e : spotLights)
             {
@@ -202,7 +274,7 @@ void Scene::SetupSceneData()
                 glm::vec3 direction =
                     glm::normalize(glm::rotate(transformComponent.GetRotation(), glm::vec3(1.0f, 0.0f, 0.0f)));
 
-                m_sceneData.LightEnvironment.SpotLights[spotLightIndex++] = {
+                m_sceneData.LightData.SpotLights[spotLightIndex++] = {
                     transformComponent.Position,
                     direction,
                     lightComponent.Radiance,

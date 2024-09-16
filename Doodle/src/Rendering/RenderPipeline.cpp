@@ -56,21 +56,26 @@ void RenderPipeline::Execute()
     auto &sceneData = m_scene->GetData();
     {
         static UBOScene s_UboScene = {};
-        s_UboScene.DirectionalLight = sceneData.LightEnvironment.DirectionalLights[0];
+        // 赋值directional light
+        for (int i = 0; i < 4; i++)
+        {
+            s_UboScene.DirectionalLights[i] = sceneData.LightData.DirectionalLights[i];
+        }
         s_UboScene.CameraPosition = sceneData.CameraData.Position;
+        s_UboScene.EnvironmentIntensity = sceneData.EnvironmentData.Intensity;
+        s_UboScene.EnvironmentRotation = sceneData.EnvironmentData.Rotation;
         m_uniformBuffers["SceneData"]->SetSubData(&s_UboScene, sizeof(UBOScene));
 
         static UBOPointLights s_UboPointLights = {};
-        const std::vector<PointLight> &pointLightsVec = sceneData.LightEnvironment.PointLights;
+        const std::vector<PointLight> &pointLightsVec = sceneData.LightData.PointLights;
         s_UboPointLights.Count = pointLightsVec.size();
-        std::memcpy(s_UboPointLights.PointLights, pointLightsVec.data(),
-                    sceneData.LightEnvironment.GetPointLightsSize());
+        std::memcpy(s_UboPointLights.PointLights, pointLightsVec.data(), sceneData.LightData.GetPointLightsSize());
         m_uniformBuffers["PointLightData"]->SetSubData(&s_UboPointLights, sizeof(UBOPointLights));
 
         static UBOSpotLights s_UboSpotLights = {};
-        const std::vector<SpotLight> &spotLightsVec = sceneData.LightEnvironment.SpotLights;
+        const std::vector<SpotLight> &spotLightsVec = sceneData.LightData.SpotLights;
         s_UboSpotLights.Count = spotLightsVec.size();
-        std::memcpy(s_UboSpotLights.SpotLights, spotLightsVec.data(), sceneData.LightEnvironment.GetSpotLightsSize());
+        std::memcpy(s_UboSpotLights.SpotLights, spotLightsVec.data(), sceneData.LightData.GetSpotLightsSize());
         m_uniformBuffers["SpotLightData"]->SetSubData(&s_UboSpotLights, sizeof(UBOSpotLights));
     }
 

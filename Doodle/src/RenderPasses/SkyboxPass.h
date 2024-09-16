@@ -2,7 +2,6 @@
 
 #include "Material.h"
 #include "RenderPipeline.h"
-#include "SceneEnvironment.h"
 #include "pch.h"
 
 #include "Component.h"
@@ -45,7 +44,7 @@ public:
         view[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
         glm::mat4 projection = sceneData.CameraData.Projection;
 
-        Environment &environment = sceneData.Environment;
+        EnvironmentData &environment = sceneData.EnvironmentData;
         auto skyboxTexture = environment.RadianceMap;
 
         if (skyboxTexture == nullptr)
@@ -55,6 +54,8 @@ public:
 
         m_material->Bind();
         m_material->SetUniformTexture("u_Skybox", skyboxTexture);
+        m_material->SetUniform1f("u_Intensity", environment.Intensity);
+        m_material->SetUniform1f("u_Rotation", environment.Rotation);
         m_material->SetUniformMatrix4f("u_View", view);
         m_material->SetUniformMatrix4f("u_Projection", projection);
 

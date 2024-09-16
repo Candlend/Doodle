@@ -67,8 +67,10 @@ struct DirectionalLight
 
 layout(std140, binding = 0) uniform SceneData
 {
-    DirectionalLight DirectionalLight;
+    DirectionalLight DirectionalLights[4];
     vec3 CameraPosition;
+    float EnvironmentIntensity;
+    float EnvironmentRotation;
 } u_Scene;
 
 struct PointLight
@@ -189,9 +191,19 @@ vec3 CookTorranceBRDF(vec3 normal, vec3 viewDir, vec3 lightDir, float metallic, 
     return color;
 }
 
+vec3 RotateVectorAboutY(float angle, vec3 vec)
+{
+    angle = radians(angle);
+    mat3x3 rotationMatrix ={vec3(cos(angle),0.0,sin(angle)),
+                            vec3(0.0,1.0,0.0),
+                            vec3(-sin(angle),0.0,cos(angle))};
+    return rotationMatrix * vec;
+}
+
 vec3 IBL(vec3 normal, vec3 viewDir, vec4 albedo, float metallic, float roughness)
 {
     // IBL
+    viewDir = RotateVectorAboutY(u_Scene.EnvironmentRotation, viewDir);
     vec3 N = normalize(normal);
     vec3 V = normalize(viewDir);
     vec3 R = reflect(-V, N);
@@ -228,11 +240,15 @@ void main()
     vec3 color = vec3(0.0);
     
     // Ambient lighting
-    color += IBL(normal, viewDir, albedo, metallic, roughness);
+    color += IBL(normal, viewDir, albedo, metallic, roughness) * u_Scene.EnvironmentIntensity;
 
-    // Directional light contribution
-    vec3 lightDir = normalize(-u_Scene.DirectionalLight.Direction);
-    color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * u_Scene.DirectionalLight.Radiance * u_Scene.DirectionalLight.Intensity;
+    // Directional lights
+    for (uint i = 0; i < 4; ++i)
+    {
+        DirectionalLight light = u_Scene.DirectionalLights[i];
+        vec3 lightDir = normalize(-light.Direction);
+        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity;
+    }
 
     // Point lights
     for (uint i = 0; i < u_PointLights.LightCount; ++i)

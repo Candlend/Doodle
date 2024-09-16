@@ -34,8 +34,8 @@ public:
 
         auto *scene = m_scene;
         auto &sceneData = scene->GetData();
-        auto irradienceMap = sceneData.Environment.IrradianceMap;
-        auto prefilterMap = sceneData.Environment.RadianceMap;
+        auto irradienceMap = sceneData.EnvironmentData.IrradianceMap;
+        auto prefilterMap = sceneData.EnvironmentData.RadianceMap;
 
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
         for (auto entity : vaoView)
