@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Log.h"
+#include "Scene.h"
 #include "pch.h"
 #include <entt/entt.hpp>
 #include <memory>
@@ -34,6 +35,21 @@ struct LightEnvironment
     }
 };
 
+struct CameraData
+{
+    glm::mat4 View;
+    glm::mat4 Projection;
+    glm::mat4 ViewProjection;
+    glm::vec3 Position;
+};
+
+struct SceneData
+{
+    glm::vec3 AmbientRadiance;
+    CameraData CameraData;
+    LightEnvironment LightEnvironment;
+};
+
 class Scene;
 
 class DOO_API SceneRenderer : public Singleton<SceneRenderer>,
@@ -50,11 +66,16 @@ public:
 
 private:
     bool OnEvent(ViewportResizeEvent &e) override;
+
+    std::shared_ptr<FrameBuffer> m_frameBuffer;
+
     std::shared_ptr<UniformBuffer> m_sceneUBO;
     std::shared_ptr<UniformBuffer> m_pointLightsUBO;
     std::shared_ptr<UniformBuffer> m_spotLightsUBO;
-    LightEnvironment m_lightEnvironment;
-    std::shared_ptr<FrameBuffer> m_frameBuffer;
+
+    void PrepareSceneData(std::shared_ptr<Scene> scene);
+
+    SceneData m_sceneData;
 };
 
 } // namespace Doodle

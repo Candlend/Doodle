@@ -1,3 +1,4 @@
+#include "EditorCamera.h"
 #include "KeyCode.h"
 #include "pch.h"
 #include <glm/ext/vector_float3.hpp>
@@ -36,28 +37,27 @@ void ViewportPanel::OnUpdate()
 
 void ViewportPanel::OnPanelLayout()
 {
+    ImGui::SetKeyOwner(ImGuiMod_Alt, m_panelData.ID);
+
     auto frameBuffer = m_sceneRenderer->GetFrameBuffer();
     auto textureID = frameBuffer->GetColorAttachmentRendererID();
     auto size = m_panelData.ContentSize;
     ImGui::Image(reinterpret_cast<void *>(static_cast<uintptr_t>(textureID)), ImVec2(size.x, size.y), ImVec2(0, 1),
                  ImVec2(1, 0));
+    if (SceneManager::Get()->GetState() != SceneState::Editor)
+        return;
 
     auto scene = SceneManager::Get()->GetActiveScene();
 
-    auto cameraEntity = scene->GetMainCameraEntity();
-    if (!cameraEntity)
-    {
-        return;
-    }
+    auto *editorCamera = EditorCamera::Get();
 
-    ImGuizmo::SetOrthographic(cameraEntity.GetComponent<CameraComponent>().Camera->GetProjectionType() ==
-                              ProjectionType::Orthographic);
+    ImGuizmo::SetOrthographic(editorCamera->GetProjectionType() == ProjectionType::Orthographic);
     ImGuizmo::SetDrawlist(ImGui::GetCurrentWindow()->DrawList);
 
     ImGuizmo::SetRect(m_panelData.GetContentPos().x, m_panelData.GetContentPos().y, m_panelData.ContentSize.x,
                       m_panelData.ContentSize.y);
-    glm::mat4 view = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetModelMatrix());
-    glm::mat4 projection = cameraEntity.GetComponent<CameraComponent>().GetProjectionMatrix();
+    glm::mat4 view = editorCamera->GetViewMatrix();
+    glm::mat4 projection = editorCamera->GetProjectionMatrix();
 
     static ImGuizmo::OPERATION s_Operation = ImGuizmo::OPERATION::TRANSLATE;
     static ImGuizmo::MODE s_Mode = ImGuizmo::MODE::LOCAL;
@@ -76,19 +76,11 @@ void ViewportPanel::OnPanelLayout()
             s_Operation = ImGuizmo::OPERATION::SCALE;
         }
 
-        static ImGuizmo::MODE s_Mode = ImGuizmo::MODE::LOCAL;
-        if (Input::IsKeyPressed(KeyCode::LeftShift))
+        if (Input::IsKeyPressed(KeyCode::Tab))
         {
             s_Mode = s_Mode == ImGuizmo::MODE::LOCAL ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL;
         }
     }
-
-    ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4(1.0f)), 100.0f);
-
-    ImGuizmo::ViewManipulate(glm::value_ptr(view), 1.0f,
-                             ImVec2(m_panelData.GetContentPos().x, m_panelData.GetContentPos().y), ImVec2(128, 128),
-                             0x10101010);
-    // TODO 根据变化后的view更新相机
 
     auto uuids = SelectionManager::GetSelections(SelectionContext::Global);
 
@@ -111,6 +103,11 @@ void ViewportPanel::OnPanelLayout()
             transform.Position = translation;
             transform.Rotation = rotation;
             transform.Scale = scale;
+        }
+
+        if (Input::IsKeyPressed(KeyCode::F))
+        {
+            editorCamera->Focus(transform.Position);
         }
     }
 }

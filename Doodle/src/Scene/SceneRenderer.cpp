@@ -1,15 +1,17 @@
 #include "pch.h"
 #include <glad/glad.h>
+#include <memory>
 
-#include "SceneRenderer.h"
 #include "ApplicationEvent.h"
 #include "Component.h"
+#include "EditorCamera.h"
 #include "Entity.h"
 #include "EventManager.h"
 #include "FrameBuffer.h"
 #include "PanelManager.h"
 #include "RenderScope.h"
 #include "SceneManager.h"
+#include "SceneRenderer.h"
 #include "ViewportPanel.h"
 
 namespace Doodle
@@ -31,6 +33,7 @@ SceneRenderer::SceneRenderer()
 
 SceneRenderer::~SceneRenderer()
 {
+    EventManager::Get()->RemoveListener<AppRenderEvent>(this, &SceneRenderer::Render);
     DOO_CORE_TRACE("SceneRenderer destroyed");
 }
 
@@ -44,100 +47,31 @@ void SceneRenderer::Render()
         return;
     }
 
-    auto cameraEntity = scene->GetMainCameraEntity();
-    if (!cameraEntity)
+    PrepareSceneData(scene);
     {
-        return;
+        UBOScene sceneData = {};
+        sceneData.DirectionalLight = m_sceneData.LightEnvironment.DirectionalLights[0];
+        sceneData.AmbientRadiance = glm::vec3(0.03f);
+        sceneData.CameraPosition = m_sceneData.CameraData.Position;
+        m_sceneUBO->SetSubData(&sceneData, sizeof(UBOScene));
+
+        UBOPointLights pointLightData = {};
+        const std::vector<PointLight> &pointLightsVec = m_sceneData.LightEnvironment.PointLights;
+        pointLightData.Count = pointLightsVec.size();
+        std::memcpy(pointLightData.PointLights, pointLightsVec.data(),
+                    m_sceneData.LightEnvironment.GetPointLightsSize());
+        m_pointLightsUBO->SetSubData(&pointLightData, sizeof(UBOPointLights));
+
+        UBOSpotLights spotLightData = {};
+        const std::vector<SpotLight> &spotLightsVec = m_sceneData.LightEnvironment.SpotLights;
+        spotLightData.Count = spotLightsVec.size();
+        std::memcpy(spotLightData.SpotLights, spotLightsVec.data(), m_sceneData.LightEnvironment.GetSpotLightsSize());
+        m_spotLightsUBO->SetSubData(&spotLightData, sizeof(UBOSpotLights));
+
+        m_sceneUBO->Bind(0);
+        m_pointLightsUBO->Bind(1);
+        m_spotLightsUBO->Bind(2);
     }
-    glm::mat4 view = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetModelMatrix());
-    glm::mat4 projection = cameraEntity.GetComponent<CameraComponent>().GetProjectionMatrix();
-
-    // Process lights
-    {
-        m_lightEnvironment = LightEnvironment();
-        // Directional Lights
-        {
-            auto lights = scene->m_registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
-            uint32_t directionalLightIndex = 0;
-            for (auto e : lights)
-            {
-                auto [transformComponent, lightComponent] =
-                    lights.get<TransformComponent, DirectionalLightComponent>(e);
-                glm::vec3 direction =
-                    glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
-                DOO_CORE_ASSERT(directionalLightIndex < LightEnvironment::MAX_DIRECTIONAL_LIGHTS,
-                                "More than {} directional lights in scene!", LightEnvironment::MAX_DIRECTIONAL_LIGHTS);
-                m_lightEnvironment.DirectionalLights[directionalLightIndex++] = {
-                    direction,
-                    lightComponent.Radiance,
-                    lightComponent.Intensity,
-                };
-            }
-            // Point Lights
-            {
-                auto pointLights = scene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
-                m_lightEnvironment.PointLights.resize(pointLights.size());
-                uint32_t pointLightIndex = 0;
-                for (auto e : pointLights)
-                {
-                    Entity entity(scene.get(), e);
-                    auto [transformComponent, lightComponent] =
-                        pointLights.get<TransformComponent, PointLightComponent>(e);
-                    m_lightEnvironment.PointLights[pointLightIndex++] = {
-                        transformComponent.Position, lightComponent.Radiance, lightComponent.Intensity,
-                        lightComponent.MinRadius,    lightComponent.Radius,   lightComponent.Falloff,
-                        lightComponent.SourceSize,
-                    };
-                }
-            }
-            // Spot Lights
-            {
-                auto spotLights = scene->m_registry.group<SpotLightComponent>(entt::get<TransformComponent>);
-                m_lightEnvironment.SpotLights.resize(spotLights.size());
-                uint32_t spotLightIndex = 0;
-                for (auto e : spotLights)
-                {
-                    Entity entity(scene.get(), e);
-                    auto [transformComponent, lightComponent] =
-                        spotLights.get<TransformComponent, SpotLightComponent>(e);
-                    glm::vec3 direction =
-                        glm::normalize(glm::rotate(transformComponent.GetRotation(), glm::vec3(1.0f, 0.0f, 0.0f)));
-
-                    m_lightEnvironment.SpotLights[spotLightIndex++] = {
-                        transformComponent.Position,
-                        direction,
-                        lightComponent.Radiance,
-                        lightComponent.Intensity,
-                        lightComponent.AngleAttenuation,
-                        lightComponent.Range,
-                        lightComponent.Angle,
-                        lightComponent.Falloff,
-                    };
-                }
-            }
-        }
-    }
-    UBOScene sceneData = {};
-    sceneData.DirectionalLight = m_lightEnvironment.DirectionalLights[0];
-    sceneData.AmbientRadiance = glm::vec3(0.03f);
-    sceneData.CameraPosition = cameraEntity.GetComponent<TransformComponent>().Position;
-    m_sceneUBO->SetSubData(&sceneData, sizeof(UBOScene));
-
-    UBOPointLights pointLightData = {};
-    const std::vector<PointLight> &pointLightsVec = m_lightEnvironment.PointLights;
-    pointLightData.Count = pointLightsVec.size();
-    std::memcpy(pointLightData.PointLights, pointLightsVec.data(), m_lightEnvironment.GetPointLightsSize());
-    m_pointLightsUBO->SetSubData(&pointLightData, sizeof(UBOPointLights));
-
-    UBOSpotLights spotLightData = {};
-    const std::vector<SpotLight> &spotLightsVec = m_lightEnvironment.SpotLights;
-    spotLightData.Count = spotLightsVec.size();
-    std::memcpy(spotLightData.SpotLights, spotLightsVec.data(), m_lightEnvironment.GetSpotLightsSize());
-    m_spotLightsUBO->SetSubData(&spotLightData, sizeof(UBOSpotLights));
-
-    m_sceneUBO->Bind(0);
-    m_pointLightsUBO->Bind(1);
-    m_spotLightsUBO->Bind(2);
 
     auto vaoView = scene->m_registry.view<TransformComponent, VAOComponent, MaterialComponent>();
     for (auto entity : vaoView)
@@ -149,8 +83,8 @@ void SceneRenderer::Render()
         glm::mat4 model = transform.GetModelMatrix();
 
         material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-        material.MaterialInstance->SetUniformMatrix4f("u_View", view);
-        material.MaterialInstance->SetUniformMatrix4f("u_Projection", projection);
+        material.MaterialInstance->SetUniformMatrix4f("u_View", m_sceneData.CameraData.View);
+        material.MaterialInstance->SetUniformMatrix4f("u_Projection", m_sceneData.CameraData.Projection);
 
         material.MaterialInstance->Bind();
 
@@ -168,11 +102,96 @@ void SceneRenderer::Render()
         glm::mat4 model = transform.GetModelMatrix();
 
         material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-        material.MaterialInstance->SetUniformMatrix4f("u_View", view);
-        material.MaterialInstance->SetUniformMatrix4f("u_Projection", projection);
+        material.MaterialInstance->SetUniformMatrix4f("u_View", m_sceneData.CameraData.View);
+        material.MaterialInstance->SetUniformMatrix4f("u_Projection", m_sceneData.CameraData.Projection);
 
         material.MaterialInstance->Bind();
         mesh.Render();
+    }
+}
+
+void SceneRenderer::PrepareSceneData(std::shared_ptr<Scene> scene)
+{
+    if (SceneManager::Get()->GetState() == SceneState::Editor)
+    {
+        auto *editorCamera = EditorCamera::Get();
+        m_sceneData.CameraData.Position = editorCamera->GetPosition();
+        m_sceneData.CameraData.View = editorCamera->GetViewMatrix();
+        m_sceneData.CameraData.Projection = editorCamera->GetProjectionMatrix();
+    }
+    else
+    {
+        auto cameraEntity = scene->GetMainCameraEntity();
+        if (!cameraEntity)
+        {
+            return;
+        }
+        m_sceneData.CameraData.Position = cameraEntity.GetComponent<TransformComponent>().Position;
+        m_sceneData.CameraData.View = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetModelMatrix());
+        m_sceneData.CameraData.Projection = cameraEntity.GetComponent<CameraComponent>().GetProjectionMatrix();
+    }
+
+    m_sceneData.CameraData.ViewProjection = m_sceneData.CameraData.Projection * m_sceneData.CameraData.View;
+
+    // Process lights
+    m_sceneData.LightEnvironment = LightEnvironment();
+    // Directional Lights
+    {
+        auto lights = scene->m_registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
+        uint32_t directionalLightIndex = 0;
+        for (auto e : lights)
+        {
+            auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(e);
+            glm::vec3 direction =
+                glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
+            DOO_CORE_ASSERT(directionalLightIndex < LightEnvironment::MAX_DIRECTIONAL_LIGHTS,
+                            "More than {} directional lights in scene!", LightEnvironment::MAX_DIRECTIONAL_LIGHTS);
+            m_sceneData.LightEnvironment.DirectionalLights[directionalLightIndex++] = {
+                direction,
+                lightComponent.Radiance,
+                lightComponent.Intensity,
+            };
+        }
+        // Point Lights
+        {
+            auto pointLights = scene->m_registry.group<PointLightComponent>(entt::get<TransformComponent>);
+            m_sceneData.LightEnvironment.PointLights.resize(pointLights.size());
+            uint32_t pointLightIndex = 0;
+            for (auto e : pointLights)
+            {
+                Entity entity(scene.get(), e);
+                auto [transformComponent, lightComponent] = pointLights.get<TransformComponent, PointLightComponent>(e);
+                m_sceneData.LightEnvironment.PointLights[pointLightIndex++] = {
+                    transformComponent.Position, lightComponent.Radiance, lightComponent.Intensity,
+                    lightComponent.MinRadius,    lightComponent.Radius,   lightComponent.Falloff,
+                    lightComponent.SourceSize,
+                };
+            }
+        }
+        // Spot Lights
+        {
+            auto spotLights = scene->m_registry.group<SpotLightComponent>(entt::get<TransformComponent>);
+            m_sceneData.LightEnvironment.SpotLights.resize(spotLights.size());
+            uint32_t spotLightIndex = 0;
+            for (auto e : spotLights)
+            {
+                Entity entity(scene.get(), e);
+                auto [transformComponent, lightComponent] = spotLights.get<TransformComponent, SpotLightComponent>(e);
+                glm::vec3 direction =
+                    glm::normalize(glm::rotate(transformComponent.GetRotation(), glm::vec3(1.0f, 0.0f, 0.0f)));
+
+                m_sceneData.LightEnvironment.SpotLights[spotLightIndex++] = {
+                    transformComponent.Position,
+                    direction,
+                    lightComponent.Radiance,
+                    lightComponent.Intensity,
+                    lightComponent.AngleAttenuation,
+                    lightComponent.Range,
+                    lightComponent.Angle,
+                    lightComponent.Falloff,
+                };
+            }
+        }
     }
 }
 

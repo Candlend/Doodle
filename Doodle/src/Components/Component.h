@@ -126,9 +126,13 @@ struct TransformComponent : public BaseComponent
     void LookAt(const glm::vec3 &target)
     {
         glm::vec3 direction = glm::normalize(target - Position);
-        Rotation.x = glm::degrees(asin(direction.y));
-        Rotation.y = glm::degrees(atan2(direction.z, direction.x));
-        Rotation.z = 0.0f; // Reset roll or handle it as needed
+
+        float pitch = glm::asin(direction.y);
+        float yaw = glm::atan(-direction.x, -direction.z);
+
+        Rotation.x = glm::degrees(pitch);
+        Rotation.y = glm::degrees(yaw);
+        Rotation.z = 0.0f;
     }
 
     void Rotate(const glm::vec3 &eulerAngles)
