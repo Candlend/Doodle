@@ -59,11 +59,11 @@ void Renderer::SetClearColor(float r, float g, float b, float a)
     });
 }
 
-void Renderer::DrawIndexed(unsigned int count, bool depthTest)
+void Renderer::DrawIndexed(unsigned int count)
 {
-    Renderer::Submit([count, depthTest]() {
-        RendererAPI::DrawIndexed(count, depthTest);
-        DOO_CORE_TRACE("Renderer draw indexed: {0}, {1}", count, depthTest);
+    Renderer::Submit([count]() {
+        RendererAPI::DrawIndexed(count);
+        DOO_CORE_TRACE("Renderer draw indexed: {0}", count);
     });
 }
 

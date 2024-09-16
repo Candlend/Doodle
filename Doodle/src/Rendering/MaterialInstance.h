@@ -25,6 +25,7 @@ public:
     MaterialInstance(std::shared_ptr<Material> material);
 
     void Bind();
+    void Unbind();
 
     // 设置实例特定的统一值
     void SetUniform1f(const std::string &name, float value);

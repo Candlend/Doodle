@@ -18,11 +18,7 @@ public:
     virtual uint32_t GetRendererID() const = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
-    virtual void Render(bool depthTest) const = 0;
-    void Render() const
-    {
-        Render(true);
-    }
+    virtual void Render() const = 0;
 
     virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer) = 0;
     virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer) = 0;

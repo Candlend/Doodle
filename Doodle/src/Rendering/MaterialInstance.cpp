@@ -16,6 +16,11 @@ void MaterialInstance::Bind()
     ApplyInstanceUniforms();
 }
 
+void MaterialInstance::Unbind()
+{
+    m_material->Unbind();
+}
+
 void MaterialInstance::SetUniform1f(const std::string &name, float value)
 {
     m_instanceUniforms1f[name] = value;

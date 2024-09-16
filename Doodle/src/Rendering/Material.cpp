@@ -1,7 +1,8 @@
 
+#include <glad/glad.h>
+
 #include "Material.h"
-#include "Log.h"
-#include <cstdint>
+#include "Renderer.h"
 
 namespace Doodle
 {
@@ -112,6 +113,28 @@ void Material::Bind()
     {
         m_shader->SetUniformMatrix3f(name, value);
     }
+}
+
+void Material::Unbind()
+{
+}
+
+void SkyboxMaterial::Bind()
+{
+    Renderer::Submit([]() {
+        glDepthFunc(GL_LEQUAL);
+        glCullFace(GL_FRONT);
+    });
+    Material::Bind();
+}
+
+void SkyboxMaterial::Unbind()
+{
+    Material::Unbind();
+    Renderer::Submit([]() {
+        glDepthFunc(GL_LESS);
+        glCullFace(GL_BACK);
+    });
 }
 
 } // namespace Doodle

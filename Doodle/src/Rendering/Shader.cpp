@@ -48,6 +48,11 @@ public:
         });
     }
 
+    uint32_t GetRendererID() const override
+    {
+        return m_rendererID;
+    }
+
 private:
     void ReadShaderFromFile(const std::string &filepath)
     {
@@ -103,7 +108,8 @@ private:
                 }
                 currentType = trimmedLine.substr(TYPE_TOKEN.length());
                 boost::algorithm::trim(currentType); // 去掉前后的空格
-                DOO_CORE_ASSERT(currentType == "vertex" || currentType == "fragment" || currentType == "pixel",
+                DOO_CORE_ASSERT(currentType == "vertex" || currentType == "fragment" || currentType == "pixel" ||
+                                    currentType == "geometry" || currentType == "compute",
                                 "Invalid shader type specified");
             }
             else if (!currentType.empty())
@@ -226,6 +232,10 @@ private:
             return GL_VERTEX_SHADER;
         if (type == "fragment" || type == "pixel")
             return GL_FRAGMENT_SHADER;
+        if (type == "geometry")
+            return GL_GEOMETRY_SHADER;
+        if (type == "compute")
+            return GL_COMPUTE_SHADER;
         return GL_NONE;
     }
 

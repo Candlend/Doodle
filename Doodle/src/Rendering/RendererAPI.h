@@ -24,7 +24,7 @@ public:
     static void Clear();
     static void SetClearColor(float r, float g, float b, float a);
 
-    static void DrawIndexed(unsigned int count, bool depthTest = true);
+    static void DrawIndexed(unsigned int count);
     static void UseWireframe(bool useWireframe);
 
     static RenderAPICapabilities &GetCapabilities()

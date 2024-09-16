@@ -30,6 +30,8 @@ public:
     virtual uint32_t GetRendererID() const = 0;
     virtual uint32_t GetBinding() const = 0;
     virtual uint32_t GetTarget() const = 0;
+    virtual TextureFormat GetFormat() const = 0;
+    virtual uint32_t GetMipLevelCount() const = 0;
     virtual UUID GetUUID() const
     {
         return m_uuid;
@@ -69,6 +71,8 @@ public:
                                                const TextureParams &params = TextureParams());
     static std::shared_ptr<TextureCube> Create(const std::array<Buffer, 6> &faceBuffers,
                                                const TextureParams &params = TextureParams());
+
+    static std::shared_ptr<TextureCube> Create(const TextureParams &params = TextureParams());
 
     static std::shared_ptr<TextureCube> GetWhiteTexture();
 

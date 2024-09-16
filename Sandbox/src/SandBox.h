@@ -62,11 +62,11 @@ public:
         InitializeLayout();
 
         m_scene = SceneManager::Get()->CreateScene("Main");
-        m_scene->BeginScene();
         Renderer::SetClearColor(0.3f, 0.3f, 0.3f, 1.f);
         ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
-        BuildSkybox();
+        m_scene->LoadEnvironment("assets/envs/pink_sunrise_4k.hdr");
         BuildScene();
+        m_scene->BeginScene();
     }
 
     void BeforeLayout() override
@@ -77,26 +77,8 @@ public:
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
     }
 
-    void BuildSkybox()
-    {
-        auto skyboxMaterial = SkyboxMaterial::Create();
-
-        std::array<std::string, 6> faces = {
-            "assets/textures/skybox/right.jpg",  "assets/textures/skybox/left.jpg",  "assets/textures/skybox/top.jpg",
-            "assets/textures/skybox/bottom.jpg", "assets/textures/skybox/front.jpg", "assets/textures/skybox/back.jpg",
-        };
-        TextureParams params;
-        params.Format = TextureFormat::SRGB8;
-        skyboxMaterial->LoadSkyboxTexture(faces, params);
-
-        auto skybox = m_scene->CreateEntity("Skybox");
-        skybox.AddComponent<MaterialComponent>(skyboxMaterial);
-        skybox.AddComponent<MeshComponent>("assets/models/test_cube.obj");
-        skybox.GetComponent<TransformComponent>().Scale = glm::vec3(100.f);
-    }
     void BuildScene()
     {
-
         auto material = StandardMaterial::Create();
 
         auto cerberus = m_scene->CreateEntity("Cerberus");

@@ -47,8 +47,8 @@ public:
             material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
 
             material.MaterialInstance->Bind();
-
             vao.Render();
+            material.MaterialInstance->Unbind();
         }
 
         auto meshView = scene->View<TransformComponent, MeshComponent, MaterialComponent>();
@@ -67,6 +67,7 @@ public:
 
             material.MaterialInstance->Bind();
             mesh.Render();
+            material.MaterialInstance->Unbind();
         }
     }
 };

@@ -115,10 +115,10 @@ public:
         return m_indexBuffer;
     }
 
-    void Render(bool depthTest) const override
+    void Render() const override
     {
         Bind();
-        Renderer::DrawIndexed(m_indexBuffer->GetSize(), depthTest);
+        Renderer::DrawIndexed(m_indexBuffer->GetSize());
     }
 
 private:

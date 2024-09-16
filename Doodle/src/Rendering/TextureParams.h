@@ -30,6 +30,7 @@ enum class TextureWrap
     Repeat = 1,
     MirroredRepeat = 2,
     Clamp = 3,
+    ClampToEdge = 4,
 };
 
 enum class TextureFilter

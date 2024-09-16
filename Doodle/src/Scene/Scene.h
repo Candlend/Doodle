@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SceneEnvironment.h"
+#include "Texture.h"
 #include "entt/entity/fwd.hpp"
 #include "pch.h"
 #include <entt/entt.hpp>
@@ -46,6 +48,7 @@ struct SceneData
     glm::vec3 AmbientRadiance;
     CameraData CameraData;
     LightEnvironment LightEnvironment;
+    Environment Environment;
 };
 
 class Entity;
@@ -70,6 +73,7 @@ public:
     void AddEntity(const Entity &entity);
     void RemoveEntity(const UUID &id);
     void DestroyEntity(const Entity &entity);
+    void LoadEnvironment(const std::string &filepath);
 
     inline std::string GetName() const
     {

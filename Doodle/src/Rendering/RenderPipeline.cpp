@@ -1,5 +1,6 @@
 #include "RenderPipeline.h"
 #include "ShadingPass.h"
+#include "SkyboxPass.h"
 
 namespace Doodle
 {
@@ -13,6 +14,7 @@ RenderPipeline::RenderPipeline()
 }
 void RenderPipeline::RegisterRenderPasses()
 {
+    CreateRenderPass<SkyboxPass>("SkyboxPass", {SceneRenderer::Get()->GetFrameBuffer()});
     CreateRenderPass<ShadingPass>("ShadingPass", {SceneRenderer::Get()->GetFrameBuffer()});
 }
 void RenderPipeline::AddRenderPass(const std::string &name, std::shared_ptr<RenderPass> renderPass)

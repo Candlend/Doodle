@@ -146,9 +146,16 @@ public:
             DOO_CORE_WARN("Texture format not specified");
             break;
         }
-
-        m_data =
-            reinterpret_cast<std::byte *>(stbi_load(m_filepath.c_str(), &width, &height, &channels, desiredChannels));
+        if (m_hdr)
+        {
+            m_data = reinterpret_cast<std::byte *>(
+                stbi_loadf(m_filepath.c_str(), &width, &height, &channels, desiredChannels));
+        }
+        else
+        {
+            m_data = reinterpret_cast<std::byte *>(
+                stbi_load(m_filepath.c_str(), &width, &height, &channels, desiredChannels));
+        }
 
         if (!m_data)
         {
@@ -223,6 +230,14 @@ public:
     {
         return GL_TEXTURE_2D;
     }
+    TextureFormat GetFormat() const override
+    {
+        return m_params.Format;
+    }
+    uint32_t GetMipLevelCount() const override
+    {
+        return CalculateMipMapCount(m_params.Width, m_params.Height);
+    }
 
 private:
     void LoadTexture()
@@ -235,9 +250,10 @@ private:
             GLenum internalFormat = GetInternalFormat(m_params.Format);
             GLenum format = std::get<0>(GetFormatAndType(internalFormat));
             GLenum type = std::get<1>(GetFormatAndType(internalFormat));
-
-            glTextureStorage2D(m_rendererId, 1, internalFormat, width, height);
-            glTextureSubImage2D(m_rendererId, 0, 0, 0, width, height, format, type, m_data);
+            uint32_t levels = GetMipLevelCount();
+            glTextureStorage2D(m_rendererId, levels, internalFormat, width, height);
+            if (m_data != nullptr)
+                glTextureSubImage2D(m_rendererId, 0, 0, 0, width, height, format, type, m_data);
             glGenerateTextureMipmap(m_rendererId);
 
             // Set texture parameters
@@ -252,6 +268,10 @@ private:
                 glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
                 break;
             case TextureWrap::Clamp:
+                glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                break;
+            case TextureWrap::ClampToEdge:
                 glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 break;
@@ -288,7 +308,7 @@ private:
     TextureParams m_params;
     uint32_t m_rendererId;
     std::string m_filepath;
-    std::byte *m_data;
+    std::byte *m_data = nullptr;
     bool m_hdr;
     uint32_t m_binding;
 };
@@ -395,8 +415,17 @@ public:
         // Load each face of the cube texture
         for (size_t i = 0; i < 6; ++i)
         {
-            m_faceData[i] = reinterpret_cast<std::byte *>(
-                stbi_load(m_facePaths[i].c_str(), &width, &height, &channels, desiredChannels)),
+            if (m_hdr)
+            {
+                m_faceData[i] = reinterpret_cast<std::byte *>(
+                    stbi_loadf(m_facePaths[i].c_str(), &width, &height, &channels, desiredChannels));
+            }
+            else
+            {
+                m_faceData[i] = reinterpret_cast<std::byte *>(
+                    stbi_load(m_facePaths[i].c_str(), &width, &height, &channels, desiredChannels));
+            }
+
             GetMemorySize(m_params.Format, width, height);
             if (!m_faceData[i])
             {
@@ -423,13 +452,12 @@ public:
             {
                 m_faceData[i] = Buffer::Copy(faceBuffers[i], size);
             }
-            else
-            {
-                Buffer buffer;
-                buffer.Allocate(size);
-                m_faceData[i] = buffer;
-            }
         }
+        LoadTexture();
+    }
+
+    OpenGLTextureCube(const TextureParams &params) : m_params(params)
+    {
         LoadTexture();
     }
 
@@ -478,6 +506,14 @@ public:
     {
         return GL_TEXTURE_CUBE_MAP;
     }
+    TextureFormat GetFormat() const override
+    {
+        return m_params.Format;
+    }
+    uint32_t GetMipLevelCount() const override
+    {
+        return CalculateMipMapCount(m_params.Width, m_params.Height);
+    }
 
 private:
     void LoadTexture()
@@ -490,12 +526,16 @@ private:
             GLenum internalFormat = GetInternalFormat(m_params.Format);
             GLenum format = std::get<0>(GetFormatAndType(internalFormat));
             GLenum type = std::get<1>(GetFormatAndType(internalFormat));
-
-            glTextureStorage2D(m_rendererId, 1, internalFormat, width, height);
+            uint32_t levels = GetMipLevelCount();
+            glTextureStorage2D(m_rendererId, levels, internalFormat, width, height);
 
             // Upload each face to the cube map
             for (size_t i = 0; i < 6; ++i)
             {
+                if (m_faceData[i] == nullptr)
+                {
+                    continue;
+                }
                 glTextureSubImage3D(m_rendererId, 0, 0, 0, static_cast<GLint>(i), width, height, 1, format, type,
                                     m_faceData[i]);
             }
@@ -516,6 +556,11 @@ private:
                 glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
                 break;
             case TextureWrap::Clamp:
+                glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+                break;
+            case TextureWrap::ClampToEdge:
                 glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 glTextureParameteri(m_rendererId, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -555,7 +600,7 @@ private:
     TextureParams m_params;
     uint32_t m_rendererId;
     std::array<std::string, 6> m_facePaths;
-    std::array<std::byte *, 6> m_faceData;
+    std::array<std::byte *, 6> m_faceData = {nullptr};
     uint32_t m_binding;
     bool m_hdr;
 };
@@ -569,6 +614,11 @@ std::shared_ptr<TextureCube> TextureCube::Create(const std::array<std::string, 6
 std::shared_ptr<TextureCube> TextureCube::Create(const std::array<Buffer, 6> &faceBuffers, const TextureParams &params)
 {
     return std::make_shared<OpenGLTextureCube>(faceBuffers, params);
+}
+
+std::shared_ptr<TextureCube> TextureCube::Create(const TextureParams &params)
+{
+    return std::make_shared<OpenGLTextureCube>(params);
 }
 
 std::shared_ptr<TextureCube> TextureCube::GetWhiteTexture()

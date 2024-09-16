@@ -68,15 +68,9 @@ void RendererAPI::SetClearColor(float r, float g, float b, float a)
     glClearColor(r, g, b, a);
 }
 
-void RendererAPI::DrawIndexed(unsigned int count, bool depthTest)
+void RendererAPI::DrawIndexed(unsigned int count)
 {
-    if (!depthTest)
-        glDisable(GL_DEPTH_TEST);
-
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-
-    if (!depthTest)
-        glEnable(GL_DEPTH_TEST);
 }
 
 void RendererAPI::UseWireframe(bool useWireframe)

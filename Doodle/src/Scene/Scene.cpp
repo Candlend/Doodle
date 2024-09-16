@@ -107,6 +107,11 @@ void Scene::DestroyEntity(const Entity &entity)
     m_entityComponents.erase(id);
 }
 
+void Scene::LoadEnvironment(const std::string &filepath)
+{
+    m_sceneData.Environment = Environment::Load(filepath);
+}
+
 void Scene::BeginScene()
 {
     m_active = true;

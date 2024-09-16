@@ -37,7 +37,8 @@ public:
         m_shader = ShaderLibrary::Get()->GetShader(shaderName);
     }
 
-    void Bind();
+    virtual void Bind();
+    virtual void Unbind();
 
     void SetUniform1f(const std::string &name, float value);
     void SetUniform2f(const std::string &name, glm::vec2 value);
@@ -199,6 +200,9 @@ public:
     {
         SetSkyboxTexture(TextureCube::Create(faceBuffers, params));
     }
+
+    void Bind() override;
+    void Unbind() override;
 };
 
 } // namespace Doodle

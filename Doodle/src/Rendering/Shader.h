@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <cstdint>
 #include <glm/glm.hpp>
 
 #include "Renderer.h"
@@ -23,6 +24,7 @@ public:
     virtual void BindUniformBlock(const std::string &name, uint32_t slot) = 0;
     virtual void PrintActiveUniforms() = 0;
     virtual void PrintActiveUniformBlocks() = 0;
+    virtual uint32_t GetRendererID() const = 0;
 
     template <typename Func, typename... Args> void SetUniform(const std::string &name, Func func, Args... args)
     {
