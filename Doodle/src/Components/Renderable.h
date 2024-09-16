@@ -17,16 +17,13 @@ struct IRenderable : public BaseComponent
 
 struct VAOComponent : public IRenderable
 {
+    COMPONENT_CLASS_TYPE(VAO)
+
     std::shared_ptr<VertexArray> VAO;
 
     void Render() const override
     {
         VAO->Render();
-    }
-
-    std::string GetName() const override
-    {
-        return "VAO";
     }
 
     void OnInspectorLayout() override
@@ -37,6 +34,8 @@ struct VAOComponent : public IRenderable
 
 struct MeshComponent : public IRenderable
 {
+    COMPONENT_CLASS_TYPE(Mesh)
+
     std::shared_ptr<Mesh> Mesh;
 
     MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
@@ -46,11 +45,6 @@ struct MeshComponent : public IRenderable
     void Render() const override
     {
         Mesh->Render();
-    }
-
-    std::string GetName() const override
-    {
-        return "Mesh";
     }
 
     void OnInspectorLayout() override

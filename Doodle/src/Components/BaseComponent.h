@@ -36,7 +36,7 @@ struct DOO_API BaseComponent
     entt::entity GetEntityHandle() const;
     UUID GetUUID() const;
     Scene *GetScene() const;
-    virtual std::string GetName() const = 0;
+    virtual const char *GetName() const = 0;
 
     virtual void OnInspectorLayout()
     {
@@ -127,5 +127,15 @@ protected:
     entt::registry &GetRegistry() const;
     Entity m_entity;
 };
+
+#define COMPONENT_CLASS_TYPE(type)                                                                                     \
+    static const char *GetStaticName()                                                                                 \
+    {                                                                                                                  \
+        return #type;                                                                                                  \
+    }                                                                                                                  \
+    virtual const char *GetName() const override                                                                       \
+    {                                                                                                                  \
+        return GetStaticName();                                                                                        \
+    }
 
 } // namespace Doodle

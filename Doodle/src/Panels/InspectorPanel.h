@@ -15,6 +15,16 @@ public:
     void OnUpdate() override;
 
     void OnPanelLayout() override;
+
+    template <typename T> void AddComponentButton(Entity &entity)
+    {
+        if (entity.HasComponent<T>())
+            return;
+        if (ImGui::MenuItem(T::GetStaticName()))
+        {
+            entity.AddComponent<T>();
+        }
+    }
 };
 
 } // namespace Doodle

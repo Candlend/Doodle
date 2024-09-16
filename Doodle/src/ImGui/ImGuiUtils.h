@@ -58,6 +58,13 @@ inline bool InputText(const char *label, std::string &str, ImGuiInputTextFlags f
     return false;
 }
 
+inline bool SizedButton(const char *label, int n = 1)
+{
+    auto style = ImGui::GetStyle();
+    float buttonWidth = (ImGui::GetWindowSize().x - style.WindowPadding.x * 2 - style.ItemSpacing.x * (n - 1)) / n;
+    return ImGui::Button(label, ImVec2(buttonWidth, 0));
+}
+
 inline void ReadOnlyInputText(const char *label, std::string str)
 {
     ImGuiUtils::StyleColorScope sc{ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]};

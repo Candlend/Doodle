@@ -16,12 +16,9 @@ using namespace Doodle;
 
 class CameraController : public Scriptable, public IEventHandler<ViewportResizeEvent>
 {
-public:
-    std::string GetName() const override
-    {
-        return "Camera Controller";
-    }
+    COMPONENT_CLASS_TYPE(CameraController)
 
+public:
     void Initialize() override
     {
         m_moveSpeed = 2.0f;

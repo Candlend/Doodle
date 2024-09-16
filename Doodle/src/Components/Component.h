@@ -13,17 +13,14 @@ namespace Doodle
 
 struct IDComponent : public BaseComponent
 {
+    COMPONENT_CLASS_TYPE(ID)
+
     UUID ID;
 
     IDComponent() = default;
     IDComponent(const IDComponent &) = default;
     IDComponent(const UUID &id) : ID(id)
     {
-    }
-
-    std::string GetName() const override
-    {
-        return "ID";
     }
 
     operator UUID &()
@@ -44,6 +41,8 @@ struct IDComponent : public BaseComponent
 
 struct TagComponent : public BaseComponent
 {
+    COMPONENT_CLASS_TYPE(Tag)
+
     std::string Tag;
 
     TagComponent() = default;
@@ -62,30 +61,22 @@ struct TagComponent : public BaseComponent
         return Tag;
     }
 
-    std::string GetName() const override
-    {
-        return "Tag";
-    }
-
     void OnInspectorLayout() override
     {
-        ImGuiUtils::ReadOnlyInputText("Tag", Tag);
+        ImGuiUtils::InputText("Tag##TagComponent", Tag);
     }
 };
 
 struct TransformComponent : public BaseComponent
 {
+    COMPONENT_CLASS_TYPE(Transform)
+
     glm::vec3 Position;
     glm::vec3 Rotation; // Euler angles in degrees
     glm::vec3 Scale;
 
     TransformComponent() : Position(0.0f), Rotation(0.0f), Scale(1.0f)
     {
-    }
-
-    std::string GetName() const override
-    {
-        return "Transform";
     }
 
     glm::quat GetRotation() const
@@ -189,4 +180,5 @@ struct TransformComponent : public BaseComponent
         ImGui::DragFloat3("##Scale", &Scale.x, 0.1f);
     }
 };
+
 } // namespace Doodle

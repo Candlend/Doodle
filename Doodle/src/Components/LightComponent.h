@@ -10,13 +10,10 @@ namespace Doodle
 
 struct DirectionalLightComponent : public BaseComponent
 {
+    COMPONENT_CLASS_TYPE(DirectionalLight)
+
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
-
-    std::string GetName() const override
-    {
-        return "Directional Light";
-    }
 
     void OnInspectorLayout() override
     {
@@ -27,17 +24,14 @@ struct DirectionalLightComponent : public BaseComponent
 
 struct PointLightComponent : public BaseComponent
 {
+    COMPONENT_CLASS_TYPE(PointLight)
+
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
     float MinRadius = 0.001f;
     float Radius = 25.0f;
     float Falloff = 1.f;
     float SourceSize = 0.1f;
-
-    std::string GetName() const override
-    {
-        return "Point Light";
-    }
 
     void OnInspectorLayout() override
     {
@@ -52,17 +46,14 @@ struct PointLightComponent : public BaseComponent
 
 struct SpotLightComponent : public BaseComponent
 {
+    COMPONENT_CLASS_TYPE(SpotLight)
+
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
     float AngleAttenuation = 0.0f;
     float Range = 0.1f;
     float Angle = 0.0f;
     float Falloff = 1.0f;
-
-    std::string GetName() const override
-    {
-        return "Spot Light";
-    }
 
     void OnInspectorLayout() override
     {

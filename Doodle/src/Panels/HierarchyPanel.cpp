@@ -23,6 +23,16 @@ void HierarchyPanel::OnPanelLayout()
             ImGui::SetWindowFocus("Viewport");
         }
     }
+
+    // 右键菜单
+    if (ImGui::BeginPopupContextWindow())
+    {
+        if (ImGui::MenuItem("Create Empty Entity"))
+        {
+            auto entity = scene->CreateEntity("Empty Entity");
+        }
+        ImGui::EndPopup();
+    }
 }
 
 void HierarchyPanel::OnUpdate()

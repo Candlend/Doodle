@@ -1,5 +1,8 @@
 #include "InspectorPanel.h"
 #include "Component.h"
+#include "Entity.h"
+#include "MaterialComponent.h"
+#include "Renderable.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
 #include "imgui.h"
@@ -26,17 +29,30 @@ void InspectorPanel::OnPanelLayout()
         ImGui::TextDisabled("Multiple entities selected");
         return;
     }
-
-    for (auto &uuid : uuids)
+    auto uuid = uuids[0];
+    auto components = SceneManager::Get()->GetActiveScene()->GetComponents(uuid);
+    for (auto &component : components)
     {
-        auto components = SceneManager::Get()->GetActiveScene()->GetComponents(uuid);
-        for (auto &component : components)
+        if (ImGui::CollapsingHeader(component->GetName()))
         {
-            if (ImGui::CollapsingHeader(component->GetName().c_str()))
-            {
-                component->OnInspectorLayout();
-            }
+            component->OnInspectorLayout();
         }
+    }
+    auto entity = SceneManager::Get()->GetActiveScene()->GetEntity(uuid);
+
+    ImGui::Separator();
+    if (ImGuiUtils::SizedButton("Add Component"))
+    {
+        ImGui::OpenPopup("AddComponentPopup");
+    }
+
+    if (ImGui::BeginPopup("AddComponentPopup"))
+    {
+        AddComponentButton<CameraComponent>(entity);
+        AddComponentButton<DirectionalLightComponent>(entity);
+        AddComponentButton<PointLightComponent>(entity);
+        AddComponentButton<SpotLightComponent>(entity);
+        ImGui::EndPopup();
     }
 }
 

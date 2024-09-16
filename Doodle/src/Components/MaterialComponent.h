@@ -12,6 +12,8 @@ namespace Doodle
 
 struct MaterialComponent : public BaseComponent
 {
+    COMPONENT_CLASS_TYPE(Material)
+
     std::shared_ptr<MaterialInstance> MaterialInstance;
 
     MaterialComponent(const std::shared_ptr<Doodle::MaterialInstance> &materialInstance)
@@ -31,11 +33,6 @@ struct MaterialComponent : public BaseComponent
     operator const Doodle::MaterialInstance &() const
     {
         return *MaterialInstance;
-    }
-
-    std::string GetName() const override
-    {
-        return "Material";
     }
 
     void OnInspectorLayout() override
