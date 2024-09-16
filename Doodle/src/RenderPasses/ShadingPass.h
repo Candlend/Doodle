@@ -1,11 +1,12 @@
 #pragma once
 
-#include "RenderPipeline.h"
 #include "pch.h"
 
 #include "Component.h"
 #include "RenderPass.h"
-#include <memory>
+#include "RenderPipeline.h"
+#include "Texture.h"
+
 
 namespace Doodle
 {
@@ -15,7 +16,9 @@ class DOO_API ShadingPass : public RenderPass
 public:
     ShadingPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
-        m_brdfLUT = Texture2D::Create("assets/textures/brdfLUT.tga");
+        TextureParams params;
+        params.Wrap = TextureWrap::ClampToEdge;
+        m_brdfLUT = Texture2D::Create("assets/textures/brdfLUT.png", params);
     }
 
     void BeginScene() override
@@ -73,7 +76,7 @@ public:
             material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
             material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
             material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
-            material.MaterialInstance->SetUniformTexture("u_brdfLUT", m_brdfLUT);
+            material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT);
 
             material.MaterialInstance->Bind();
             mesh.Render();
