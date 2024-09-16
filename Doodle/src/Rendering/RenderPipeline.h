@@ -52,10 +52,6 @@ private:
     Scene *m_scene;
     std::unordered_map<std::string, std::shared_ptr<RenderPass>> m_renderPasses;
     std::unordered_map<std::string, std::shared_ptr<UniformBuffer>> m_uniformBuffers;
-
-    std::shared_ptr<UniformBuffer> m_sceneUBO;
-    std::shared_ptr<UniformBuffer> m_pointLightsUBO;
-    std::shared_ptr<UniformBuffer> m_spotLightsUBO;
 };
 
 } // namespace Doodle

@@ -6,12 +6,9 @@ namespace Doodle
 
 RenderPipeline::RenderPipeline()
 {
-    // m_uniformBuffers["SceneData"] = UniformBuffer::Create(sizeof(UBOScene), true);
-    // m_uniformBuffers["PointLightData"] = UniformBuffer::Create(sizeof(UBOPointLights), true);
-    // m_uniformBuffers["SpotLightData"] = UniformBuffer::Create(sizeof(UBOSpotLights), true);
-    m_sceneUBO = UniformBuffer::Create(sizeof(UBOScene), true);
-    m_pointLightsUBO = UniformBuffer::Create(sizeof(UBOPointLights), true);
-    m_spotLightsUBO = UniformBuffer::Create(sizeof(UBOSpotLights), true);
+    m_uniformBuffers["SceneData"] = UniformBuffer::Create(sizeof(UBOScene), true);
+    m_uniformBuffers["PointLightData"] = UniformBuffer::Create(sizeof(UBOPointLights), true);
+    m_uniformBuffers["SpotLightData"] = UniformBuffer::Create(sizeof(UBOSpotLights), true);
     RegisterRenderPasses();
 }
 void RenderPipeline::RegisterRenderPasses()
@@ -60,24 +57,20 @@ void RenderPipeline::Execute()
         s_UboScene.DirectionalLight = sceneData.LightEnvironment.DirectionalLights[0];
         s_UboScene.AmbientRadiance = glm::vec3(0.03f);
         s_UboScene.CameraPosition = sceneData.CameraData.Position;
-        m_sceneUBO->SetSubData(&s_UboScene, sizeof(UBOScene));
+        m_uniformBuffers["SceneData"]->SetSubData(&s_UboScene, sizeof(UBOScene));
 
         static UBOPointLights s_UboPointLights = {};
         const std::vector<PointLight> &pointLightsVec = sceneData.LightEnvironment.PointLights;
         s_UboPointLights.Count = pointLightsVec.size();
         std::memcpy(s_UboPointLights.PointLights, pointLightsVec.data(),
                     sceneData.LightEnvironment.GetPointLightsSize());
-        m_pointLightsUBO->SetSubData(&s_UboPointLights, sizeof(UBOPointLights));
+        m_uniformBuffers["PointLightData"]->SetSubData(&s_UboPointLights, sizeof(UBOPointLights));
 
         static UBOSpotLights s_UboSpotLights = {};
         const std::vector<SpotLight> &spotLightsVec = sceneData.LightEnvironment.SpotLights;
         s_UboSpotLights.Count = spotLightsVec.size();
         std::memcpy(s_UboSpotLights.SpotLights, spotLightsVec.data(), sceneData.LightEnvironment.GetSpotLightsSize());
-        m_spotLightsUBO->SetSubData(&s_UboSpotLights, sizeof(UBOSpotLights));
-
-        m_sceneUBO->Bind(0);
-        m_pointLightsUBO->Bind(1);
-        m_spotLightsUBO->Bind(2);
+        m_uniformBuffers["SpotLightData"]->SetSubData(&s_UboSpotLights, sizeof(UBOSpotLights));
     }
 
     for (const auto &[name, renderPass] : m_renderPasses)

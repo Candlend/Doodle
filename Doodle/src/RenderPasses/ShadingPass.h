@@ -26,6 +26,10 @@ public:
 
     void Execute() override
     {
+        RenderPipeline::Get()->GetUniformBuffer("SceneData")->Bind(0);
+        RenderPipeline::Get()->GetUniformBuffer("PointLightData")->Bind(1);
+        RenderPipeline::Get()->GetUniformBuffer("SpotLightData")->Bind(2);
+
         auto *scene = m_scene;
         auto &sceneData = scene->GetData();
 
