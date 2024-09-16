@@ -133,7 +133,6 @@ public:
 private:
     std::shared_ptr<Material> m_material;
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_instanceTextures;
-    std::unordered_map<UUID, uint32_t> m_instanceTextureSlots;
     std::unordered_map<std::string, float> m_instanceUniforms1f;
     std::unordered_map<std::string, glm::vec2> m_instanceUniforms2f;
     std::unordered_map<std::string, glm::vec3> m_instanceUniforms3f;

@@ -436,10 +436,9 @@ private:
         SetUniform(name, glUniformMatrix4fv, 1, GL_FALSE, &mat[0][0]);
     }
 
-    void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> texture, uint32_t slot) override
+    void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> texture) override
     {
-        texture->Bind(slot);
-        SetUniform1i(name, slot);
+        SetUniform(name, glUniformHandleui64ARB, texture->GetTextureHandle());
     }
 
     std::string m_filepath;

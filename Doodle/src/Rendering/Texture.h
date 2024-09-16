@@ -28,7 +28,7 @@ public:
     virtual uint32_t GetWidth() const = 0;
     virtual uint32_t GetHeight() const = 0;
     virtual uint32_t GetRendererID() const = 0;
-    virtual uint32_t GetBinding() const = 0;
+    virtual uint64_t GetTextureHandle() const = 0;
     virtual uint32_t GetTarget() const = 0;
     virtual TextureFormat GetFormat() const = 0;
     virtual uint32_t GetMipLevelCount() const = 0;

@@ -60,7 +60,6 @@ public:
 private:
     std::shared_ptr<Shader> m_shader;
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
-    std::unordered_map<UUID, uint32_t> m_textureSlots;
     std::unordered_map<std::string, float> m_uniforms1f;
     std::unordered_map<std::string, glm::vec2> m_uniforms2f;
     std::unordered_map<std::string, glm::vec3> m_uniforms3f;

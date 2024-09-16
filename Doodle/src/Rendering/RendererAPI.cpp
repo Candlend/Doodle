@@ -1,5 +1,6 @@
 
 #include "pch.h"
+#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 #include "RendererAPI.h"
@@ -21,6 +22,8 @@ static void OpenGLLogMessage(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, 
 void RendererAPI::Initialize()
 {
     glDebugMessageCallback(OpenGLLogMessage, nullptr);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

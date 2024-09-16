@@ -188,6 +188,7 @@ public:
     ~OpenGLTexture2D()
     {
         Renderer::Submit([this]() {
+            glMakeTextureHandleNonResidentARB(m_textureHandle);
             glDeleteTextures(1, &m_rendererId);
             DOO_CORE_TRACE("Texture <{0}> destroyed", m_rendererId);
         });
@@ -222,9 +223,9 @@ public:
     {
         return m_rendererId;
     }
-    uint32_t GetBinding() const override
+    uint64_t GetTextureHandle() const override
     {
-        return m_binding;
+        return m_textureHandle;
     }
     uint32_t GetTarget() const override
     {
@@ -302,11 +303,15 @@ private:
                 DOO_CORE_WARN("Texture filter mode not specified");
                 break;
             }
+
+            m_textureHandle = glGetTextureHandleARB(m_rendererId);
+            glMakeTextureHandleResidentARB(m_textureHandle);
             DOO_CORE_TRACE("Texture <{0}> created: {1}\n{2}", m_rendererId, m_filepath, m_params.ToString());
         });
     }
     TextureParams m_params;
     uint32_t m_rendererId;
+    uint64_t m_textureHandle;
     std::string m_filepath;
     std::byte *m_data = nullptr;
     bool m_hdr;
@@ -464,6 +469,7 @@ public:
     ~OpenGLTextureCube()
     {
         Renderer::Submit([this]() {
+            glMakeTextureHandleNonResidentARB(m_textureHandle);
             glDeleteTextures(1, &m_rendererId);
             DOO_CORE_TRACE("Cube Texture <{0}> destroyed", m_rendererId);
         });
@@ -498,9 +504,9 @@ public:
     {
         return m_rendererId;
     }
-    uint32_t GetBinding() const override
+    uint64_t GetTextureHandle() const override
     {
-        return m_binding;
+        return m_textureHandle;
     }
     uint32_t GetTarget() const override
     {
@@ -593,12 +599,15 @@ private:
                 break;
             }
 
+            m_textureHandle = glGetTextureHandleARB(m_rendererId);
+            glMakeTextureHandleResidentARB(m_textureHandle);
             DOO_CORE_TRACE("Texture <{0}> created: {1}\n{2}", m_rendererId, m_facePaths[0], m_params.ToString());
         });
     }
 
     TextureParams m_params;
     uint32_t m_rendererId;
+    uint64_t m_textureHandle;
     std::array<std::string, 6> m_facePaths;
     std::array<std::byte *, 6> m_faceData = {nullptr};
     uint32_t m_binding;

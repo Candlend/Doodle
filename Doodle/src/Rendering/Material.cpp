@@ -59,10 +59,6 @@ void Material::SetUniformMatrix3f(const std::string &name, glm::mat3 value)
 
 void Material::SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value)
 {
-    if (!m_textureSlots.contains(value->GetUUID()))
-    {
-        m_textureSlots[value->GetUUID()] = m_textureSlots.size();
-    }
     m_textures[name] = value;
 }
 
@@ -71,7 +67,7 @@ void Material::Bind()
     m_shader->Bind();
     for (auto &[name, texture] : m_textures)
     {
-        m_shader->SetUniformTexture(name, texture, m_textureSlots[texture->GetUUID()]);
+        m_shader->SetUniformTexture(name, texture);
     }
     for (auto &[name, value] : m_uniforms1f)
     {
