@@ -30,8 +30,8 @@ void SceneSettingsPanel::OnPanelLayout()
 
     if (ImGui::CollapsingHeader("Shadow"))
     {
-        ImGui::DragFloat("Bias", &sceneData.ShadowBias, 0.001f, 0.0f, 0.1f);
-        ImGui::DragFloat("Normal Bias", &sceneData.ShadowNormalBias, 0.001f, 0.0f, 0.1f);
+        ImGui::DragFloat("Bias", &sceneData.ShadowBias, 0.0001f, 0.0f, 0.1f);
+        ImGui::DragFloat("Normal Bias", &sceneData.ShadowNormalBias, 0.0001f, 0.0f, 0.1f);
     }
 }
 
