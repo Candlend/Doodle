@@ -242,6 +242,8 @@ static GLenum GetGLBlendType(BlendType blendType)
         return GL_ONE_MINUS_CONSTANT_ALPHA;
     case BlendType::SrcAlphaSaturate:
         return GL_SRC_ALPHA_SATURATE;
+    default:
+        return GL_ZERO;
     }
 }
 

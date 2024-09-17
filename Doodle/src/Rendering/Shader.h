@@ -55,14 +55,11 @@ public:
     template <typename Func, typename... Args> void SetUniform(const std::string &name, Func func, Args... args)
     {
         Bind();
-        Renderer::Submit([=, this]() {
+        std::function<void(Args...)> f = [name, func, this](Args... args) {
             uint32_t location = GetUniformLocation(name);
             func(location, args...);
-            std::ostringstream oss;
-            (void)std::initializer_list<int>{(oss << args << ", ", 0)...};
-            if (location != -1)
-                DOO_CORE_TRACE("Shader uniform set: <{0}> {1}", location, name);
-        });
+        };
+        Renderer::Submit<Args...>(f, args...);
     }
 
     virtual void SetUniform1i(const std::string &name, int v) = 0;

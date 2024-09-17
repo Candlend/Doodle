@@ -11,7 +11,7 @@ template <typename... Args> class RenderCommand
 public:
     using ExecuteFn = std::function<void(Args...)>;
 
-    RenderCommand(ExecuteFn func, Args... args) : m_func(func), m_args(std::make_tuple(args...))
+    RenderCommand(ExecuteFn func, Args... args) : m_func(func), m_args(std::make_tuple(std::forward<Args>(args)...))
     {
     }
 
@@ -22,7 +22,7 @@ public:
 
 private:
     ExecuteFn m_func;
-    std::tuple<Args...> m_args;
+    std::tuple<typename std::decay<Args>::type...> m_args;
 };
 
 } // namespace Doodle
