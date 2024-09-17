@@ -59,6 +59,9 @@ void ViewportPanel::OnPanelLayout()
     glm::mat4 view = editorCamera->GetViewMatrix();
     glm::mat4 projection = editorCamera->GetProjectionMatrix();
 
+    ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(glm::mat4(1.0f)),
+                       100.f); // 100x100 grid
+
     static ImGuizmo::OPERATION s_Operation = ImGuizmo::OPERATION::TRANSLATE;
     static ImGuizmo::MODE s_Mode = ImGuizmo::MODE::LOCAL;
     if (!Input::IsMouseButtonDown(MouseButton::Right))

@@ -1,13 +1,50 @@
 #include "pch.h"
 #include <boost/algorithm/string.hpp>
+#include <cstdint>
 #include <glad/glad.h>
 #include <string>
+#include <vector>
 
 #include "Shader.h"
 #include "ShaderReloader.h"
 
 namespace Doodle
 {
+
+static ShaderPropertyType GetShaderPropertyType(uint32_t glType)
+{
+    switch (glType)
+    {
+    case GL_FLOAT:
+        return ShaderPropertyType::Float;
+    case GL_FLOAT_VEC2:
+        return ShaderPropertyType::Float2;
+    case GL_FLOAT_VEC3:
+        return ShaderPropertyType::Float3;
+    case GL_FLOAT_VEC4:
+        return ShaderPropertyType::Float4;
+    case GL_FLOAT_MAT3:
+        return ShaderPropertyType::Mat3;
+    case GL_FLOAT_MAT4:
+        return ShaderPropertyType::Mat4;
+    case GL_INT:
+        return ShaderPropertyType::Int;
+    case GL_INT_VEC2:
+        return ShaderPropertyType::Int2;
+    case GL_INT_VEC3:
+        return ShaderPropertyType::Int3;
+    case GL_INT_VEC4:
+        return ShaderPropertyType::Int4;
+    case GL_BOOL:
+        return ShaderPropertyType::Bool;
+    case GL_SAMPLER_2D:
+        return ShaderPropertyType::Sampler2D;
+    case GL_SAMPLER_CUBE:
+        return ShaderPropertyType::SamplerCube;
+    default:
+        return ShaderPropertyType::None;
+    }
+}
 
 class OpenGLShader : public Shader
 {
@@ -24,6 +61,14 @@ public:
         });
     }
 
+    ~OpenGLShader()
+    {
+        Renderer::Submit([this]() {
+            glDeleteProgram(m_rendererID);
+            DOO_CORE_TRACE("OpenGLShader <{0}> destroyed", m_rendererID);
+        });
+    }
+
     std::string GetPath() const override
     {
         return m_filepath;
@@ -33,6 +78,7 @@ public:
     {
         ReadShaderFromFile(m_filepath);
         Renderer::Submit([this]() {
+            glDeleteProgram(m_rendererID);
             CompileAndUploadShader();
             DOO_CORE_TRACE("OpenGLShader <{0}> reloaded", m_rendererID);
             PrintActiveUniforms();
@@ -178,6 +224,7 @@ private:
         GLsizei length;
         int location;
         std::vector<GLchar> uniformName(uniformMaxLength);
+        m_properties.clear();
         for (int i = 0; i < numUniforms; i++)
         {
             glGetActiveUniform(program, i, uniformMaxLength, &length, &count, &type, uniformName.data());
@@ -185,6 +232,10 @@ private:
             location = glGetUniformLocation(program, name.c_str());
             if (location == -1)
                 continue;
+            ShaderProperty property;
+            property.Name = name;
+            property.Type = GetShaderPropertyType(type);
+            m_properties.push_back(property);
             m_uniformsCache[name] = location;
             auto arrayPos = name.find('[');
             if (arrayPos != std::string::npos)
@@ -310,6 +361,11 @@ private:
             oss << "    <" << location << "> " << name << std::endl;
         }
         DOO_CORE_INFO(oss.str());
+    }
+
+    std::vector<ShaderProperty> GetProperties() override
+    {
+        return m_properties;
     }
 
     void PrintActiveUniformBlocks() override
@@ -442,6 +498,7 @@ private:
     }
 
     std::string m_filepath;
+    std::vector<ShaderProperty> m_properties;
     std::unordered_map<std::string, uint32_t> m_uniformsCache;
     std::unordered_map<std::string, uint32_t> m_uniformBlocksCache;
     uint32_t m_rendererID;

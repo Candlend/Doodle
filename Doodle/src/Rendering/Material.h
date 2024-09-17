@@ -2,7 +2,9 @@
 
 #include "pch.h"
 #include <glm/glm.hpp>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "Shader.h"
 #include "ShaderLibrary.h"
@@ -34,6 +36,7 @@ public:
 
     Material(const std::string &shaderName)
     {
+        m_shaderName = shaderName;
         m_shader = ShaderLibrary::Get()->GetShader(shaderName);
     }
 
@@ -52,12 +55,35 @@ public:
     void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
 
+    float GetUniform1f(const std::string &name);
+    glm::vec2 GetUniform2f(const std::string &name);
+    glm::vec3 GetUniform3f(const std::string &name);
+    glm::vec4 GetUniform4f(const std::string &name);
+    int GetUniform1i(const std::string &name);
+    glm::ivec2 GetUniform2i(const std::string &name);
+    glm::ivec3 GetUniform3i(const std::string &name);
+    glm::ivec4 GetUniform4i(const std::string &name);
+    glm::mat3 GetUniformMatrix3f(const std::string &name);
+    glm::mat4 GetUniformMatrix4f(const std::string &name);
+    std::shared_ptr<Texture> GetUniformTexture(const std::string &name);
+
     std::shared_ptr<Shader> GetShader() const
     {
         return m_shader;
     }
 
+    std::string GetShaderName() const
+    {
+        return m_shaderName;
+    }
+
+    std::vector<ShaderProperty> GetProperties() const
+    {
+        return m_shader->GetProperties();
+    }
+
 private:
+    std::string m_shaderName;
     std::shared_ptr<Shader> m_shader;
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
     std::unordered_map<std::string, float> m_uniforms1f;

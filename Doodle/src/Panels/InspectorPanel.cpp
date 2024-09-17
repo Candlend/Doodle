@@ -41,6 +41,7 @@ void InspectorPanel::OnPanelLayout()
     auto entity = SceneManager::Get()->GetActiveScene()->GetEntity(uuid);
 
     ImGui::Separator();
+    ImGui::Spacing();
     if (ImGuiUtils::SizedButton("Add Component"))
     {
         ImGui::OpenPopup("AddComponentPopup");

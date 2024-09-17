@@ -3,12 +3,37 @@
 #include "pch.h"
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <vector>
 
 #include "Renderer.h"
 #include "Texture.h"
 
 namespace Doodle
 {
+
+enum class ShaderPropertyType
+{
+    None = 0,
+    Float,
+    Float2,
+    Float3,
+    Float4,
+    Mat3,
+    Mat4,
+    Int,
+    Int2,
+    Int3,
+    Int4,
+    Bool,
+    Sampler2D,
+    SamplerCube,
+};
+
+struct ShaderProperty
+{
+    std::string Name;
+    ShaderPropertyType Type;
+};
 
 class DOO_API Shader
 {
@@ -23,6 +48,7 @@ public:
     virtual uint32_t GetUniformBlockBinding(const std::string &name) = 0;
     virtual void BindUniformBlock(const std::string &name, uint32_t slot) = 0;
     virtual void PrintActiveUniforms() = 0;
+    virtual std::vector<ShaderProperty> GetProperties() = 0;
     virtual void PrintActiveUniformBlocks() = 0;
     virtual uint32_t GetRendererID() const = 0;
 

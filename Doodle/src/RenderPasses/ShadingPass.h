@@ -54,7 +54,7 @@ public:
             material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
             material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
             material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
-            material.MaterialInstance->SetUniformTexture("u_brdfLUT", m_brdfLUT);
+            material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT);
 
             material.MaterialInstance->Bind();
             vao.Render();

@@ -62,7 +62,6 @@ public:
         Application::Initialize();
         ActivateImGuiContext();
         InitializeLayout();
-
         m_scene = SceneManager::Get()->CreateScene("Main");
         Renderer::SetClearColor(0.3f, 0.3f, 0.3f, 1.f);
         ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");

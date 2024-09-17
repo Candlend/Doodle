@@ -78,6 +78,105 @@ void MaterialInstance::SetUniformTexture(const std::string &name, std::shared_pt
     m_instanceTextures[name] = value;
 }
 
+float MaterialInstance::GetUniform1f(const std::string &name)
+{
+    if (m_instanceUniforms1f.contains(name))
+    {
+        return m_instanceUniforms1f[name];
+    }
+    return m_material->GetUniform1f(name);
+}
+
+glm::vec2 MaterialInstance::GetUniform2f(const std::string &name)
+{
+    if (m_instanceUniforms2f.contains(name))
+    {
+        return m_instanceUniforms2f[name];
+    }
+    return m_material->GetUniform2f(name);
+}
+
+glm::vec3 MaterialInstance::GetUniform3f(const std::string &name)
+{
+    if (m_instanceUniforms3f.contains(name))
+    {
+        return m_instanceUniforms3f[name];
+    }
+    return m_material->GetUniform3f(name);
+}
+
+glm::vec4 MaterialInstance::GetUniform4f(const std::string &name)
+{
+    if (m_instanceUniforms4f.contains(name))
+    {
+        return m_instanceUniforms4f[name];
+    }
+    return m_material->GetUniform4f(name);
+}
+
+int MaterialInstance::GetUniform1i(const std::string &name)
+{
+    if (m_instanceUniforms1i.contains(name))
+    {
+        return m_instanceUniforms1i[name];
+    }
+    return m_material->GetUniform1i(name);
+}
+
+glm::ivec2 MaterialInstance::GetUniform2i(const std::string &name)
+{
+    if (m_instanceUniforms2i.contains(name))
+    {
+        return m_instanceUniforms2i[name];
+    }
+    return m_material->GetUniform2i(name);
+}
+
+glm::ivec3 MaterialInstance::GetUniform3i(const std::string &name)
+{
+    if (m_instanceUniforms3i.contains(name))
+    {
+        return m_instanceUniforms3i[name];
+    }
+    return m_material->GetUniform3i(name);
+}
+
+glm::ivec4 MaterialInstance::GetUniform4i(const std::string &name)
+{
+    if (m_instanceUniforms4i.contains(name))
+    {
+        return m_instanceUniforms4i[name];
+    }
+    return m_material->GetUniform4i(name);
+}
+
+glm::mat3 MaterialInstance::GetUniformMatrix3f(const std::string &name)
+{
+    if (m_instanceUniforms3m.contains(name))
+    {
+        return m_instanceUniforms3m[name];
+    }
+    return m_material->GetUniformMatrix3f(name);
+}
+
+glm::mat4 MaterialInstance::GetUniformMatrix4f(const std::string &name)
+{
+    if (m_instanceUniforms4m.contains(name))
+    {
+        return m_instanceUniforms4m[name];
+    }
+    return m_material->GetUniformMatrix4f(name);
+}
+
+std::shared_ptr<Texture> MaterialInstance::GetUniformTexture(const std::string &name)
+{
+    if (m_instanceTextures.contains(name))
+    {
+        return m_instanceTextures[name];
+    }
+    return m_material->GetUniformTexture(name);
+}
+
 void MaterialInstance::ApplyInstanceUniforms()
 {
     for (auto &[name, texture] : m_instanceTextures)

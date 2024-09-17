@@ -40,6 +40,18 @@ public:
     void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
 
+    float GetUniform1f(const std::string &name);
+    glm::vec2 GetUniform2f(const std::string &name);
+    glm::vec3 GetUniform3f(const std::string &name);
+    glm::vec4 GetUniform4f(const std::string &name);
+    int GetUniform1i(const std::string &name);
+    glm::ivec2 GetUniform2i(const std::string &name);
+    glm::ivec3 GetUniform3i(const std::string &name);
+    glm::ivec4 GetUniform4i(const std::string &name);
+    glm::mat3 GetUniformMatrix3f(const std::string &name);
+    glm::mat4 GetUniformMatrix4f(const std::string &name);
+    std::shared_ptr<Texture> GetUniformTexture(const std::string &name);
+
     void SetAlbedoColor(const glm::vec4 &color)
     {
         SetUniform4f("u_AlbedoColor", color);
@@ -128,6 +140,11 @@ public:
     std::shared_ptr<Shader> GetShader()
     {
         return m_material->GetShader();
+    }
+
+    std::vector<ShaderProperty> GetProperties() const
+    {
+        return m_material->GetProperties();
     }
 
 private:

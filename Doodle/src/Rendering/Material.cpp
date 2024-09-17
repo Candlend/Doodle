@@ -62,6 +62,61 @@ void Material::SetUniformTexture(const std::string &name, std::shared_ptr<Textur
     m_textures[name] = value;
 }
 
+float Material::GetUniform1f(const std::string &name)
+{
+    return m_uniforms1f[name];
+}
+
+glm::vec2 Material::GetUniform2f(const std::string &name)
+{
+    return m_uniforms2f[name];
+}
+
+glm::vec3 Material::GetUniform3f(const std::string &name)
+{
+    return m_uniforms3f[name];
+}
+
+glm::vec4 Material::GetUniform4f(const std::string &name)
+{
+    return m_uniforms4f[name];
+}
+
+int Material::GetUniform1i(const std::string &name)
+{
+    return m_uniforms1i[name];
+}
+
+glm::ivec2 Material::GetUniform2i(const std::string &name)
+{
+    return m_uniforms2i[name];
+}
+
+glm::ivec3 Material::GetUniform3i(const std::string &name)
+{
+    return m_uniforms3i[name];
+}
+
+glm::ivec4 Material::GetUniform4i(const std::string &name)
+{
+    return m_uniforms4i[name];
+}
+
+glm::mat3 Material::GetUniformMatrix3f(const std::string &name)
+{
+    return m_uniforms3m[name];
+}
+
+glm::mat4 Material::GetUniformMatrix4f(const std::string &name)
+{
+    return m_uniforms4m[name];
+}
+
+std::shared_ptr<Texture> Material::GetUniformTexture(const std::string &name)
+{
+    return m_textures[name];
+}
+
 void Material::Bind()
 {
     m_shader->Bind();

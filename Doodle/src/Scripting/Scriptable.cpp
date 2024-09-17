@@ -33,7 +33,7 @@ void Scriptable::OnAdded()
 
 bool Scriptable::OnSceneActivate(const SceneActivateEvent &e)
 {
-    if (e.GetScene() == GetScene() && IsValid())
+    if (e.GetScene() == GetScene() && IsValid() && SceneManager::Get()->GetState() == SceneState::Runtime)
     {
         EventManager::Get()->AddListener<AppUpdateEvent>(this, &Scriptable::OnUpdate);
         EventManager::Get()->AddListener<AppLayoutEvent>(this, &Scriptable::OnLayout);
