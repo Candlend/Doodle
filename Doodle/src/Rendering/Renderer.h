@@ -31,6 +31,7 @@ public:
     static void Clear();
     static void SetClearColor(float r, float g, float b, float a = 1.0f);
     static void DrawIndexed(unsigned int count);
+    static void Draw(unsigned int count, PrimitiveType type);
 
     static void SetDepthWrite(bool write);
     static void SetDepthTest(DepthTestType type);

@@ -66,6 +66,7 @@ public:
         glm::mat4 lightSpaceMatrix = RenderPipeline::Get()->GetUniformMatrix4f("u_LightSpaceMatrix");
         std::shared_ptr<FrameBuffer> shadowMap = RenderPipeline::Get()->GetFrameBuffer("ShadowMap");
 
+        Renderer::SetDepthTest(DepthTestType::LessEqual);
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
         for (auto entity : vaoView)
         {
@@ -98,6 +99,7 @@ public:
             mesh.Render();
             material.MaterialInstance->Unbind();
         }
+        Renderer::SetDepthTest(DepthTestType::Less);
     }
 
 private:

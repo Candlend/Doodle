@@ -31,6 +31,39 @@ void HierarchyPanel::OnPanelLayout()
         {
             auto entity = scene->CreateEntity("Empty Entity");
         }
+
+        if (ImGui::BeginMenu("Create Primitives"))
+        {
+            if (ImGui::MenuItem("Quad"))
+            {
+                auto entity = scene->CreateEntity("Quad");
+                entity.AddComponent<MeshComponent>(Mesh::GetQuad());
+                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+            }
+
+            if (ImGui::MenuItem("Cube"))
+            {
+                auto entity = scene->CreateEntity("Cube");
+                entity.AddComponent<MeshComponent>(Mesh::GetCube());
+                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+            }
+
+            if (ImGui::MenuItem("Sphere"))
+            {
+                auto entity = scene->CreateEntity("Sphere");
+                entity.AddComponent<MeshComponent>(Mesh::GetSphere());
+                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+            }
+
+            if (ImGui::MenuItem("Plane"))
+            {
+                auto entity = scene->CreateEntity("Plane");
+                entity.AddComponent<MeshComponent>(Mesh::GetPlane());
+                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+            }
+
+            ImGui::EndMenu();
+        }
         ImGui::EndPopup();
     }
 }

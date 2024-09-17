@@ -1,12 +1,16 @@
 
 #include <cstddef>
+#include <cstdint>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "Core.h"
+#include "Log.h"
 #include "RenderScope.h"
 #include "Renderer.h"
 #include "VertexArray.h"
+#include "VertexBuffer.h"
 
 namespace Doodle
 {
@@ -118,7 +122,14 @@ public:
     void Render() const override
     {
         Bind();
-        Renderer::DrawIndexed(m_indexBuffer->GetSize());
+        if (m_indexBuffer)
+            Renderer::DrawIndexed(m_indexBuffer->GetSize());
+        else
+            Renderer::Submit([this]() {
+                auto count = m_vertexBuffers[0]->GetSize() / m_vertexBuffers[0]->GetStride();
+                RendererAPI::Draw(count, PrimitiveType::Triangles);
+                DOO_CORE_TRACE("Renderer draw triangles: {0}", count);
+            });
     }
 
 private:

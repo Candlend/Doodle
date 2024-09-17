@@ -326,6 +326,7 @@ std::shared_ptr<Texture2D> Texture2D::Create(Buffer buffer, const TextureParams 
 
 std::shared_ptr<Texture2D> Texture2D::GetWhiteTexture()
 {
+    static std::shared_ptr<Texture2D> s_WhiteTexture = nullptr;
     if (!s_WhiteTexture)
     {
         uint32_t data = 0xffffffff;
@@ -337,6 +338,7 @@ std::shared_ptr<Texture2D> Texture2D::GetWhiteTexture()
 
 std::shared_ptr<Texture2D> Texture2D::GetBlackTexture()
 {
+    static std::shared_ptr<Texture2D> s_BlackTexture = nullptr;
     if (!s_BlackTexture)
     {
         uint32_t data = 0xff000000;
@@ -348,6 +350,7 @@ std::shared_ptr<Texture2D> Texture2D::GetBlackTexture()
 
 std::shared_ptr<Texture2D> Texture2D::GetDefaultNormalTexture()
 {
+    static std::shared_ptr<Texture2D> s_DefaultNormalTexture = nullptr;
     if (!s_DefaultNormalTexture)
     {
         uint32_t data = 0xffff8080;
@@ -359,6 +362,7 @@ std::shared_ptr<Texture2D> Texture2D::GetDefaultNormalTexture()
 
 std::shared_ptr<Texture2D> Texture2D::GetCheckerboardTexture()
 {
+    static std::shared_ptr<Texture2D> s_CheckerboardTexture = nullptr;
     if (!s_CheckerboardTexture)
     {
         uint32_t checkerboard[4][4] = {{0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000},
@@ -374,11 +378,6 @@ std::shared_ptr<Texture2D> Texture2D::GetCheckerboardTexture()
     }
     return s_CheckerboardTexture;
 }
-
-std::shared_ptr<Texture2D> Texture2D::s_WhiteTexture = nullptr;
-std::shared_ptr<Texture2D> Texture2D::s_BlackTexture = nullptr;
-std::shared_ptr<Texture2D> Texture2D::s_DefaultNormalTexture = nullptr;
-std::shared_ptr<Texture2D> Texture2D::s_CheckerboardTexture = nullptr;
 
 class OpenGLTextureCube : public TextureCube
 {
@@ -630,6 +629,8 @@ std::shared_ptr<TextureCube> TextureCube::Create(const TextureParams &params)
 
 std::shared_ptr<TextureCube> TextureCube::GetWhiteTexture()
 {
+    static std::shared_ptr<TextureCube> s_WhiteTexture = nullptr;
+
     if (!s_WhiteTexture)
     {
         uint32_t data = 0xffffffff;
@@ -643,6 +644,8 @@ std::shared_ptr<TextureCube> TextureCube::GetWhiteTexture()
 
 std::shared_ptr<TextureCube> TextureCube::GetBlackTexture()
 {
+    static std::shared_ptr<TextureCube> s_BlackTexture = nullptr;
+
     if (!s_BlackTexture)
     {
         uint32_t data = 0xff000000;
@@ -653,8 +656,5 @@ std::shared_ptr<TextureCube> TextureCube::GetBlackTexture()
     }
     return s_BlackTexture;
 }
-
-std::shared_ptr<TextureCube> TextureCube::s_WhiteTexture = nullptr;
-std::shared_ptr<TextureCube> TextureCube::s_BlackTexture = nullptr;
 
 } // namespace Doodle

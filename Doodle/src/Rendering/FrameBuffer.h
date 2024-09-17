@@ -1,8 +1,8 @@
 #pragma once
 
 #include "pch.h"
-#include <cstdint>
-#include <memory>
+
+#include "Shader.h"
 
 namespace Doodle
 {
@@ -59,6 +59,8 @@ public:
     virtual void Unbind() = 0;
     virtual void Resize(uint32_t width, uint32_t height) = 0;
 
+    virtual uint32_t GetRendererID() const = 0;
+
     virtual uint32_t GetColorAttachmentRendererID(size_t index) const = 0;
     uint32_t GetColorAttachmentRendererID() const
     {
@@ -76,6 +78,9 @@ public:
 
     virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
     virtual FramebufferSpecification &GetSpecification() = 0;
+
+    virtual void BlitTo(std::shared_ptr<FrameBuffer> target) = 0;
+    virtual void BlitToWithShader(std::shared_ptr<FrameBuffer> target, std::shared_ptr<Shader> shader) = 0;
 };
 
 } // namespace Doodle

@@ -112,6 +112,46 @@ void Mesh::Render()
     m_vertexArray->Render();
 }
 
+std::shared_ptr<Mesh> Mesh::GetQuad()
+{
+    static std::shared_ptr<Mesh> s_Quad = nullptr;
+    if (!s_Quad)
+    {
+        s_Quad = std::make_shared<Mesh>("assets/models/quad.obj");
+    }
+    return s_Quad;
+}
+
+std::shared_ptr<Mesh> Mesh::GetCube()
+{
+    static std::shared_ptr<Mesh> s_Cube = nullptr;
+    if (!s_Cube)
+    {
+        s_Cube = std::make_shared<Mesh>("assets/models/cube.obj");
+    }
+    return s_Cube;
+}
+
+std::shared_ptr<Mesh> Mesh::GetSphere()
+{
+    static std::shared_ptr<Mesh> s_Sphere = nullptr;
+    if (!s_Sphere)
+    {
+        s_Sphere = std::make_shared<Mesh>("assets/models/sphere.obj");
+    }
+    return s_Sphere;
+}
+
+std::shared_ptr<Mesh> Mesh::GetPlane()
+{
+    static std::shared_ptr<Mesh> s_Plane = nullptr;
+    if (!s_Plane)
+    {
+        s_Plane = std::make_shared<Mesh>("assets/models/plane.obj");
+    }
+    return s_Plane;
+}
+
 std::shared_ptr<Mesh> Mesh::Create(const std::string &filename)
 {
     return std::make_shared<Mesh>(filename);

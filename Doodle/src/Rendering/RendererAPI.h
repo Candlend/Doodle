@@ -93,6 +93,7 @@ public:
     static void SetClearColor(float r, float g, float b, float a);
 
     static void DrawIndexed(unsigned int count);
+    static void Draw(unsigned int count, PrimitiveType type);
 
     static void SetDepthWrite(bool write);
     static void SetDepthTest(DepthTestType type);

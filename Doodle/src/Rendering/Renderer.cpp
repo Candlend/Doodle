@@ -67,6 +67,14 @@ void Renderer::DrawIndexed(unsigned int count)
     });
 }
 
+void Renderer::Draw(unsigned int count, PrimitiveType type)
+{
+    Renderer::Submit([count, type]() {
+        RendererAPI::Draw(count, type);
+        DOO_CORE_TRACE("Renderer draw triangles: {0}", count);
+    });
+}
+
 void Renderer::SetDepthTest(DepthTestType type)
 {
     Renderer::Submit([type]() {

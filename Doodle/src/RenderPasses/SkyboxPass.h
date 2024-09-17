@@ -18,7 +18,7 @@ public:
     SkyboxPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
         m_material = Material::Create("skybox");
-        m_mesh = Mesh::Create("assets/models/test_cube.obj");
+        m_mesh = Mesh::GetCube();
 
         std::array<std::string, 6> faces = {
             "assets/textures/skybox/right.jpg",  "assets/textures/skybox/left.jpg",  "assets/textures/skybox/top.jpg",

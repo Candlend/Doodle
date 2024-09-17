@@ -30,6 +30,10 @@ struct VAOComponent : public IRenderable
     {
         ImGuiUtils::ReadOnlyInputText("Renderer ID", "{}", VAO->GetRendererID());
     }
+
+    VAOComponent(std::shared_ptr<VertexArray> vao) : VAO(vao)
+    {
+    }
 };
 
 struct MeshComponent : public IRenderable
@@ -39,6 +43,10 @@ struct MeshComponent : public IRenderable
     std::shared_ptr<Mesh> Mesh;
 
     MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
+    {
+    }
+
+    MeshComponent(std::shared_ptr<Doodle::Mesh> mesh) : Mesh(mesh)
     {
     }
 

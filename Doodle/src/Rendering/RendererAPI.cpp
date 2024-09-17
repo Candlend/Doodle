@@ -75,6 +75,24 @@ void RendererAPI::DrawIndexed(unsigned int count)
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
 
+void RendererAPI::Draw(unsigned int count, PrimitiveType type)
+{
+    GLenum glType;
+    switch (type)
+    {
+    case PrimitiveType::Triangles:
+        glType = GL_TRIANGLES;
+        break;
+    case PrimitiveType::Lines:
+        glType = GL_LINES;
+        break;
+    case PrimitiveType::Points:
+        glType = GL_POINTS;
+        break;
+    }
+    glDrawArrays(glType, 0, count);
+}
+
 void RendererAPI::SetDepthTest(DepthTestType type)
 {
     switch (type)

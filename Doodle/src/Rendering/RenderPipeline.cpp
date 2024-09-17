@@ -1,4 +1,6 @@
 #include "RenderPipeline.h"
+#include "PreDepthPass.h"
+#include "SceneRenderer.h"
 #include "ShadingPass.h"
 #include "ShadowPass.h"
 #include "SkyboxPass.h"
@@ -13,14 +15,20 @@ RenderPipeline::RenderPipeline()
     m_uniformBuffers["PointLightData"] = UniformBuffer::Create(sizeof(UBOPointLights), true);
     m_uniformBuffers["SpotLightData"] = UniformBuffer::Create(sizeof(UBOSpotLights), true);
     m_uniformBuffers["AreaLightData"] = UniformBuffer::Create(sizeof(UBOAreaLights), true);
+
+    FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::Depth};
+    FramebufferSpecification spec = {4096, 4096, attachments};
+    m_frameBuffers["ShadowMap"] = FrameBuffer::Create(spec);
+
+    spec = {1920, 1080, attachments};
+    m_frameBuffers["PreDepthMap"] = FrameBuffer::Create(spec);
+
     RegisterRenderPasses();
 }
 void RenderPipeline::RegisterRenderPasses()
 {
     CreateRenderPass<SkyboxPass>("SkyboxPass", {SceneRenderer::Get()->GetFrameBuffer()});
-    FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
-    FramebufferSpecification spec = {4096, 4096, attachments};
-    m_frameBuffers["ShadowMap"] = FrameBuffer::Create(spec);
+    CreateRenderPass<PreDepthPass>("PreDepthPass", {SceneRenderer::Get()->GetFrameBuffer()});
     CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
     CreateRenderPass<ShadingPass>("ShadingPass", {SceneRenderer::Get()->GetFrameBuffer()});
 }
@@ -94,9 +102,9 @@ void RenderPipeline::Execute()
 
     for (const auto &[name, renderPass] : m_renderPasses)
     {
-        renderPass->GetSpecification().TargetFramebuffer->Bind();
+        renderPass->GetSpecification().TargetFrameBuffer->Bind();
         renderPass->Execute();
-        renderPass->GetSpecification().TargetFramebuffer->Unbind();
+        renderPass->GetSpecification().TargetFrameBuffer->Unbind();
     }
 }
 

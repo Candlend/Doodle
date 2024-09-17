@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "LogPanel.h"
 #include "PanelManager.h"
+#include "Renderable.h"
 #include "SceneSettingsPanel.h"
 #include "Texture.h"
 #include "ViewportPanel.h"
@@ -95,7 +96,7 @@ public:
         cerberusMat->LoadRoughnessTexture("assets/textures/cerberus/cerberus_R.png");
 
         auto cube = m_scene->CreateEntity("Cube");
-        cube.AddComponent<MeshComponent>("assets/models/test_cube.obj");
+        cube.AddComponent<MeshComponent>(Mesh::GetCube());
         cube.AddComponent<MaterialComponent>(material);
         cube.GetComponent<TransformComponent>().Position = glm::vec3(2.f, 0.f, 0.f);
         auto &cubeMat = cube.GetComponent<MaterialComponent>().MaterialInstance;

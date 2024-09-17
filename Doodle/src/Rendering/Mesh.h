@@ -35,6 +35,11 @@ public:
     }
     void Render();
 
+    static std::shared_ptr<Mesh> GetQuad();
+    static std::shared_ptr<Mesh> GetCube();
+    static std::shared_ptr<Mesh> GetSphere();
+    static std::shared_ptr<Mesh> GetPlane();
+
 private:
     std::string m_filePath;
     std::vector<Vertex> m_vertices;

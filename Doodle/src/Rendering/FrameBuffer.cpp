@@ -137,6 +137,11 @@ public:
         Renderer::Submit([this]() { Invalidate(); });
     }
 
+    uint32_t GetRendererID() const override
+    {
+        return m_rendererId;
+    }
+
     uint32_t GetColorAttachmentRendererID(size_t index) const override
     {
         DOO_CORE_ASSERT(index < m_colorAttachments.size(), "Index out of range!");
@@ -180,20 +185,36 @@ public:
         return m_depthAttachmentTextureHandle;
     }
 
+    void BlitTo(std::shared_ptr<FrameBuffer> target) override
+    {
+        Renderer::Submit([this, target]() {
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_rendererId);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target->GetRendererID());
+            float width = static_cast<float>(m_specification.Width);
+            float height = static_cast<float>(m_specification.Height);
+            float targetWidth = static_cast<float>(target->GetSpecification().Width);
+            float targetHeight = static_cast<float>(target->GetSpecification().Height);
+            glBlitFramebuffer(0, 0, width, height, 0, 0, targetWidth, targetHeight,
+                              GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+        });
+    }
+
+    void BlitToWithShader(std::shared_ptr<FrameBuffer> target, std::shared_ptr<Shader> shader) override
+    {
+        BlitTo(target);
+        Renderer::Submit([shader]() {
+            shader->Bind();
+        });
+    }
+
 private:
     void Invalidate()
     {
         if (m_rendererId)
         {
             glDeleteFramebuffers(1, &m_rendererId);
-            for (auto colorAttachment : m_colorAttachments)
-            {
-                glMakeTextureHandleNonResidentARB(colorAttachment);
-            }
             glDeleteTextures(m_colorAttachments.size(), m_colorAttachments.data());
-            if (m_depthAttachment)
             {
-                glMakeTextureHandleNonResidentARB(m_depthAttachmentTextureHandle);
                 glDeleteTextures(1, &m_depthAttachment);
             }
 

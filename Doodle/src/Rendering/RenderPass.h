@@ -12,7 +12,7 @@ namespace Doodle
 
 struct RenderPassSpecification
 {
-    std::shared_ptr<FrameBuffer> TargetFramebuffer;
+    std::shared_ptr<FrameBuffer> TargetFrameBuffer;
 };
 
 using RenderPassInput = typename std::variant<std::shared_ptr<FrameBuffer>>;
