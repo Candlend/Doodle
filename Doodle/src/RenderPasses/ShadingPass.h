@@ -7,9 +7,24 @@
 #include "RenderPass.h"
 #include "RenderPipeline.h"
 #include "Texture.h"
+#include <memory>
 
 namespace Doodle
 {
+
+#define SET_UNIFORMS()                                                                                                 \
+    material.MaterialInstance->SetUniformMatrix4f("u_Model", model);                                                   \
+    material.MaterialInstance->SetUniformMatrix4f("u_View", sceneData.CameraData.View);                                \
+    material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);                    \
+    material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap->GetTextureHandle());                \
+    material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap->GetTextureHandle());                  \
+    material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT->GetTextureHandle());                          \
+    material.MaterialInstance->SetUniformTexture("u_LTC1", m_ltc1->GetTextureHandle());                                \
+    material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2->GetTextureHandle());                                \
+    material.MaterialInstance->SetUniformMatrix4f("u_LightSpaceMatrix", lightSpaceMatrix);                             \
+    material.MaterialInstance->SetUniformTexture("u_ShadowMap", shadowMap->GetDepthAttachmentTextureHandle());         \
+    material.MaterialInstance->SetUniform1f("u_ShadowBias", sceneData.ShadowBias);                                     \
+    material.MaterialInstance->SetUniform1f("u_ShadowNormalBias", sceneData.ShadowNormalBias);
 
 class DOO_API ShadingPass : public RenderPass
 {
@@ -48,6 +63,9 @@ public:
         auto irradienceMap = sceneData.EnvironmentData.IrradianceMap;
         auto prefilterMap = sceneData.EnvironmentData.RadianceMap;
 
+        glm::mat4 lightSpaceMatrix = RenderPipeline::Get()->GetUniformMatrix4f("u_LightSpaceMatrix");
+        std::shared_ptr<FrameBuffer> shadowMap = RenderPipeline::Get()->GetFrameBuffer("ShadowMap");
+
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
         for (auto entity : vaoView)
         {
@@ -57,14 +75,7 @@ public:
 
             glm::mat4 model = transform.GetModelMatrix();
 
-            material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-            material.MaterialInstance->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
-            material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
-            material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
-            material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
-            material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT);
-            material.MaterialInstance->SetUniformTexture("u_LTC1", m_ltc1);
-            material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2);
+            SET_UNIFORMS();
 
             material.MaterialInstance->Bind();
             vao.Render();
@@ -81,14 +92,7 @@ public:
 
             glm::mat4 model = transform.GetModelMatrix();
 
-            material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-            material.MaterialInstance->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
-            material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
-            material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
-            material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
-            material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT);
-            material.MaterialInstance->SetUniformTexture("u_LTC1", m_ltc1);
-            material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2);
+            SET_UNIFORMS();
 
             material.MaterialInstance->Bind();
             mesh.Render();

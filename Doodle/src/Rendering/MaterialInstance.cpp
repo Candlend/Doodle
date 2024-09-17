@@ -78,6 +78,11 @@ void MaterialInstance::SetUniformTexture(const std::string &name, std::shared_pt
     m_instanceTextures[name] = value;
 }
 
+void MaterialInstance::SetUniformTexture(const std::string &name, uint64_t textureHandle)
+{
+    m_instanceTextureHandles[name] = textureHandle;
+}
+
 float MaterialInstance::GetUniform1f(const std::string &name)
 {
     if (m_instanceUniforms1f.contains(name))
@@ -177,11 +182,24 @@ std::shared_ptr<Texture> MaterialInstance::GetUniformTexture(const std::string &
     return m_material->GetUniformTexture(name);
 }
 
+uint64_t MaterialInstance::GetUniformTextureHandle(const std::string &name)
+{
+    if (m_instanceTextureHandles.contains(name))
+    {
+        return m_instanceTextureHandles[name];
+    }
+    return m_material->GetUniformTextureHandle(name);
+}
+
 void MaterialInstance::ApplyInstanceUniforms()
 {
     for (auto &[name, texture] : m_instanceTextures)
     {
         m_material->m_shader->SetUniformTexture(name, texture);
+    }
+    for (auto &[name, handle] : m_instanceTextureHandles)
+    {
+        m_material->m_shader->SetUniformTexture(name, handle);
     }
     for (const auto &[name, value] : m_instanceUniforms1f)
     {

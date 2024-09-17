@@ -1,5 +1,6 @@
 #include "RenderPipeline.h"
 #include "ShadingPass.h"
+#include "ShadowPass.h"
 #include "SkyboxPass.h"
 #include "Utils.h"
 
@@ -17,6 +18,10 @@ RenderPipeline::RenderPipeline()
 void RenderPipeline::RegisterRenderPasses()
 {
     CreateRenderPass<SkyboxPass>("SkyboxPass", {SceneRenderer::Get()->GetFrameBuffer()});
+    FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
+    FramebufferSpecification spec = {4096, 4096, attachments};
+    m_frameBuffers["ShadowMap"] = FrameBuffer::Create(spec);
+    CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
     CreateRenderPass<ShadingPass>("ShadingPass", {SceneRenderer::Get()->GetFrameBuffer()});
 }
 void RenderPipeline::AddRenderPass(const std::string &name, std::shared_ptr<RenderPass> renderPass)
@@ -94,4 +99,135 @@ void RenderPipeline::Execute()
         renderPass->GetSpecification().TargetFramebuffer->Unbind();
     }
 }
+
+void RenderPipeline::SetUniformBuffer(const std::string &name, std::shared_ptr<UniformBuffer> uniformBuffer)
+{
+    m_uniformBuffers[name] = uniformBuffer;
+}
+
+void RenderPipeline::SetFrameBuffer(const std::string &name, std::shared_ptr<FrameBuffer> frameBuffer)
+{
+    m_frameBuffers[name] = frameBuffer;
+}
+
+void RenderPipeline::SetUniform1f(const std::string &name, float value)
+{
+    m_uniforms1f[name] = value;
+}
+
+void RenderPipeline::SetUniform2f(const std::string &name, glm::vec2 value)
+{
+    m_uniforms2f[name] = value;
+}
+
+void RenderPipeline::SetUniform3f(const std::string &name, glm::vec3 value)
+{
+    m_uniforms3f[name] = value;
+}
+
+void RenderPipeline::SetUniform4f(const std::string &name, glm::vec4 value)
+{
+    m_uniforms4f[name] = value;
+}
+
+void RenderPipeline::SetUniform1i(const std::string &name, int value)
+{
+    m_uniforms1i[name] = value;
+}
+
+void RenderPipeline::SetUniform2i(const std::string &name, glm::ivec2 value)
+{
+    m_uniforms2i[name] = value;
+}
+
+void RenderPipeline::SetUniform3i(const std::string &name, glm::ivec3 value)
+{
+    m_uniforms3i[name] = value;
+}
+
+void RenderPipeline::SetUniform4i(const std::string &name, glm::ivec4 value)
+{
+    m_uniforms4i[name] = value;
+}
+
+void RenderPipeline::SetUniformMatrix3f(const std::string &name, glm::mat3 value)
+{
+    m_uniforms3m[name] = value;
+}
+
+void RenderPipeline::SetUniformMatrix4f(const std::string &name, glm::mat4 value)
+{
+    m_uniforms4m[name] = value;
+}
+
+void RenderPipeline::SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value)
+{
+    m_textures[name] = value;
+}
+
+std::shared_ptr<UniformBuffer> RenderPipeline::GetUniformBuffer(const std::string &name)
+{
+    return m_uniformBuffers[name];
+}
+
+std::shared_ptr<FrameBuffer> RenderPipeline::GetFrameBuffer(const std::string &name)
+{
+    return m_frameBuffers[name];
+}
+
+float RenderPipeline::GetUniform1f(const std::string &name)
+{
+    return m_uniforms1f[name];
+}
+
+glm::vec2 RenderPipeline::GetUniform2f(const std::string &name)
+{
+    return m_uniforms2f[name];
+}
+
+glm::vec3 RenderPipeline::GetUniform3f(const std::string &name)
+{
+    return m_uniforms3f[name];
+}
+
+glm::vec4 RenderPipeline::GetUniform4f(const std::string &name)
+{
+    return m_uniforms4f[name];
+}
+
+int RenderPipeline::GetUniform1i(const std::string &name)
+{
+    return m_uniforms1i[name];
+}
+
+glm::ivec2 RenderPipeline::GetUniform2i(const std::string &name)
+{
+    return m_uniforms2i[name];
+}
+
+glm::ivec3 RenderPipeline::GetUniform3i(const std::string &name)
+{
+    return m_uniforms3i[name];
+}
+
+glm::ivec4 RenderPipeline::GetUniform4i(const std::string &name)
+{
+    return m_uniforms4i[name];
+}
+
+glm::mat3 RenderPipeline::GetUniformMatrix3f(const std::string &name)
+{
+    return m_uniforms3m[name];
+}
+
+glm::mat4 RenderPipeline::GetUniformMatrix4f(const std::string &name)
+{
+    return m_uniforms4m[name];
+}
+
+std::shared_ptr<Texture> RenderPipeline::GetUniformTexture(const std::string &name)
+{
+    return m_textures[name];
+}
+
 } // namespace Doodle

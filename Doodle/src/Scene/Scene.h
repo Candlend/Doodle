@@ -61,6 +61,8 @@ struct SceneData
     CameraData CameraData;
     EnvironmentData EnvironmentData;
     LightData LightData;
+    float ShadowBias = 0.001f;
+    float ShadowNormalBias = 0.001f;
 };
 
 class Entity;

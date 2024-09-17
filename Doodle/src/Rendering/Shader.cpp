@@ -94,6 +94,14 @@ public:
         });
     }
 
+    void Unbind() override
+    {
+        Renderer::Submit([this]() {
+            glUseProgram(0);
+            DOO_CORE_TRACE("OpenGLShader <{0}> unbound", m_rendererID);
+        });
+    }
+
     uint32_t GetRendererID() const override
     {
         return m_rendererID;
@@ -501,6 +509,11 @@ private:
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> texture) override
     {
         SetUniform(name, glUniformHandleui64ARB, texture->GetTextureHandle());
+    }
+
+    void SetUniformTexture(const std::string &name, uint64_t textureHandle) override
+    {
+        SetUniform(name, glUniformHandleui64ARB, textureHandle);
     }
 
     std::string m_filepath;

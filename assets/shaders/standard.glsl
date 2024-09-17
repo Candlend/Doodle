@@ -7,30 +7,38 @@ layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec3 a_Binormal;
 layout(location = 4) in vec2 a_TexCoord;
 
-out vec2 v_TexCoord;
-out vec3 v_Normal;
-out vec3 v_Position;
-out mat3 v_TBN; // 切线-法线-切线空间矩阵
+out Varyings
+{
+    vec2 TexCoord;
+    vec3 Normal;
+    vec3 Position;
+    mat3 TBN; 
+    vec4 LightSpacePos;
+} vs_out;
 
 uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
+uniform mat4 u_LightSpaceMatrix;
 
 void main()
 {
     gl_Position = u_Projection * u_View * u_Model * vec4(a_Position, 1.0);
-    v_TexCoord = a_TexCoord;
+    vs_out.TexCoord = a_TexCoord;
     
     // Transform normal to world space
     mat3 normalMatrix = mat3(transpose(inverse(u_Model))); // TODO 放在CPU端计算
-    v_Normal = normalMatrix * a_Normal; 
+    vs_out.Normal = normalMatrix * a_Normal; 
     // Transform position to world space
-    v_Position = vec3(u_Model * vec4(a_Position, 1.0));
+    vs_out.Position = vec3(u_Model * vec4(a_Position, 1.0));
     
     // Compute TBN matrix
     vec3 T = normalMatrix * a_Tangent;
     vec3 B = normalMatrix * a_Binormal;
-    v_TBN = mat3(T, B, v_Normal);
+    vs_out.TBN = mat3(T, B, vs_out.Normal);
+
+    // Calculate light space position
+    vs_out.LightSpacePos = u_LightSpaceMatrix * vec4(vs_out.Position, 1.0);
 }
 
 #type fragment
@@ -38,10 +46,14 @@ void main()
 
 layout(location = 0) out vec4 finalColor;
 
-in vec2 v_TexCoord;
-in vec3 v_Normal;
-in vec3 v_Position;
-in mat3 v_TBN;
+in Varyings
+{
+    vec2 TexCoord;
+    vec3 Normal;
+    vec3 Position;
+    mat3 TBN;
+    vec4 LightSpacePos;
+} fs_in;
 
 uniform vec4 u_AlbedoColor;
 uniform float u_NormalScale;
@@ -55,6 +67,10 @@ uniform sampler2D u_RoughnessTexture;
 uniform samplerCube u_IrradianceMap;
 uniform samplerCube u_PrefilterMap;
 uniform sampler2D u_BrdfLUT;
+
+uniform sampler2D u_ShadowMap;
+uniform float u_ShadowBias;
+uniform float u_ShadowNormalBias;
 
 const float PI = 3.14159265359;
 
@@ -321,18 +337,29 @@ vec3 IBL(vec3 normal, vec3 viewDir, vec4 albedo, float metallic, float roughness
     return kD * diffuse + specular;
 }
 
+float ShadowCalculation(vec4 LightSpacePos)
+{
+    vec3 projCoords = LightSpacePos.xyz / LightSpacePos.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float closestDepth = texture(u_ShadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    float bias = u_ShadowBias + u_ShadowNormalBias * (1.0 - projCoords.z);
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    return shadow;
+}
+
 void main()
 {
     // Sample textures
-    vec4 albedo = texture(u_AlbedoTexture, v_TexCoord) * u_AlbedoColor;
-    float metallic = texture(u_MetallicTexture, v_TexCoord).r * u_Metallic;
-    float roughness = texture(u_RoughnessTexture, v_TexCoord).r * u_Roughness;
+    vec4 albedo = texture(u_AlbedoTexture, fs_in.TexCoord) * u_AlbedoColor;
+    float metallic = texture(u_MetallicTexture, fs_in.TexCoord).r * u_Metallic;
+    float roughness = texture(u_RoughnessTexture, fs_in.TexCoord).r * u_Roughness;
 
     // Transform normal from tangent space to world space
-    vec3 normal = normalize(v_TBN * (texture(u_NormalTexture, v_TexCoord).xyz * 2.0 - 1.0) * u_NormalScale);
+    vec3 normal = normalize(fs_in.TBN * (texture(u_NormalTexture, fs_in.TexCoord).xyz * 2.0 - 1.0) * u_NormalScale);
     
     // Calculate view direction
-    vec3 viewDir = normalize(u_Scene.CameraPosition - v_Position);
+    vec3 viewDir = normalize(u_Scene.CameraPosition - fs_in.Position);
     
     // Initialize color
     vec3 color = vec3(0.0);
@@ -345,17 +372,23 @@ void main()
     {
         DirectionalLight light = u_Scene.DirectionalLights[i];
         vec3 lightDir = normalize(-light.Direction);
-        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity;
+
+        float shadow = 0.0;
+        if (i == 0){
+            shadow = ShadowCalculation(fs_in.LightSpacePos); 
+        }
+
+        color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * (1.0 - shadow);
     }
 
     // Point lights
     for (uint i = 0; i < u_PointLights.LightCount; ++i)
     {
         PointLight light = u_PointLights.Lights[i];
-        float distance = length(light.Position - v_Position);
+        float distance = length(light.Position - fs_in.Position);
         if (distance > light.Radius)
             continue;
-        vec3 lightDir = normalize(light.Position - v_Position);
+        vec3 lightDir = normalize(light.Position - fs_in.Position);
         // Attenuation
         float attenuation = clamp(1.0 - (distance - light.MinRadius) / (light.Radius - light.MinRadius), 0.0, 1.0); // TODO 参数可以调整
         color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * attenuation;
@@ -365,10 +398,10 @@ void main()
     for (uint i = 0; i < u_SpotLights.LightCount; ++i)
     {
         SpotLight light = u_SpotLights.Lights[i];
-        float distance = length(light.Position - v_Position);
+        float distance = length(light.Position - fs_in.Position);
         if (distance > light.Range)
             continue;
-        vec3 lightDir = normalize(light.Position - v_Position);
+        vec3 lightDir = normalize(light.Position - fs_in.Position);
         // Attenuation
         float attenuation = clamp(1.0 - (distance) / (light.Range), 0.0, 1.0);
         
@@ -382,7 +415,7 @@ void main()
     // Area lights
     vec3 N = normal;
     vec3 V = viewDir;
-    vec3 P = v_Position;
+    vec3 P = fs_in.Position;
 
     // use roughness and sqrt(1-cos_theta) to sample M_texture
     float NdotV = max(dot(N, V), 0.0);

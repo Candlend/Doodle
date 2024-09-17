@@ -82,13 +82,13 @@ public:
     {
         auto material = StandardMaterial::Create();
 
+        TextureParams params;
+        params.Format = TextureFormat::SRGB8;
         auto cerberus = m_scene->CreateEntity("Cerberus");
         cerberus.AddComponent<MeshComponent>("assets/models/cerberus.fbx");
         cerberus.AddComponent<MaterialComponent>(material);
         cerberus.GetComponent<TransformComponent>().Scale = glm::vec3(0.01f);
         auto &cerberusMat = cerberus.GetComponent<MaterialComponent>().MaterialInstance;
-        TextureParams params;
-        params.Format = TextureFormat::SRGB8;
         cerberusMat->LoadAlbedoTexture("assets/textures/cerberus/cerberus_A.png", params);
         cerberusMat->LoadNormalTexture("assets/textures/cerberus/cerberus_N.png");
         cerberusMat->LoadMetallicTexture("assets/textures/cerberus/cerberus_M.png");

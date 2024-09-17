@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "UUID.h"
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <map>
 #include <memory>
@@ -39,6 +40,7 @@ public:
     void SetUniformMatrix3f(const std::string &name, glm::mat3 value);
     void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
+    void SetUniformTexture(const std::string &name, uint64_t textureHandle);
 
     float GetUniform1f(const std::string &name);
     glm::vec2 GetUniform2f(const std::string &name);
@@ -51,6 +53,7 @@ public:
     glm::mat3 GetUniformMatrix3f(const std::string &name);
     glm::mat4 GetUniformMatrix4f(const std::string &name);
     std::shared_ptr<Texture> GetUniformTexture(const std::string &name);
+    uint64_t GetUniformTextureHandle(const std::string &name);
 
     void SetAlbedoColor(const glm::vec4 &color)
     {
@@ -150,6 +153,7 @@ public:
 private:
     std::shared_ptr<Material> m_material;
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_instanceTextures;
+    std::unordered_map<std::string, uint64_t> m_instanceTextureHandles;
     std::unordered_map<std::string, float> m_instanceUniforms1f;
     std::unordered_map<std::string, glm::vec2> m_instanceUniforms2f;
     std::unordered_map<std::string, glm::vec3> m_instanceUniforms3f;

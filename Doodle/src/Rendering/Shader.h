@@ -43,6 +43,7 @@ public:
     virtual std::string GetPath() const = 0;
     virtual void Reload() = 0;
     virtual void Bind() = 0;
+    virtual void Unbind() = 0;
     virtual uint32_t GetUniformLocation(const std::string &name) = 0;
     virtual uint32_t GetUniformBlockIndex(const std::string &name) = 0;
     virtual uint32_t GetUniformBlockBinding(const std::string &name) = 0;
@@ -115,6 +116,7 @@ public:
     virtual void SetUniformMatrix4f(const std::string &name, const glm::mat4 &mat) = 0;
 
     virtual void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> texture) = 0;
+    virtual void SetUniformTexture(const std::string &name, uint64_t textureHandle) = 0;
 };
 
 } // namespace Doodle

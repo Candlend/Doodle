@@ -1,4 +1,6 @@
+#include <cstdint>
 #include <glad/glad.h>
+#include <vector>
 
 #include "Framebuffer.h"
 #include "Log.h"
@@ -167,15 +169,33 @@ public:
         return m_specification;
     }
 
+    uint64_t GetColorAttachmentTextureHandle(size_t index) const override
+    {
+        DOO_CORE_ASSERT(index < m_colorAttachments.size(), "Index out of range!");
+        return m_colorAttachmentTextureHandles[index];
+    }
+
+    uint64_t GetDepthAttachmentTextureHandle() const override
+    {
+        return m_depthAttachmentTextureHandle;
+    }
+
 private:
     void Invalidate()
     {
         if (m_rendererId)
         {
             glDeleteFramebuffers(1, &m_rendererId);
+            for (auto colorAttachment : m_colorAttachments)
+            {
+                glMakeTextureHandleNonResidentARB(colorAttachment);
+            }
             glDeleteTextures(m_colorAttachments.size(), m_colorAttachments.data());
             if (m_depthAttachment)
+            {
+                glMakeTextureHandleNonResidentARB(m_depthAttachmentTextureHandle);
                 glDeleteTextures(1, &m_depthAttachment);
+            }
 
             m_colorAttachments.clear();
             m_depthAttachment = 0;
@@ -190,6 +210,7 @@ private:
         if (!m_colorAttachmentSpecifications.empty())
         {
             m_colorAttachments.resize(m_colorAttachmentSpecifications.size());
+            m_colorAttachmentTextureHandles.resize(m_colorAttachmentSpecifications.size());
             CreateTextures(multisample, m_colorAttachments.data(), m_colorAttachments.size());
 
             for (size_t i = 0; i < m_colorAttachments.size(); i++)
@@ -209,6 +230,9 @@ private:
                 case FramebufferTextureFormat::None:
                     break;
                 }
+
+                m_colorAttachmentTextureHandles[i] = glGetTextureHandleARB(m_colorAttachments[i]);
+                glMakeTextureHandleResidentARB(m_colorAttachmentTextureHandles[i]);
             }
         }
 
@@ -221,6 +245,9 @@ private:
                 AttachDepthTexture(m_depthAttachment, m_specification.Samples, GL_DEPTH24_STENCIL8,
                                    GL_DEPTH_STENCIL_ATTACHMENT, m_specification.Width, m_specification.Height);
             }
+
+            m_depthAttachmentTextureHandle = glGetTextureHandleARB(m_depthAttachment);
+            glMakeTextureHandleResidentARB(m_depthAttachmentTextureHandle);
         }
 
         if (m_colorAttachments.size() > 1)
@@ -247,6 +274,9 @@ private:
     FramebufferSpecification m_specification;
     std::vector<FramebufferTextureSpecification> m_colorAttachmentSpecifications;
     FramebufferTextureSpecification m_depthAttachmentSpecification;
+
+    std::vector<uint64_t> m_colorAttachmentTextureHandles;
+    uint64_t m_depthAttachmentTextureHandle = 0;
 };
 
 std::shared_ptr<FrameBuffer> FrameBuffer::Create(const FramebufferSpecification &specification)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
@@ -54,6 +55,7 @@ public:
     void SetUniformMatrix3f(const std::string &name, glm::mat3 value);
     void SetUniformMatrix4f(const std::string &name, glm::mat4 value);
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> value);
+    void SetUniformTexture(const std::string &name, uint64_t textureHandle);
 
     float GetUniform1f(const std::string &name);
     glm::vec2 GetUniform2f(const std::string &name);
@@ -66,6 +68,7 @@ public:
     glm::mat3 GetUniformMatrix3f(const std::string &name);
     glm::mat4 GetUniformMatrix4f(const std::string &name);
     std::shared_ptr<Texture> GetUniformTexture(const std::string &name);
+    uint64_t GetUniformTextureHandle(const std::string &name);
 
     std::shared_ptr<Shader> GetShader() const
     {
@@ -86,6 +89,7 @@ private:
     std::string m_shaderName;
     std::shared_ptr<Shader> m_shader;
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
+    std::unordered_map<std::string, uint64_t> m_textureHandles;
     std::unordered_map<std::string, float> m_uniforms1f;
     std::unordered_map<std::string, glm::vec2> m_uniforms2f;
     std::unordered_map<std::string, glm::vec3> m_uniforms3f;

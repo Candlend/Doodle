@@ -64,7 +64,13 @@ public:
     {
         return GetColorAttachmentRendererID(0);
     }
+    virtual uint64_t GetColorAttachmentTextureHandle(size_t index) const = 0;
+    uint64_t GetColorAttachmentTextureHandle() const
+    {
+        return GetColorAttachmentTextureHandle(0);
+    }
     virtual uint32_t GetDepthAttachmentRendererID() const = 0;
+    virtual uint64_t GetDepthAttachmentTextureHandle() const = 0;
     virtual uint32_t GetWidth() const = 0;
     virtual uint32_t GetHeight() const = 0;
 
