@@ -402,7 +402,8 @@ void main()
         vec3(t1.z, 0, t1.w)
     );
 
-    vec3 F = FresnelSchlickRoughness(NdotV, vec3(0.04), roughness);
+    vec3 F0 = mix(vec3(0.04), albedo.rgb, metallic);
+    vec3 F = FresnelSchlickRoughness(NdotV, F0, roughness);
     vec3 kS = F;
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;
@@ -413,7 +414,7 @@ void main()
 		// Evaluate LTC shading
 		vec3 diffuse = LTC_Evaluate(N, V, P, mat3(1), light.Points, light.TwoSided);
 		vec3 specular = LTC_Evaluate(N, V, P, Minv, light.Points, light.TwoSided);
-
+        diffuse *= albedo.rgb;
 		// GGX BRDF shadowing and Fresnel
 		// t2.x: shadowedF90 (F90 normally it should be 1.0)
 		// t2.y: Smith function for Geometric Attenuation Term, it is dot(V or L, H).
