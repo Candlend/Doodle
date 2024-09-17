@@ -84,7 +84,6 @@ void RenderPipeline::Execute()
         const std::vector<AreaLight> &areaLightsVec = sceneData.LightData.AreaLights;
         s_UboAreaLights.Count = areaLightsVec.size();
         std::memcpy(s_UboAreaLights.AreaLights, areaLightsVec.data(), sceneData.LightData.GetAreaLightsSize());
-        PrintBinary((void *)&s_UboAreaLights.AreaLights[0], sizeof(AreaLight));
         m_uniformBuffers["AreaLightData"]->SetSubData(&s_UboAreaLights, sizeof(UBOAreaLights));
     }
 

@@ -544,6 +544,8 @@ private:
 
             glGenerateTextureMipmap(m_rendererId);
 
+            glTextureParameteri(m_rendererId, GL_TEXTURE_CUBE_MAP_SEAMLESS, GL_TRUE);
+
             // Set texture parameters
             switch (m_params.Wrap)
             {
