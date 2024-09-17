@@ -12,7 +12,14 @@ void DebugPanel::OnPanelLayout()
 
 void DebugPanel::OnUpdate()
 {
-    Renderer::UseWireframe(m_useWireframe);
+    if (m_useWireframe)
+    {
+        Renderer::SetPolygonMode(PolygonModeType::Line);
+    }
+    else
+    {
+        Renderer::SetPolygonMode(PolygonModeType::Fill);
+    }
 }
 
 } // namespace Doodle

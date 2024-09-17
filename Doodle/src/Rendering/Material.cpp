@@ -170,22 +170,4 @@ void Material::Unbind()
 {
 }
 
-void SkyboxMaterial::Bind()
-{
-    Renderer::Submit([]() {
-        glDepthFunc(GL_LEQUAL);
-        glCullFace(GL_FRONT);
-    });
-    Material::Bind();
-}
-
-void SkyboxMaterial::Unbind()
-{
-    Material::Unbind();
-    Renderer::Submit([]() {
-        glDepthFunc(GL_LESS);
-        glCullFace(GL_BACK);
-    });
-}
-
 } // namespace Doodle

@@ -199,35 +199,4 @@ public:
     }
 };
 
-class DOO_API SkyboxMaterial : public Material
-{
-public:
-    static std::shared_ptr<SkyboxMaterial> Create()
-    {
-        return std::make_shared<SkyboxMaterial>();
-    }
-
-    SkyboxMaterial() : Material("skybox")
-    {
-    }
-
-    void SetSkyboxTexture(std::shared_ptr<TextureCube> skyboxTexture)
-    {
-        SetUniformTexture("u_Skybox", skyboxTexture);
-    }
-
-    void LoadSkyboxTexture(const std::array<std::string, 6> &filepaths, const TextureParams &params = TextureParams())
-    {
-        SetSkyboxTexture(TextureCube::Create(filepaths, params));
-    }
-
-    void LoadSkyboxTexture(const std::array<Buffer, 6> &faceBuffers, const TextureParams &params = TextureParams())
-    {
-        SetSkyboxTexture(TextureCube::Create(faceBuffers, params));
-    }
-
-    void Bind() override;
-    void Unbind() override;
-};
-
 } // namespace Doodle

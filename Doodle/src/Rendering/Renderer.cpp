@@ -67,11 +67,67 @@ void Renderer::DrawIndexed(unsigned int count)
     });
 }
 
-void Renderer::UseWireframe(bool useWireframe)
+void Renderer::SetDepthTest(DepthTestType type)
 {
-    Renderer::Submit([useWireframe]() {
-        RendererAPI::UseWireframe(useWireframe);
-        DOO_CORE_TRACE("Renderer use wireframe: {0}", useWireframe);
+    Renderer::Submit([type]() {
+        RendererAPI::SetDepthTest(type);
+        DOO_CORE_TRACE("Renderer set depth test: {0}", static_cast<int>(type));
+    });
+}
+
+void Renderer::SetDepthWrite(bool write)
+{
+    Renderer::Submit([write]() {
+        RendererAPI::SetDepthWrite(write);
+        DOO_CORE_TRACE("Renderer set depth write: {0}", write);
+    });
+}
+
+void Renderer::SetCullFace(CullFaceType type)
+{
+    Renderer::Submit([type]() {
+        RendererAPI::SetCullFace(type);
+        DOO_CORE_TRACE("Renderer set cull face: {0}", static_cast<int>(type));
+    });
+}
+
+void Renderer::SetBlend(BlendType src, BlendType dst)
+{
+    Renderer::Submit([src, dst]() {
+        RendererAPI::SetBlend(src, dst);
+        DOO_CORE_TRACE("Renderer set blend: {0}, {1}", static_cast<int>(src), static_cast<int>(dst));
+    });
+}
+
+void Renderer::SetBlendEquation(BlendEquationType type)
+{
+    Renderer::Submit([type]() {
+        RendererAPI::SetBlendEquation(type);
+        DOO_CORE_TRACE("Renderer set blend equation: {0}", static_cast<int>(type));
+    });
+}
+
+void Renderer::SetPolygonMode(PolygonModeType type)
+{
+    Renderer::Submit([type]() {
+        RendererAPI::SetPolygonMode(type);
+        DOO_CORE_TRACE("Renderer set polygon mode: {0}", static_cast<int>(type));
+    });
+}
+
+void Renderer::SetFrontFace(FrontFaceType type)
+{
+    Renderer::Submit([type]() {
+        RendererAPI::SetFrontFace(type);
+        DOO_CORE_TRACE("Renderer set front face: {0}", static_cast<int>(type));
+    });
+}
+
+void Renderer::SetPrimitiveType(PrimitiveType type)
+{
+    Renderer::Submit([type]() {
+        RendererAPI::SetPrimitiveType(type);
+        DOO_CORE_TRACE("Renderer set primitive type: {0}", static_cast<int>(type));
     });
 }
 

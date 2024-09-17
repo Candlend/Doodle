@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Material.h"
-#include "RenderPipeline.h"
+#include "RendererAPI.h"
 #include "pch.h"
+#include <glad/glad.h>
 
 #include "Component.h"
+#include "Material.h"
 #include "RenderPass.h"
-#include <memory>
+#include "RenderPipeline.h"
 
 namespace Doodle
 {
@@ -16,7 +17,7 @@ class DOO_API SkyboxPass : public RenderPass
 public:
     SkyboxPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
-        m_material = SkyboxMaterial::Create();
+        m_material = Material::Create("skybox");
         m_mesh = Mesh::Create("assets/models/test_cube.obj");
 
         std::array<std::string, 6> faces = {
@@ -52,6 +53,8 @@ public:
             skyboxTexture = m_defaultTextureCube;
         }
 
+        Renderer::SetDepthTest(DepthTestType::LessEqual);
+        Renderer::SetCullFace(CullFaceType::Front);
         m_material->Bind();
         m_material->SetUniformTexture("u_Skybox", skyboxTexture);
         m_material->SetUniform1f("u_Intensity", environment.Intensity);
@@ -61,6 +64,8 @@ public:
 
         m_mesh->Render();
         m_material->Unbind();
+        Renderer::SetDepthTest(DepthTestType::Less);
+        Renderer::SetCullFace(CullFaceType::Back);
     }
 
 private:
