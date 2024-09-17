@@ -6,11 +6,12 @@
 #include "RenderCommandQueue.h"
 #include "RendererAPI.h"
 #include "Singleton.h"
-#include "Texture.h"
 
 namespace Doodle
 {
 
+class Shader;
+class Texture;
 class DOO_API Renderer : public Singleton<Renderer>
 {
 public:
@@ -32,6 +33,9 @@ public:
     static void SetClearColor(float r, float g, float b, float a = 1.0f);
     static void DrawIndexed(unsigned int count);
     static void Draw(unsigned int count, PrimitiveType type);
+
+    static void RenderFullscreenQuad(std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader = nullptr);
+    static void RenderFullscreenQuad(uint32_t textureID, std::shared_ptr<Shader> shader = nullptr);
 
     static void SetDepthWrite(bool write);
     static void SetDepthTest(DepthTestType type);

@@ -22,7 +22,8 @@ enum class CullFaceType
 {
     Front,
     Back,
-    FrontAndBack
+    FrontAndBack,
+    Disabled
 };
 
 enum class BlendType

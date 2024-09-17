@@ -4,7 +4,10 @@
 #include "ApplicationEvent.h"
 #include "EventManager.h"
 #include "Log.h"
+#include "Mesh.h"
 #include "Renderer.h"
+#include "Shader.h"
+#include "ShaderLibrary.h"
 
 namespace Doodle
 {
@@ -73,6 +76,31 @@ void Renderer::Draw(unsigned int count, PrimitiveType type)
         RendererAPI::Draw(count, type);
         DOO_CORE_TRACE("Renderer draw triangles: {0}", count);
     });
+}
+
+void Renderer::RenderFullscreenQuad(std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader)
+{
+    Renderer::SetDepthTest(DepthTestType::Disabled);
+    if (!shader)
+        shader = ShaderLibrary::Get()->GetShader("image");
+    shader->Bind();
+    texture->Bind();
+    Mesh::GetQuad()->Render();
+    Renderer::SetDepthTest(DepthTestType::Less);
+    texture->Unbind();
+    shader->Unbind();
+}
+
+void Renderer::RenderFullscreenQuad(uint32_t textureID, std::shared_ptr<Shader> shader)
+{
+    Renderer::SetDepthTest(DepthTestType::Disabled);
+    if (!shader)
+        shader = ShaderLibrary::Get()->GetShader("image");
+    shader->Bind();
+    Renderer::Submit([textureID]() { glBindTextureUnit(0, textureID); });
+    Mesh::GetQuad()->Render();
+    Renderer::SetDepthTest(DepthTestType::Less);
+    Renderer::Submit([textureID]() { glBindTextureUnit(0, 0); });
 }
 
 void Renderer::SetDepthTest(DepthTestType type)

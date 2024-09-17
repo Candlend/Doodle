@@ -2541,12 +2541,12 @@ void DrawGrid(const float *view, const float *projection, const float *matrix, c
     vec_t frustum[6];
     ComputeFrustumPlanes(frustum, viewProjection.m16);
     matrix_t res = *(matrix_t *)matrix * viewProjection;
-
-    // 从视图矩阵中提取摄像机位置
+    matrix_t viewInverse;
+    viewInverse.Inverse(*(matrix_t *)view);
     vec_t cameraPosition;
-    cameraPosition.x = -view[12]; // 视图矩阵的第四列（平移部分）
-    cameraPosition.y = -view[13];
-    cameraPosition.z = -view[14];
+    cameraPosition.x = viewInverse.m[3][0];
+    cameraPosition.y = viewInverse.m[3][1];
+    cameraPosition.z = viewInverse.m[3][2];
     cameraPosition.w = 1.0f; // 设定为 1.0 以便于后续计算
 
     for (float f = -gridSize; f <= gridSize; f += 1.f)
@@ -2606,20 +2606,19 @@ void DrawGrid(const float *view, const float *projection, const float *matrix, c
                 alphaB = minAlpha + (alphaB * (maxAlpha - minAlpha));
 
                 // 计算颜色
-                ImU32 colA = 0xFF808080; // 默认颜色
-                colA = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 0xFF909090 : colA;
-                colA = (fabsf(f) < FLT_EPSILON) ? 0xFF404040 : colA;
+                ImU32 col = 0xFF808080; // 默认颜色
+                col = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 0xFF909090 : col;
+                col = (fabsf(f) < FLT_EPSILON) ? 0xFF404040 : col;
 
-                ImU32 colB = colA;                                        // 颜色一致
-                colA = (colA & 0x00FFFFFF) | ((int)(alphaA * 255) << 24); // 设置透明度
-                colB = (colB & 0x00FFFFFF) | ((int)(alphaB * 255) << 24); // 设置透明度
+                float alpha = (alphaA + alphaB) * 0.5f;
+                col = (col & 0x00FFFFFF) | ((int)(alpha * 255) << 24); // 设置透明度
 
                 float thickness = 1.f;
                 thickness = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 1.5f : thickness;
                 thickness = (fabsf(f) < FLT_EPSILON) ? 2.3f : thickness;
 
                 // 绘制线条
-                gContext.mDrawList->AddLine(worldToPos(ptA, res), worldToPos(ptB, res), colA, thickness);
+                gContext.mDrawList->AddLine(worldToPos(ptA, res), worldToPos(ptB, res), col, thickness);
             }
         }
     }

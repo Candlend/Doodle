@@ -18,7 +18,7 @@ struct Vertex
     glm::vec3 Normal;
     glm::vec3 Tangent;
     glm::vec3 Binormal;
-    glm::vec2 Texcoord;
+    glm::vec2 TexCoord;
 };
 #pragma pack(pop)
 

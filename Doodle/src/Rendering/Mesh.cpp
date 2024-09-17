@@ -53,6 +53,8 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
 
     DOO_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
     DOO_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
+    DOO_CORE_ASSERT(mesh->HasTangentsAndBitangents(), "Meshes require tangents and bitangents.");
+    DOO_CORE_ASSERT(mesh->HasTextureCoords(0), "Meshes require texture coordinates.");
 
     m_vertices.reserve(mesh->mNumVertices);
 
@@ -70,7 +72,7 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
         }
 
         if (mesh->HasTextureCoords(0))
-            vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+            vertex.TexCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
 
         m_vertices.push_back(vertex);
     }
@@ -81,7 +83,7 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
     m_vertexBuffer->PushElement("a_Normal", VertexDataType::Vec3);
     m_vertexBuffer->PushElement("a_Tangent", VertexDataType::Vec3);
     m_vertexBuffer->PushElement("a_Binormal", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_Texcoord", VertexDataType::Vec2);
+    m_vertexBuffer->PushElement("a_TexCoord", VertexDataType::Vec2);
 
     // Extract indices from model
     m_indices.reserve(mesh->mNumFaces * 3); // Each face has 3 indices

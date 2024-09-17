@@ -156,6 +156,9 @@ void RendererAPI::SetCullFace(CullFaceType type)
         glEnable(GL_CULL_FACE);
         glCullFace(GL_FRONT_AND_BACK);
         break;
+    case CullFaceType::Disabled:
+        glDisable(GL_CULL_FACE);
+        break;
     }
 }
 
