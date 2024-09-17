@@ -65,6 +65,33 @@ struct SpotLight
     }
 };
 
+struct AreaLight
+{
+    glm::vec3 Points1;
+    float Padding1;
+    glm::vec3 Points2;
+    float Padding2;
+    glm::vec3 Points3;
+    float Padding3;
+    glm::vec3 Points4;
+    float Padding4;
+    glm::vec3 Radiance{1.0f};
+    float Intensity = 0.0f;
+    int TwoSided = 0;
+    float Padding5[3];
+
+    AreaLight() = default;
+
+    AreaLight(glm::vec3 points[4], glm::vec3 radiance, float intensity, bool twoSided)
+        : Radiance(radiance), Intensity(intensity), TwoSided(twoSided)
+    {
+        Points1 = points[0];
+        Points2 = points[1];
+        Points3 = points[2];
+        Points4 = points[3];
+    }
+};
+
 struct UBOScene
 {
     DirectionalLight DirectionalLights[4];
@@ -88,19 +115,9 @@ struct UBOSpotLights
     SpotLight SpotLights[256];
 };
 
-struct LightData
+struct UBOAreaLights
 {
-    static constexpr size_t MAX_DIRECTIONAL_LIGHTS = 4;
-
-    DirectionalLight DirectionalLights[MAX_DIRECTIONAL_LIGHTS];
-    std::vector<PointLight> PointLights;
-    std::vector<SpotLight> SpotLights;
-    [[nodiscard]] uint32_t GetPointLightsSize() const
-    {
-        return static_cast<uint32_t>(PointLights.size() * sizeof(PointLight));
-    }
-    [[nodiscard]] uint32_t GetSpotLightsSize() const
-    {
-        return static_cast<uint32_t>(SpotLights.size() * sizeof(SpotLight));
-    }
+    uint32_t Count;
+    float Padding[3];
+    AreaLight AreaLights[32];
 };

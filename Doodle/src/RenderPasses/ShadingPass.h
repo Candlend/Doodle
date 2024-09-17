@@ -3,10 +3,10 @@
 #include "pch.h"
 
 #include "Component.h"
+#include "LTCMatrix.h"
 #include "RenderPass.h"
 #include "RenderPipeline.h"
 #include "Texture.h"
-
 
 namespace Doodle
 {
@@ -19,6 +19,13 @@ public:
         TextureParams params;
         params.Wrap = TextureWrap::ClampToEdge;
         m_brdfLUT = Texture2D::Create("assets/textures/brdfLUT.png", params);
+
+        params.Wrap = TextureWrap::ClampToEdge;
+        params.Filter = TextureFilter::Linear;
+        Buffer ltc1Buffer = Buffer::Copy(LTC1, sizeof(LTC1));
+        m_ltc1 = Texture2D::Create(ltc1Buffer, params);
+        Buffer ltc2Buffer = Buffer::Copy(LTC2, sizeof(LTC2));
+        m_ltc2 = Texture2D::Create(ltc2Buffer, params);
     }
 
     void BeginScene() override
@@ -34,6 +41,7 @@ public:
         RenderPipeline::Get()->GetUniformBuffer("SceneData")->Bind(0);
         RenderPipeline::Get()->GetUniformBuffer("PointLightData")->Bind(1);
         RenderPipeline::Get()->GetUniformBuffer("SpotLightData")->Bind(2);
+        RenderPipeline::Get()->GetUniformBuffer("AreaLightData")->Bind(3);
 
         auto *scene = m_scene;
         auto &sceneData = scene->GetData();
@@ -55,6 +63,8 @@ public:
             material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
             material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
             material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT);
+            material.MaterialInstance->SetUniformTexture("u_LTC1", m_ltc1);
+            material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2);
 
             material.MaterialInstance->Bind();
             vao.Render();
@@ -77,6 +87,8 @@ public:
             material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap);
             material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap);
             material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT);
+            material.MaterialInstance->SetUniformTexture("u_LTC1", m_ltc1);
+            material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2);
 
             material.MaterialInstance->Bind();
             mesh.Render();
@@ -86,6 +98,8 @@ public:
 
 private:
     std::shared_ptr<Texture2D> m_brdfLUT;
+    std::shared_ptr<Texture2D> m_ltc1;
+    std::shared_ptr<Texture2D> m_ltc2;
 };
 
 } // namespace Doodle

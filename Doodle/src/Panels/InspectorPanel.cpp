@@ -53,6 +53,7 @@ void InspectorPanel::OnPanelLayout()
         AddComponentButton<DirectionalLightComponent>(entity);
         AddComponentButton<PointLightComponent>(entity);
         AddComponentButton<SpotLightComponent>(entity);
+        AddComponentButton<AreaLightComponent>(entity);
         ImGui::EndPopup();
     }
 }

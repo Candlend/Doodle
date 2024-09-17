@@ -1,6 +1,7 @@
 #include "RenderPipeline.h"
 #include "ShadingPass.h"
 #include "SkyboxPass.h"
+#include "Utils.h"
 
 namespace Doodle
 {
@@ -10,6 +11,7 @@ RenderPipeline::RenderPipeline()
     m_uniformBuffers["SceneData"] = UniformBuffer::Create(sizeof(UBOScene), true);
     m_uniformBuffers["PointLightData"] = UniformBuffer::Create(sizeof(UBOPointLights), true);
     m_uniformBuffers["SpotLightData"] = UniformBuffer::Create(sizeof(UBOSpotLights), true);
+    m_uniformBuffers["AreaLightData"] = UniformBuffer::Create(sizeof(UBOAreaLights), true);
     RegisterRenderPasses();
 }
 void RenderPipeline::RegisterRenderPasses()
@@ -77,6 +79,13 @@ void RenderPipeline::Execute()
         s_UboSpotLights.Count = spotLightsVec.size();
         std::memcpy(s_UboSpotLights.SpotLights, spotLightsVec.data(), sceneData.LightData.GetSpotLightsSize());
         m_uniformBuffers["SpotLightData"]->SetSubData(&s_UboSpotLights, sizeof(UBOSpotLights));
+
+        static UBOAreaLights s_UboAreaLights = {};
+        const std::vector<AreaLight> &areaLightsVec = sceneData.LightData.AreaLights;
+        s_UboAreaLights.Count = areaLightsVec.size();
+        std::memcpy(s_UboAreaLights.AreaLights, areaLightsVec.data(), sceneData.LightData.GetAreaLightsSize());
+        PrintBinary((void *)&s_UboAreaLights.AreaLights[0], sizeof(AreaLight));
+        m_uniformBuffers["AreaLightData"]->SetSubData(&s_UboAreaLights, sizeof(UBOAreaLights));
     }
 
     for (const auto &[name, renderPass] : m_renderPasses)

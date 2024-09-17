@@ -1,4 +1,5 @@
 
+#include "glm/fwd.hpp"
 #include "pch.h"
 #include <glad/glad.h>
 
@@ -283,6 +284,35 @@ void Scene::SetupSceneData()
                     lightComponent.Range,
                     lightComponent.Angle,
                     lightComponent.Falloff,
+                };
+            }
+        }
+        // Area Lights
+        {
+            auto areaLights = m_registry.group<AreaLightComponent>(entt::get<TransformComponent>);
+            m_sceneData.LightData.AreaLights.resize(areaLights.size());
+            uint32_t areaLightIndex = 0;
+            for (auto e : areaLights)
+            {
+                Entity entity(this, e);
+                auto [transformComponent, lightComponent] = areaLights.get<TransformComponent, AreaLightComponent>(e);
+                glm::mat4 model = transformComponent.GetModelMatrix();
+                glm::vec2 size = lightComponent.Size;
+                glm::vec3 points[4] = {
+                    glm::vec3(-size.x, -size.y, 0.0f),
+                    glm::vec3(-size.x, size.y, 0.0f),
+                    glm::vec3(size.x, size.y, 0.0f),
+                    glm::vec3(size.x, -size.y, 0.0f),
+                };
+                for (auto &point : points)
+                {
+                    point = glm::vec3(model * glm::vec4(point, 1.0f));
+                }
+                m_sceneData.LightData.AreaLights[areaLightIndex++] = {
+                    points,
+                    lightComponent.Radiance,
+                    lightComponent.Intensity,
+                    lightComponent.TwoSided,
                 };
             }
         }

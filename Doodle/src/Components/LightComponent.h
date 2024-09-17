@@ -66,4 +66,22 @@ struct SpotLightComponent : public BaseComponent
     }
 };
 
+struct AreaLightComponent : public BaseComponent
+{
+    COMPONENT_CLASS_TYPE(AreaLight)
+
+    glm::vec3 Radiance{1.0f};
+    float Intensity = 0.0f;
+    glm::vec2 Size{1.0f};
+    bool TwoSided = false;
+
+    void OnInspectorLayout() override
+    {
+        ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
+        ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 100.0f);
+        ImGui::DragFloat2("Size", glm::value_ptr(Size), 0.1f, 0.0f, 100.0f);
+        ImGui::Checkbox("Two Sided", &TwoSided);
+    }
+};
+
 } // namespace Doodle

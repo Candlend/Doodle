@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <stb_image.h>
 
 #include "Buffer.h"
@@ -106,12 +107,7 @@ static std::tuple<GLenum, GLenum> GetFormatAndType(GLenum internalFormat)
 
 static int CalculateMipMapCount(int width, int height)
 {
-    int levels = 1;
-    while ((width | height) >> levels)
-    {
-        levels++;
-    }
-    return levels;
+    return static_cast<int>(glm::floor(glm::log2(static_cast<float>(glm::min(width, height))))) + 1;
 }
 
 class OpenGLTexture2D : public Texture2D

@@ -22,6 +22,7 @@ struct LightData
     DirectionalLight DirectionalLights[MAX_DIRECTIONAL_LIGHTS];
     std::vector<PointLight> PointLights;
     std::vector<SpotLight> SpotLights;
+    std::vector<AreaLight> AreaLights;
 
     [[nodiscard]] uint32_t GetPointLightsSize() const
     {
@@ -31,6 +32,11 @@ struct LightData
     [[nodiscard]] uint32_t GetSpotLightsSize() const
     {
         return static_cast<uint32_t>(SpotLights.size() * sizeof(SpotLight));
+    }
+
+    [[nodiscard]] uint32_t GetAreaLightsSize() const
+    {
+        return static_cast<uint32_t>(AreaLights.size() * sizeof(AreaLight));
     }
 };
 

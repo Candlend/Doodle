@@ -24,8 +24,8 @@ void SceneSettingsPanel::OnPanelLayout()
 
     if (ImGui::CollapsingHeader("Environment"))
     {
-        ImGui::SliderFloat("Intensity", &sceneData.EnvironmentData.Intensity, 0.0f, 5.0f);
-        ImGui::SliderFloat("Rotation", &sceneData.EnvironmentData.Rotation, 0.0f, 360.0f);
+        ImGui::DragFloat("Intensity", &sceneData.EnvironmentData.Intensity, 0.1f, 0.0f, 100.0f);
+        ImGui::DragFloat("Rotation", &sceneData.EnvironmentData.Rotation, 0.1f, 0.0f, 360.0f);
     }
 }
 

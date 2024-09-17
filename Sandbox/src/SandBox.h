@@ -163,6 +163,15 @@ public:
         auto &sTransform = spotLight.GetComponent<TransformComponent>();
         sTransform.Position = glm::vec3(0.0f, 2.0f, 0.0f);                // 位置
         sTransform.Rotation = glm::vec3(glm::radians(90.0f), 0.0f, 0.0f); // 旋转（以弧度为单位）
+
+        // 创建面光源
+        auto areaLight = m_scene->CreateEntity("AreaLight");
+        auto &aLight = areaLight.AddComponent<AreaLightComponent>();
+        aLight.Intensity = 1.0f;
+        aLight.Radiance = glm::vec3(1.0f, 1.0f, 1.0f);                                       // 白色光
+        areaLight.GetComponent<TransformComponent>().Position = glm::vec3(1.0f, 1.0f, 1.0f); // 光源位置
+        areaLight.GetComponent<TransformComponent>().LookAt(
+            suzanne.GetComponent<TransformComponent>().Position); // 面光源朝向
     }
 
     void BeforeUpdate() override
