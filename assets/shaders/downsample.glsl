@@ -51,6 +51,6 @@ void main()
     color += (a+c+g+i) * 0.03125;
     color += (b+d+f+h) * 0.0625;
     color += (j+k+l+m) * 0.125;
-
+    color = max(color, vec3(0.0001f));
     finalColor = vec4(color, 1.0);
 }

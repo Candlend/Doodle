@@ -179,7 +179,6 @@ vec3 LTC_Evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool twoSid
     L[2] = Minv * (points[2] - P);
     L[3] = Minv * (points[3] - P);
 
-    // use tabulated horizon-clipped sphere
     // 判断着色点是否位于光源之后
     vec3 dir = points[0] - P; // LTC 空间
     vec3 lightNormal = cross(points[1] - points[0], points[3] - points[0]);
@@ -204,21 +203,30 @@ vec3 LTC_Evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool twoSid
     // 计算正半球修正所需要的的参数
     float len = length(vsum);
 
-    float z = vsum.z/len;
+    float z = vsum.z / len;
     if (behind)
         z = -z;
 
-    vec2 uv = vec2(z*0.5f + 0.5f, len); // range [0, 1]
-    uv = uv*LUT_SCALE + LUT_BIAS;
+    vec2 uv = vec2(z * 0.5f + 0.5f, len); // range [0, 1]
+    uv = uv * LUT_SCALE + LUT_BIAS;
 
     // 通过参数获得几何衰减系数
     float scale = texture(u_LTC2, uv).w;
 
-    float sum = len*scale;
-
+    vec3 Lo_i = vec3(0.0);
+    // 计算每个区域光源点对该点的贡献
+    for (int i = 0; i < 4; ++i) {
+        vec3 lightDir = normalize(points[i] - P);
+        float dotProduct = dot(lightDir, N);
+        
+        // 仅在光源点朝向表面时才考虑贡献
+        if (dotProduct > 0.0) {
+            float contribution = len * scale * dotProduct; // 根据点积调整贡献
+            Lo_i += vec3(contribution, contribution, contribution);
+        }
+    }
 
     // 输出
-    vec3 Lo_i = vec3(sum, sum, sum);
     return Lo_i;
 }
 
