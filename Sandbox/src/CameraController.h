@@ -11,6 +11,7 @@
 #include "PanelManager.h"
 #include "SceneManager.h"
 #include "ViewportPanel.h"
+#include "imgui.h"
 
 using namespace Doodle;
 
@@ -84,8 +85,8 @@ public:
     {
         auto &transform = GetComponent<TransformComponent>();
 
-        ImGui::SliderFloat("Move Speed", &m_moveSpeed, 0.1f, 10.0f);
-        ImGui::SliderFloat("Rotate Speed", &m_rotateSpeed, 1.0f, 100.0f);
+        ImGui::DragFloat("Move Speed", &m_moveSpeed, 0.1f, 0.0f, 10.0f);
+        ImGui::DragFloat("Rotate Speed", &m_rotateSpeed, 1.0f, 0.0f, 100.0f);
     }
 
     void Deinitialize() override

@@ -29,6 +29,7 @@ public:
 
     void Execute() override
     {
+        Renderer::SetClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Renderer::Clear();
 
         auto *scene = m_scene;
@@ -72,6 +73,13 @@ public:
             mesh.Render();
             m_shader->Unbind();
         }
+    }
+
+    void OnLayout() override
+    {
+        auto &sceneData = m_scene->GetData();
+        ImGui::DragFloat("Bias", &sceneData.ShadowBias, 0.001f, 0.0f, 1.0f);
+        ImGui::DragFloat("Normal Bias", &sceneData.ShadowNormalBias, 0.001f, 0.0f, 1.0f);
     }
 
 private:

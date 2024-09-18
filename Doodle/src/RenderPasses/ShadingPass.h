@@ -23,8 +23,7 @@ namespace Doodle
     material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2->GetTextureHandle());                                \
     material.MaterialInstance->SetUniformMatrix4f("u_LightSpaceMatrix", lightSpaceMatrix);                             \
     material.MaterialInstance->SetUniformTexture("u_ShadowMap", shadowMap->GetDepthAttachmentTextureHandle());         \
-    material.MaterialInstance->SetUniform1f("u_ShadowBias", sceneData.ShadowBias);                                     \
-    material.MaterialInstance->SetUniform1f("u_ShadowNormalBias", sceneData.ShadowNormalBias);
+    material.MaterialInstance->SetUniformTexture("u_OcclusionMap", occlusionMap->GetColorAttachmentTextureHandle(0));
 
 class DOO_API ShadingPass : public RenderPass
 {
@@ -65,6 +64,8 @@ public:
 
         glm::mat4 lightSpaceMatrix = RenderPipeline::Get()->GetUniformMatrix4f("u_LightSpaceMatrix");
         std::shared_ptr<FrameBuffer> shadowMap = RenderPipeline::Get()->GetFrameBuffer("ShadowMap");
+        std::shared_ptr<FrameBuffer> occlusionMap = RenderPipeline::Get()->GetFrameBuffer("OcclusionMap");
+        auto targetFrameBuffer = GetSpecification().TargetFrameBuffer;
 
         Renderer::SetDepthTest(DepthTestType::LessEqual);
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();

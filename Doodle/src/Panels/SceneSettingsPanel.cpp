@@ -1,5 +1,6 @@
 #include "SceneSettingsPanel.h"
 #include "Component.h"
+#include "RenderPass.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
 #include "imgui.h"
@@ -20,18 +21,12 @@ void SceneSettingsPanel::OnPanelLayout()
         return;
     }
 
-    auto &sceneData = scene->GetData();
-
-    if (ImGui::CollapsingHeader("Environment"))
+    for (auto &renderPass : RenderPipeline::Get()->GetRenderPasses())
     {
-        ImGui::DragFloat("Intensity", &sceneData.EnvironmentData.Intensity, 0.1f, 0.0f, 100.0f);
-        ImGui::DragFloat("Rotation", &sceneData.EnvironmentData.Rotation, 0.1f, 0.0f, 360.0f);
-    }
-
-    if (ImGui::CollapsingHeader("Shadow"))
-    {
-        ImGui::DragFloat("Bias", &sceneData.ShadowBias, 0.001f, 0.0f, 1.0f);
-        ImGui::DragFloat("Normal Bias", &sceneData.ShadowNormalBias, 0.001f, 0.0f, 1.0f);
+        if (ImGui::CollapsingHeader(renderPass.first.c_str()))
+        {
+            renderPass.second->OnLayout();
+        }
     }
 }
 

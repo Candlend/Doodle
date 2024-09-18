@@ -7,10 +7,12 @@
 #include "RendererAPI.h"
 #include "Shader.h"
 #include "glm/fwd.hpp"
+#include "imgui.h"
 #include "pch.h"
 
 #include "Component.h"
 #include "RenderPass.h"
+#include <cstdint>
 #include <memory>
 
 namespace Doodle
@@ -24,6 +26,8 @@ struct BloomMip
 
 class DOO_API BloomFbo
 {
+    friend class BloomPass;
+
 public:
     BloomFbo(uint32_t width, uint32_t height, uint32_t mipCount)
         : m_width(width), m_height(height), m_mipCount(mipCount)
@@ -49,21 +53,30 @@ public:
         RenderPipeline::Get()->SetFrameBuffer("BloomMap", m_mipChain[0].Fbo);
     }
 
-    void SetBlurRadius(float value)
-    {
-        m_blurRadius = value;
-    }
-
     void SetMipCount(uint32_t mipCount)
     {
         if (mipCount == m_mipCount)
             return;
+        m_mipChain.resize(m_mipCount);
         if (mipCount > m_mipCount)
         {
-            Resize(m_width, m_height);
+            for (unsigned int i = m_mipCount; i < mipCount; i++)
+            {
+                glm::u32vec2 mipSize = {static_cast<uint32_t>(m_width * std::pow(0.5f, i)),
+                                        static_cast<uint32_t>(m_height * std::pow(0.5f, i))};
+
+                FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::RGBA16F};
+                FramebufferSpecification spec = {mipSize.x, mipSize.y, attachments};
+
+                m_mipChain.push_back({FrameBuffer::Create(spec), mipSize});
+            }
         }
         m_mipCount = mipCount;
-        m_mipChain.resize(m_mipCount);
+    }
+
+    uint32_t GetMipCount() const
+    {
+        return m_mipCount;
     }
 
     void Resize(uint32_t width, uint32_t height)
@@ -150,18 +163,26 @@ public:
         auto width = targetFrameBuffer->GetWidth();
         auto height = targetFrameBuffer->GetHeight();
         m_bloomFbo->Resize(width, height);
-        m_bloomFbo->SetBlurRadius(0.005f);
-        m_bloomFbo->SetMipCount(5);
-
+        m_bloomFbo->m_bloomShader->SetUniform1f("u_BloomStrength", m_bloomStrength);
+        m_bloomFbo->m_bloomShader->SetUniform1f("u_Exposure", m_exposure);
         m_bloomFbo->RenderBloom(targetFrameBuffer);
     }
 
-private:
-    void Downsample()
+    void OnLayout() override
     {
-        // print 1
+
+        uint32_t mipCount = m_bloomFbo->GetMipCount();
+        ImGui::DragInt("Mip Count", reinterpret_cast<int *>(&mipCount), 1, 1, 10);
+        m_bloomFbo->SetMipCount(mipCount);
+
+        ImGui::DragFloat("Blur Radius", &m_bloomFbo->m_blurRadius, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("Bloom Strength", &m_bloomStrength, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("Exposure", &m_exposure, 0.1f, 0.0f, 10.0f);
     }
 
+private:
+    float m_bloomStrength = 0.04f;
+    float m_exposure = 1.0f;
     std::shared_ptr<BloomFbo> m_bloomFbo;
 };
 

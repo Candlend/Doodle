@@ -41,6 +41,7 @@ SceneRenderer::~SceneRenderer()
 void SceneRenderer::Render()
 {
     RenderScope<FrameBuffer> renderScope(m_frameBuffer.get());
+    Renderer::SetClearColor(0.3, 0.3, 0.3, 1.0);
     Renderer::Clear();
     auto scene = SceneManager::Get()->GetActiveScene();
     if (!scene || !scene->IsActive())

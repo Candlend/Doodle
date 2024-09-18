@@ -146,10 +146,10 @@ vec3 view_to_screen_space(vec3 view_pos, bool handle_jitter) {
 //   ambient occlusion
 // ---------------------
 
-#define GTAO_SLICES        2
-#define GTAO_HORIZON_STEPS 3
-#define GTAO_RADIUS        2.0
-#define GTAO_FALLOFF_START 0.75
+uniform int u_Slices = 2;
+uniform int u_HorizonSteps = 3;
+uniform float u_Radius = 2.0;
+uniform float u_FalloffStart = 0.75;
 
 float integrate_arc(vec2 h, float n, float cos_n) {
 	vec2 tmp = cos_n + 2.0 * h * sin(n) - cos(2.0 * h - n);
@@ -163,7 +163,7 @@ float calculate_maximum_horizon_angle(
 	vec3 view_pos,
 	float dither
 ) {
-	const float step_size = GTAO_RADIUS * rcp(float(GTAO_HORIZON_STEPS));
+	const float step_size = u_Radius * rcp(float(u_HorizonSteps));
 
 	float max_cos_theta = -1.0;
 
@@ -171,7 +171,7 @@ float calculate_maximum_horizon_angle(
 	vec2 ray_pos = screen_pos.xy + ray_step * (dither + max_of(u_PixelSize) * rcp_length(ray_step));
 
 
-	for (int i = 0; i < GTAO_HORIZON_STEPS; ++i, ray_pos += ray_step) {
+	for (int i = 0; i < u_HorizonSteps; ++i, ray_pos += ray_step) {
 		float depth = texelFetch2D(u_GDepth, ivec2(clamp(ray_pos,0.0,1.0) * u_Resolution * taau_render_scale - 0.5), 0).x;
 
 		if (depth == 1.0 || depth < hand_depth || depth == screen_pos.z) continue;
@@ -181,7 +181,7 @@ float calculate_maximum_horizon_angle(
 		float len_sq = length_squared(offset);
 		float norm = inversesqrt(len_sq);
 
-		float distance_falloff = linear_step(GTAO_FALLOFF_START * GTAO_RADIUS, GTAO_RADIUS, len_sq * norm);
+		float distance_falloff = linear_step(u_FalloffStart * u_Radius, u_Radius, len_sq * norm);
 
 		float cos_theta = dot(viewer_dir, offset) * norm;
 		      cos_theta = mix(cos_theta, -1.0, distance_falloff);
@@ -201,8 +201,8 @@ float ambient_occlusion(vec3 screen_pos, vec3 view_pos, vec3 view_normal, vec2 d
 	vec3 viewer_up    = cross(viewer_dir, viewer_right);
 	mat3 local_to_view = mat3(viewer_right, viewer_up, viewer_dir);
 
-	for (int i = 0; i < GTAO_SLICES; ++i) {
-		float slice_angle = (i + dither.x) * (pi / float(GTAO_SLICES));
+	for (int i = 0; i < u_Slices; ++i) {
+		float slice_angle = (i + dither.x) * (pi / float(u_Slices));
 
 		vec3 slice_dir = vec3(cos(slice_angle), sin(slice_angle), 0.0);
 		vec3 view_slice_dir = local_to_view * slice_dir;
@@ -228,7 +228,7 @@ float ambient_occlusion(vec3 screen_pos, vec3 view_pos, vec3 view_normal, vec2 d
 
 		ao += integrate_arc(max_horizon_angles, gamma, cos_gamma) * len_sq * norm  ;
 	}
-	ao *= rcp(float(GTAO_SLICES));
+	ao *= rcp(float(u_Slices));
 	return ao*(ao*0.5+0.5);
 }
 
@@ -258,8 +258,7 @@ vec3 toScreenSpace(vec3 p) {
 }
 
 void main() {
-    vec2 texelSize = 1.0 / textureSize(u_GDepth, 0).xy;
-    vec2 texcoord = gl_FragCoord.xy * texelSize;
+    vec2 texcoord = gl_FragCoord.xy * u_PixelSize;
     float z = texture2D(u_GDepth, texcoord).x;
     
 #ifdef TAA
@@ -268,13 +267,17 @@ void main() {
 	vec2 TAA_Offset = vec2(0.0);
 #endif
 
-	vec3 screen_pos = vec3(texcoord / RENDER_SCALE - TAA_Offset * texelSize * 0.5, z);
+	vec3 screen_pos = vec3(texcoord / RENDER_SCALE - TAA_Offset * u_PixelSize * 0.5, z);
     vec3 view_pos = toScreenSpace(screen_pos);
 
     vec3 world_normal = texture(u_GNormalWS, texcoord).xyz;
     vec3 view_normal = normalize((u_View * vec4(world_normal, 0.0)).xyz);
 
+#ifdef TAA
     int seed = (u_FrameCounter % 40000) + u_FrameCounter * 2;
+#else
+	int seed = 0;
+#endif
     vec2 r2 = fract(R2_samples(seed) + blueNoise(gl_FragCoord.xy).rg);
 
     float ao = ambient_occlusion(screen_pos, view_pos, view_normal, r2);

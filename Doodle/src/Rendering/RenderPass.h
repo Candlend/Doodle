@@ -1,5 +1,6 @@
 #pragma once
 
+#include "imgui.h"
 #include "pch.h"
 #include <variant>
 
@@ -49,6 +50,11 @@ public:
     template <typename T> void SetInput(const std::string &name, std::shared_ptr<T> input)
     {
         m_inputs[name] = input;
+    }
+
+    virtual void OnLayout()
+    {
+        ImGui::TextDisabled("No layout available");
     }
 
 protected:

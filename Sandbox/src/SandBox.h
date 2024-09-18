@@ -65,7 +65,6 @@ public:
         ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
         InitializeLayout();
         m_scene = SceneManager::Get()->CreateScene("Main");
-        Renderer::SetClearColor(0, 0, 0, 1);
         m_scene->LoadEnvironment("assets/envs/pink_sunrise_4k.hdr");
         BuildScene();
         m_scene->BeginScene();

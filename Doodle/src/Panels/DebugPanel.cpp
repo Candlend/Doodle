@@ -12,7 +12,7 @@ void DebugPanel::OnPanelLayout()
     ImGui::Checkbox("Wireframe Mode", &m_useWireframe);
     auto width = ImGui::GetContentRegionAvail().x;
 
-    for (auto &frameBuffer : RenderPipeline::Get()->m_frameBuffers)
+    for (auto &frameBuffer : RenderPipeline::Get()->GetFrameBuffers())
     {
         if (ImGui::CollapsingHeader(frameBuffer.first.c_str()))
         {

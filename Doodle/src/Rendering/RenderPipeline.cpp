@@ -8,6 +8,7 @@
 #include "ShadowPass.h"
 #include "SkyboxPass.h"
 #include "Utils.h"
+#include <unordered_map>
 
 namespace Doodle
 {
@@ -26,7 +27,7 @@ RenderPipeline::RenderPipeline()
          {FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::Depth}});
     m_frameBuffers["ShadowMap"] = FrameBuffer::Create({4096, 4096, {FramebufferTextureFormat::Depth}});
 
-    m_frameBuffers["OcculusionMap"] = FrameBuffer::Create({1920, 1080, {FramebufferTextureFormat::RGBA8}});
+    m_frameBuffers["OcclusionMap"] = FrameBuffer::Create({1920, 1080, {FramebufferTextureFormat::RGBA8}});
 }
 
 void RenderPipeline::RegisterRenderPasses()
@@ -34,11 +35,22 @@ void RenderPipeline::RegisterRenderPasses()
     CreateRenderPass<SkyboxPass>("SkyboxPass", {m_targetFrameBuffer});
     CreateRenderPass<PreDepthPass>("PreDepthPass", {m_targetFrameBuffer});
     CreateRenderPass<GeometryPass>("GeometryPass", {m_frameBuffers["GBuffer"]});
-    CreateRenderPass<OcclusionPass>("OcclusionPass", {m_frameBuffers["OcculusionMap"]});
+    CreateRenderPass<OcclusionPass>("OcclusionPass", {m_frameBuffers["OcclusionMap"]});
     CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
     CreateRenderPass<ShadingPass>("ShadingPass", {m_targetFrameBuffer});
     CreateRenderPass<BloomPass>("BloomPass", {m_targetFrameBuffer});
 }
+
+std::unordered_map<std::string, std::shared_ptr<RenderPass>> RenderPipeline::GetRenderPasses()
+{
+    return m_renderPasses;
+}
+
+std::unordered_map<std::string, std::shared_ptr<FrameBuffer>> RenderPipeline::GetFrameBuffers()
+{
+    return m_frameBuffers;
+}
+
 void RenderPipeline::AddRenderPass(const std::string &name, std::shared_ptr<RenderPass> renderPass)
 {
     m_renderPasses[name] = renderPass;
@@ -86,6 +98,9 @@ void RenderPipeline::Execute()
         s_UboScene.CameraPosition = sceneData.CameraData.Position;
         s_UboScene.EnvironmentIntensity = sceneData.EnvironmentData.Intensity;
         s_UboScene.EnvironmentRotation = sceneData.EnvironmentData.Rotation;
+        s_UboScene.ShadowBias = sceneData.ShadowBias;
+        s_UboScene.ShadowNormalBias = sceneData.ShadowNormalBias;
+        s_UboScene.Resolution = {m_targetFrameBuffer->GetWidth(), m_targetFrameBuffer->GetHeight()};
         m_uniformBuffers["SceneData"]->SetSubData(&s_UboScene, sizeof(UBOScene));
 
         static UBOPointLights s_UboPointLights = {};

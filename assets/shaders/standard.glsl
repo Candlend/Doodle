@@ -69,8 +69,8 @@ uniform samplerCube u_PrefilterMap;
 uniform sampler2D u_BrdfLUT;
 
 uniform sampler2D u_ShadowMap;
-uniform float u_ShadowBias;
-uniform float u_ShadowNormalBias;
+
+uniform sampler2D u_OcclusionMap;
 
 const float PI = 3.141592;
 
@@ -91,9 +91,15 @@ struct DirectionalLight
 layout(std140, binding = 0) uniform SceneData
 {
     DirectionalLight DirectionalLights[4];
+
     vec3 CameraPosition;
     float EnvironmentIntensity;
+
     float EnvironmentRotation;
+    float ShadowBias;
+    float ShadowNormalBias;
+
+    vec2 Resolution;
 } u_Scene;
 
 struct PointLight
@@ -352,7 +358,7 @@ float ShadowCalculation(vec4 PositionHLS, vec3 lightDir)
     float currentDepth = projCoords.z;
 
     vec3 normal = normalize(fs_in.NormalWS);
-    float bias = max(u_ShadowNormalBias * (1.0 - dot(normal, lightDir)), u_ShadowBias);
+    float bias = max(u_Scene.ShadowNormalBias * (1.0 - dot(normal, lightDir)), u_Scene.ShadowBias);
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
     for(int x = -1; x <= 1; ++x)
@@ -373,7 +379,7 @@ void main()
     vec4 albedo = texture(u_AlbedoTexture, fs_in.TexCoord) * u_AlbedoColor;
     float metallic = texture(u_MetallicTexture, fs_in.TexCoord).r * u_Metallic;
     float roughness = texture(u_RoughnessTexture, fs_in.TexCoord).r * u_Roughness;
-
+    float ao = texture(u_OcclusionMap, gl_FragCoord.xy / u_Scene.Resolution).r;
     // Transform normal from tangent space to world space
     vec3 normal = normalize(fs_in.TBN * (texture(u_NormalTexture, fs_in.TexCoord).xyz * 2.0 - 1.0) * u_NormalScale);
     
@@ -477,5 +483,6 @@ void main()
     }
 
     // Final color output
+    color *= ao;
     FinalColor = vec4(color, 1.0);
 }

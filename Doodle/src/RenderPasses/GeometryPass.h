@@ -31,6 +31,7 @@ public:
 
     void Execute() override
     {
+        Renderer::SetClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Renderer::Clear();
         auto preDepthMap = RenderPipeline::Get()->GetFrameBuffer("PreDepthMap");
         auto gBuffer = RenderPipeline::Get()->GetFrameBuffer("GBuffer");

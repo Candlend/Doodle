@@ -95,10 +95,16 @@ struct AreaLight
 struct UBOScene
 {
     DirectionalLight DirectionalLights[4];
+
     glm::vec3 CameraPosition{0.0f};
     float EnvironmentIntensity = 1.0f;
+
     float EnvironmentRotation = 0.0f;
-    float Padding2[3];
+    float ShadowBias = 0.001f;
+    float ShadowNormalBias = 0.001f;
+    float Padding1;
+    glm::vec2 Resolution;
+    float Padding2[2];
 };
 
 struct UBOPointLights

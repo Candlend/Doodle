@@ -68,6 +68,13 @@ public:
         Renderer::SetCullFace(CullFaceType::Back);
     }
 
+    void OnLayout() override
+    {
+        auto &sceneData = m_scene->GetData();
+        ImGui::DragFloat("Intensity", &sceneData.EnvironmentData.Intensity, 0.1f, 0.0f, 100.0f);
+        ImGui::DragFloat("Rotation", &sceneData.EnvironmentData.Rotation, 0.1f, 0.0f, 360.0f);
+    }
+
 private:
     std::shared_ptr<Material> m_material;
     std::shared_ptr<Mesh> m_mesh;

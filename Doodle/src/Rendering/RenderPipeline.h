@@ -8,21 +8,22 @@
 #include "Singleton.h"
 #include "UniformBuffer.h"
 #include <unordered_map>
+#include <vector>
 
 namespace Doodle
 {
 
 class RenderPass;
 class RenderPassSpecification;
-class DebugPanel;
 class DOO_API RenderPipeline : public Singleton<RenderPipeline>
 {
-    friend class DebugPanel;
-
 public:
     RenderPipeline();
 
     void RegisterRenderPasses();
+
+    std::unordered_map<std::string, std::shared_ptr<RenderPass>> GetRenderPasses();
+    std::unordered_map<std::string, std::shared_ptr<FrameBuffer>> GetFrameBuffers();
 
     void AddRenderPass(const std::string &name, std::shared_ptr<RenderPass> renderPass);
 

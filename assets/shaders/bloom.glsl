@@ -21,8 +21,8 @@ in vec2 v_TexCoord;
 layout(binding = 0) uniform sampler2D u_Texture;
 
 uniform float u_BloomStrength = 0.04f;
-uniform sampler2D u_BloomTexture;
 uniform float u_Exposure = 1.0f;
+uniform sampler2D u_BloomTexture;
 
 vec3 FilmicToneMapping(vec3 color) {
     color *= u_Exposure;
