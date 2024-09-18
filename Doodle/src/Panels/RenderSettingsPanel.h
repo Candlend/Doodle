@@ -7,10 +7,10 @@
 namespace Doodle
 {
 
-class DOO_API SceneSettingsPanel : public EditorPanel
+class DOO_API RenderSettingsPanel : public EditorPanel
 {
 public:
-    PANEL_CLASS_TYPE(SceneSettings)
+    PANEL_CLASS_TYPE(RenderSettings)
     void OnUpdate() override;
 
     void OnPanelLayout() override;

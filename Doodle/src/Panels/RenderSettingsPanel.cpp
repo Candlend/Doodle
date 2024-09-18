@@ -1,18 +1,19 @@
-#include "SceneSettingsPanel.h"
 #include "Component.h"
 #include "RenderPass.h"
+#include "RenderSettingsPanel.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
 #include "imgui.h"
 
+
 namespace Doodle
 {
 
-void SceneSettingsPanel::OnUpdate()
+void RenderSettingsPanel::OnUpdate()
 {
 }
 
-void SceneSettingsPanel::OnPanelLayout()
+void RenderSettingsPanel::OnPanelLayout()
 {
     auto scene = SceneManager::Get()->GetActiveScene();
     if (!scene)

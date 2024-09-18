@@ -10,8 +10,8 @@
 #include "Log.h"
 #include "LogPanel.h"
 #include "PanelManager.h"
+#include "RenderSettingsPanel.h"
 #include "Renderable.h"
-#include "SceneSettingsPanel.h"
 #include "Texture.h"
 #include "ViewportPanel.h"
 #include "imgui.h"
@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+
 
 using namespace Doodle;
 
@@ -45,7 +46,7 @@ public:
         PanelManager::Get()->CreatePanel<DebugPanel>();
         PanelManager::Get()->CreatePanel<InspectorPanel>();
         PanelManager::Get()->CreatePanel<ViewportPanel>();
-        PanelManager::Get()->CreatePanel<SceneSettingsPanel>();
+        PanelManager::Get()->CreatePanel<RenderSettingsPanel>();
 
         auto layoutMenuItem = std::make_shared<ParentMenuItem>("Layout");
         for (const auto &[name, panel] : PanelManager::Get()->GetPanels())
