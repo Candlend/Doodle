@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RendererAPI.h"
 #include "pch.h"
 
 #include "Shader.h"
@@ -82,7 +83,11 @@ public:
     virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
     virtual FramebufferSpecification &GetSpecification() = 0;
 
-    virtual void BlitTo(std::shared_ptr<FrameBuffer> target) = 0;
+    virtual void BlitTo(std::shared_ptr<FrameBuffer> target, BufferFlags bufferFlags) = 0;
+    virtual void BlitTo(std::shared_ptr<FrameBuffer> target)
+    {
+        BlitTo(target, BufferFlags::All);
+    }
 };
 
 } // namespace Doodle

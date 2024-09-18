@@ -3,6 +3,7 @@
 #include "Framebuffer.h"
 #include "Material.h"
 #include "RenderPipeline.h"
+#include "Renderer.h"
 #include "pch.h"
 
 #include "Component.h"
@@ -12,12 +13,12 @@
 namespace Doodle
 {
 
-class DOO_API PreDepthPass : public RenderPass
+class DOO_API GeometryPass : public RenderPass
 {
 public:
-    PreDepthPass(const RenderPassSpecification &specification) : RenderPass(specification)
+    GeometryPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
-        m_shader = ShaderLibrary::Get()->GetShader("depthOnly");
+        m_shader = ShaderLibrary::Get()->GetShader("gbuffer");
     }
 
     void BeginScene() override
@@ -30,20 +31,33 @@ public:
 
     void Execute() override
     {
+        Renderer::Clear();
+        auto preDepthMap = RenderPipeline::Get()->GetFrameBuffer("PreDepthMap");
+        auto gBuffer = RenderPipeline::Get()->GetFrameBuffer("GBuffer");
+        gBuffer->Resize(preDepthMap->GetWidth(), preDepthMap->GetHeight());
+        preDepthMap->BlitTo(gBuffer, BufferFlags::Depth);
+
         auto *scene = m_scene;
         auto &sceneData = scene->GetData();
 
         m_shader->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
         m_shader->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
 
+        Renderer::SetDepthTest(DepthTestType::LessEqual);
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
         for (auto entity : vaoView)
         {
             const auto &transform = vaoView.get<TransformComponent>(entity);
             const auto &vao = vaoView.get<VAOComponent>(entity);
+            const auto &material = vaoView.get<MaterialComponent>(entity);
 
             glm::mat4 model = transform.GetModelMatrix();
-            m_shader->SetUniformMatrix4f("u_Model", glm::mat4(0.123f) + model);
+            auto normalScale = material.MaterialInstance->GetUniform1f("u_NormalScale");
+            auto normalTexture = material.MaterialInstance->GetUniformTexture("u_NormalTexture");
+
+            m_shader->SetUniformMatrix4f("u_Model", model);
+            m_shader->SetUniform1f("u_NormalScale", normalScale);
+            m_shader->SetUniformTexture("u_NormalTexture", normalTexture);
             m_shader->Bind();
             vao.Render();
         }
@@ -56,14 +70,16 @@ public:
             const auto &material = meshView.get<MaterialComponent>(entity);
 
             glm::mat4 model = transform.GetModelMatrix();
+            auto normalScale = material.MaterialInstance->GetUniform1f("u_NormalScale");
+            auto normalTexture = material.MaterialInstance->GetUniformTexture("u_NormalTexture");
+
             m_shader->SetUniformMatrix4f("u_Model", model);
+            m_shader->SetUniform1f("u_NormalScale", normalScale);
+            m_shader->SetUniformTexture("u_NormalTexture", normalTexture);
             m_shader->Bind();
             mesh.Render();
         }
-        auto preDepthMap = RenderPipeline::Get()->GetFrameBuffer("PreDepthMap");
-        auto targetFrameBuffer = GetSpecification().TargetFrameBuffer;
-        preDepthMap->Resize(targetFrameBuffer->GetWidth(), targetFrameBuffer->GetHeight());
-        targetFrameBuffer->BlitTo(preDepthMap);
+        Renderer::SetDepthTest(DepthTestType::Less);
     }
 
 private:

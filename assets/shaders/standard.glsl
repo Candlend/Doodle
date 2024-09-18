@@ -345,12 +345,14 @@ vec3 IBL(vec3 normal, vec3 viewDir, vec4 albedo, float metallic, float roughness
     return kD * diffuse + specular;
 }
 
-float ShadowCalculation(vec4 LightSpacePos)
+float ShadowCalculation(vec4 LightSpacePos, vec3 lightDir)
 {
     vec3 projCoords = LightSpacePos.xyz / LightSpacePos.w;
     projCoords = projCoords * 0.5 + 0.5;
     float currentDepth = projCoords.z;
-    float bias = u_ShadowBias + u_ShadowNormalBias * (1.0 - projCoords.z);
+
+    vec3 normal = normalize(fs_in.Normal);
+    float bias = max(u_ShadowNormalBias * (1.0 - dot(normal, lightDir)), u_ShadowBias);
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
     for(int x = -1; x <= 1; ++x)
@@ -392,7 +394,7 @@ void main()
 
         float shadow = 0.0;
         if (i == 0){
-            shadow = ShadowCalculation(fs_in.LightSpacePos); 
+            shadow = ShadowCalculation(fs_in.LightSpacePos, lightDir); 
         }
 
         color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * (1.0 - shadow);

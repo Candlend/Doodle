@@ -30,8 +30,7 @@ public:
     {
         Submit<>(func);
     }
-    static void Clear(float r, float g, float b, float a = 1.0f);
-    static void Clear();
+    static void Clear(BufferFlags bufferFlags = BufferFlags::All);
     static void SetClearColor(float r, float g, float b, float a = 1.0f);
     static void DrawIndexed(unsigned int count);
     static void Draw(unsigned int count, PrimitiveType type);

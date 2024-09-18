@@ -5,6 +5,7 @@
 #include "Framebuffer.h"
 #include "Log.h"
 #include "Renderer.h"
+#include "RendererAPI.h"
 
 namespace Doodle
 {
@@ -187,17 +188,30 @@ public:
         return m_depthAttachmentTextureHandle;
     }
 
-    void BlitTo(std::shared_ptr<FrameBuffer> target) override
+    void BlitTo(std::shared_ptr<FrameBuffer> target, BufferFlags bufferFlags) override
     {
-        Renderer::Submit([this, target]() {
+        GLenum glBuffers = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+        if ((bufferFlags & BufferFlags::Color) == BufferFlags::None)
+        {
+            glBuffers &= ~GL_COLOR_BUFFER_BIT;
+        }
+        if ((bufferFlags & BufferFlags::Depth) == BufferFlags::None)
+        {
+            glBuffers &= ~GL_DEPTH_BUFFER_BIT;
+        }
+        if ((bufferFlags & BufferFlags::Stencil) == BufferFlags::None)
+        {
+            glBuffers &= ~GL_STENCIL_BUFFER_BIT;
+        }
+
+        Renderer::Submit([this, target, glBuffers]() {
             glBindFramebuffer(GL_READ_FRAMEBUFFER, m_rendererId);
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target->GetRendererID());
             float width = static_cast<float>(m_specification.Width);
             float height = static_cast<float>(m_specification.Height);
             float targetWidth = static_cast<float>(target->GetSpecification().Width);
             float targetHeight = static_cast<float>(target->GetSpecification().Height);
-            glBlitFramebuffer(0, 0, width, height, 0, 0, targetWidth, targetHeight,
-                              GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+            glBlitFramebuffer(0, 0, width, height, 0, 0, targetWidth, targetHeight, glBuffers, GL_NEAREST);
         });
     }
 

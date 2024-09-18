@@ -1,5 +1,6 @@
 #include "RenderPipeline.h"
 #include "BloomPass.h"
+#include "GeometryPass.h"
 #include "PreDepthPass.h"
 #include "SceneRenderer.h"
 #include "ShadingPass.h"
@@ -17,18 +18,19 @@ RenderPipeline::RenderPipeline()
     m_uniformBuffers["SpotLightData"] = UniformBuffer::Create(sizeof(UBOSpotLights), true);
     m_uniformBuffers["AreaLightData"] = UniformBuffer::Create(sizeof(UBOAreaLights), true);
 
-    FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::Depth};
-    FramebufferSpecification spec = {4096, 4096, attachments};
-    m_frameBuffers["ShadowMap"] = FrameBuffer::Create(spec);
-
-    spec = {1920, 1080, attachments};
-    m_frameBuffers["PreDepthMap"] = FrameBuffer::Create(spec);
+    m_frameBuffers["PreDepthMap"] = FrameBuffer::Create({1920, 1080, {FramebufferTextureFormat::Depth}});
+    m_frameBuffers["GBuffer"] = FrameBuffer::Create(
+        {1920,
+         1080,
+         {FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::Depth}});
+    m_frameBuffers["ShadowMap"] = FrameBuffer::Create({4096, 4096, {FramebufferTextureFormat::Depth}});
 }
 
 void RenderPipeline::RegisterRenderPasses()
 {
     CreateRenderPass<SkyboxPass>("SkyboxPass", {m_targetFrameBuffer});
     CreateRenderPass<PreDepthPass>("PreDepthPass", {m_targetFrameBuffer});
+    CreateRenderPass<GeometryPass>("GeometryPass", {m_frameBuffers["GBuffer"]});
     CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
     CreateRenderPass<ShadingPass>("ShadingPass", {m_targetFrameBuffer});
     CreateRenderPass<BloomPass>("BloomPass", {m_targetFrameBuffer});

@@ -54,15 +54,22 @@ void RendererAPI::Initialize()
                   caps.Version);
 }
 
-void RendererAPI::Clear(float r, float g, float b, float a)
+void RendererAPI::Clear(BufferFlags bufferFlags)
 {
-    SetClearColor(r, g, b, a);
-    Clear();
-}
-
-void RendererAPI::Clear()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GLenum glBuffers = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+    if ((bufferFlags & BufferFlags::Color) == BufferFlags::None)
+    {
+        glBuffers &= ~GL_COLOR_BUFFER_BIT;
+    }
+    if ((bufferFlags & BufferFlags::Depth) == BufferFlags::None)
+    {
+        glBuffers &= ~GL_DEPTH_BUFFER_BIT;
+    }
+    if ((bufferFlags & BufferFlags::Stencil) == BufferFlags::None)
+    {
+        glBuffers &= ~GL_STENCIL_BUFFER_BIT;
+    }
+    glClear(glBuffers);
 }
 
 void RendererAPI::SetClearColor(float r, float g, float b, float a)

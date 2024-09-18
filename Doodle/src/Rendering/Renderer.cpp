@@ -38,18 +38,10 @@ void Renderer::EndFrame()
     Renderer::WaitAndRender();
 }
 
-void Renderer::Clear(float r, float g, float b, float a)
+void Renderer::Clear(BufferFlags bufferFlags)
 {
-    Renderer::Submit([r, g, b, a]() {
-        RendererAPI::Clear(r, g, b, a);
-        DOO_CORE_TRACE("Renderer cleared: {0}, {1}, {2}, {3}", r, g, b, a);
-    });
-}
-
-void Renderer::Clear()
-{
-    Renderer::Submit([]() {
-        RendererAPI::Clear();
+    Renderer::Submit([bufferFlags]() {
+        RendererAPI::Clear(bufferFlags);
         DOO_CORE_TRACE("Renderer cleared");
     });
 }
