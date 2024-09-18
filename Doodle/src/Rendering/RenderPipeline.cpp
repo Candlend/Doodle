@@ -1,5 +1,5 @@
 #include "RenderPipeline.h"
-#include "PostProcessPass.h"
+#include "BloomPass.h"
 #include "PreDepthPass.h"
 #include "SceneRenderer.h"
 #include "ShadingPass.h"
@@ -31,7 +31,7 @@ void RenderPipeline::RegisterRenderPasses()
     CreateRenderPass<PreDepthPass>("PreDepthPass", {m_targetFrameBuffer});
     CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
     CreateRenderPass<ShadingPass>("ShadingPass", {m_targetFrameBuffer});
-    CreateRenderPass<PostProcessPass>("PostProcessPass", {m_targetFrameBuffer});
+    CreateRenderPass<BloomPass>("BloomPass", {m_targetFrameBuffer});
 }
 void RenderPipeline::AddRenderPass(const std::string &name, std::shared_ptr<RenderPass> renderPass)
 {

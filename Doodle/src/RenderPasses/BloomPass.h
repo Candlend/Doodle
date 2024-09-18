@@ -127,10 +127,10 @@ private:
     float m_blurRadius = 0.005f;
 };
 
-class DOO_API PostProcessPass : public RenderPass
+class DOO_API BloomPass : public RenderPass
 {
 public:
-    PostProcessPass(const RenderPassSpecification &specification) : RenderPass(specification)
+    BloomPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
 
         m_bloomFbo = std::make_shared<BloomFbo>(1920, 1080, 5);
