@@ -14,7 +14,7 @@ void main()
 #type fragment
 #version 450
 
-layout(location = 0) out vec4 finalColor;
+layout(location = 0) out vec4 FinalColor;
 
 in vec2 v_TexCoord;
 
@@ -37,5 +37,5 @@ void main()
     vec3 bloom = texture(u_BloomTexture, v_TexCoord).rgb;
     color = mix(color, bloom, vec3(u_BloomStrength));
     color = FilmicToneMapping(color);
-    finalColor = vec4(color, 1.0);
+    FinalColor = vec4(color, 1.0);
 }

@@ -14,7 +14,7 @@ void main()
 #type fragment
 #version 450
 
-layout(location = 0) out vec4 finalColor;
+layout(location = 0) out vec4 FinalColor;
 
 in vec2 v_TexCoord;
 
@@ -52,5 +52,5 @@ void main()
     color += (b+d+f+h) * 0.0625;
     color += (j+k+l+m) * 0.125;
     color = max(color, vec3(0.0001f));
-    finalColor = vec4(color, 1.0);
+    FinalColor = vec4(color, 1.0);
 }

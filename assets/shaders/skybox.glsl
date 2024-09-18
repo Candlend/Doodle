@@ -18,7 +18,7 @@ void main()
 #type fragment
 #version 450
 
-layout(location = 0) out vec4 finalColor;
+layout(location = 0) out vec4 FinalColor;
 
 in vec3 v_Position;
 
@@ -41,5 +41,5 @@ void main()
     vec3 rotatedPosition = RotateVectorAboutY(-u_Rotation, v_Position);
     vec3 color = textureLod(u_Skybox, normalize(rotatedPosition), 0).rgb * u_Intensity;
 
-    finalColor = vec4(color, 1.0);
+    FinalColor = vec4(color, 1.0);
 }

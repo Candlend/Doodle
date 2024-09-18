@@ -14,7 +14,7 @@ void main()
 #type fragment
 #version 450
 
-layout(location = 0) out vec4 finalColor;
+layout(location = 0) out vec4 FinalColor;
 
 in vec2 v_TexCoord;
 
@@ -22,5 +22,5 @@ layout(binding = 0) uniform sampler2D u_Texture;
 
 void main()
 {
-    finalColor = texture(u_Texture, v_TexCoord);
+    FinalColor = texture(u_Texture, v_TexCoord);
 }
