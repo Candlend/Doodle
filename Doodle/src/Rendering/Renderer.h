@@ -37,7 +37,7 @@ public:
 
     static void RenderFullscreenQuad(std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader = nullptr);
     static void RenderFullscreenQuad(uint32_t textureID, std::shared_ptr<Shader> shader = nullptr);
-    static void RenderFullscreenQuad(std::shared_ptr<FrameBuffer> framebuffer, uint32_t colorAttachment = 0,
+    static void RenderFullscreenQuad(std::shared_ptr<FrameBuffer> framebuffer,
                                      std::shared_ptr<Shader> shader = nullptr);
 
     static void SetDepthWrite(bool write);

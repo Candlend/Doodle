@@ -213,6 +213,8 @@ void Scene::SetupSceneData()
         m_sceneData.CameraData.Position = editorCamera->GetPosition();
         m_sceneData.CameraData.View = editorCamera->GetViewMatrix();
         m_sceneData.CameraData.Projection = editorCamera->GetProjectionMatrix();
+        m_sceneData.CameraData.Near = editorCamera->GetNearClip();
+        m_sceneData.CameraData.Far = editorCamera->GetFarClip();
     }
     else
     {
@@ -224,6 +226,8 @@ void Scene::SetupSceneData()
         m_sceneData.CameraData.Position = cameraEntity.GetComponent<TransformComponent>().Position;
         m_sceneData.CameraData.View = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetModelMatrix());
         m_sceneData.CameraData.Projection = cameraEntity.GetComponent<CameraComponent>().GetProjectionMatrix();
+        m_sceneData.CameraData.Near = cameraEntity.GetComponent<CameraComponent>().Camera->GetNearClip();
+        m_sceneData.CameraData.Far = cameraEntity.GetComponent<CameraComponent>().Camera->GetFarClip();
     }
 
     m_sceneData.CameraData.ViewProjection = m_sceneData.CameraData.Projection * m_sceneData.CameraData.View;

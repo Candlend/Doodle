@@ -162,6 +162,10 @@ public:
     {
         return m_specification.Height;
     }
+    size_t GetColorAttachmentCount() const override
+    {
+        return m_colorAttachments.size();
+    }
 
     void ClearAttachment(uint32_t attachmentIndex, int value) override
     {

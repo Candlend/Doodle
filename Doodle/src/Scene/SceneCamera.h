@@ -91,6 +91,14 @@ public:
     {
         return m_projectionType;
     }
+    float GetNearClip() const
+    {
+        return m_projectionType == ProjectionType::Perspective ? m_perspectiveNear : m_orthographicNear;
+    }
+    float GetFarClip() const
+    {
+        return m_projectionType == ProjectionType::Perspective ? m_perspectiveFar : m_orthographicFar;
+    }
 
 private:
     ProjectionType m_projectionType = ProjectionType::Perspective;

@@ -42,6 +42,8 @@ public:
 
         m_shader->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
         m_shader->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
+        m_shader->SetUniform1f("u_NearPlane", sceneData.CameraData.Near);
+        m_shader->SetUniform1f("u_FarPlane", sceneData.CameraData.Far);
 
         Renderer::SetDepthTest(DepthTestType::LessEqual);
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();

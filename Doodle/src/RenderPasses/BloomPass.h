@@ -95,7 +95,7 @@ public:
             const BloomMip &mip = m_mipChain[i];
             mip.Fbo->Bind();
             auto input = (i == 0) ? source : m_mipChain[i - 1].Fbo;
-            Renderer::RenderFullscreenQuad(input, 0, m_downsampleShader);
+            Renderer::RenderFullscreenQuad(input, m_downsampleShader);
         }
 
         Renderer::SetBlend(BlendType::One, BlendType::One);
@@ -107,13 +107,13 @@ public:
             const BloomMip &nextMip = m_mipChain[i - 1];
 
             nextMip.Fbo->Bind();
-            Renderer::RenderFullscreenQuad(mip.Fbo, 0, m_upsampleShader);
+            Renderer::RenderFullscreenQuad(mip.Fbo, m_upsampleShader);
         }
 
         Renderer::SetBlend(BlendType::SrcAlpha, BlendType::OneMinusSrcAlpha);
         source->Bind();
         m_bloomShader->SetUniformTexture("u_BloomTexture", m_mipChain[0].Fbo->GetColorAttachmentTextureHandle());
-        Renderer::RenderFullscreenQuad(source, 0, m_bloomShader);
+        Renderer::RenderFullscreenQuad(source, m_bloomShader);
         // 返回默认的混合模式
     }
 

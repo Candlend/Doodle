@@ -47,6 +47,15 @@ void main()
 layout(location = 0) out vec4 gPosition;
 layout(location = 1) out vec4 gNormal;
 
+uniform float u_NearPlane;
+uniform float u_FarPlane;
+
+float LinearizeDepth(float depth) // TODO 没有考虑正交相机
+{
+    float z = depth * 2.0 - 1.0; // 回到NDC
+    return (2.0 * u_NearPlane * u_FarPlane) / (u_FarPlane + u_NearPlane - z * (u_FarPlane - u_NearPlane));
+}
+
 in Varyings
 {
     vec2 TexCoord;
@@ -61,7 +70,7 @@ uniform sampler2D u_NormalTexture;
 
 void main()
 {
-    gPosition = vec4(fs_in.Position, 1.0);
+    gPosition = vec4(fs_in.Position, LinearizeDepth(gl_FragCoord.z));
     gNormal.xyz = normalize(fs_in.TBN * (texture(u_NormalTexture, fs_in.TexCoord).xyz * 2.0 - 1.0) * u_NormalScale);
     gNormal.w = 1.0;
 }

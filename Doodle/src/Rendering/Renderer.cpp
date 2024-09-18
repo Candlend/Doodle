@@ -95,19 +95,20 @@ void Renderer::RenderFullscreenQuad(uint32_t textureID, std::shared_ptr<Shader> 
     Renderer::Submit([textureID]() { glBindTextureUnit(0, 0); });
 }
 
-void Renderer::RenderFullscreenQuad(std::shared_ptr<FrameBuffer> framebuffer, uint32_t colorAttachment,
-                                    std::shared_ptr<Shader> shader)
+void Renderer::RenderFullscreenQuad(std::shared_ptr<FrameBuffer> framebuffer, std::shared_ptr<Shader> shader)
 {
     Renderer::SetDepthTest(DepthTestType::Disabled);
     if (!shader)
         shader = ShaderLibrary::Get()->GetShader("image");
     shader->Bind();
-    Renderer::Submit([framebuffer, colorAttachment]() {
-        glBindTextureUnit(0, framebuffer->GetColorAttachmentRendererID(colorAttachment));
+    Renderer::Submit([framebuffer]() {
+        for (size_t i = 0; i < framebuffer->GetColorAttachmentCount(); i++)
+        {
+            glBindTextureUnit(i, framebuffer->GetColorAttachmentRendererID(i));
+        }
     });
     Mesh::GetQuad()->Render();
     Renderer::SetDepthTest(DepthTestType::Less);
-    Renderer::Submit([colorAttachment]() { glBindTextureUnit(0, 0); });
     shader->Unbind();
 }
 
