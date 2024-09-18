@@ -44,8 +44,8 @@ void main()
 #type fragment
 #version 450
 
-layout(location = 0) out vec4 gPosition;
-layout(location = 1) out vec4 gNormal;
+layout(location = 0) out vec4 gPositionWS;
+layout(location = 1) out vec4 gNormalWS;
 
 uniform float u_NearPlane;
 uniform float u_FarPlane;
@@ -70,7 +70,7 @@ uniform sampler2D u_NormalTexture;
 
 void main()
 {
-    gPosition = vec4(fs_in.PositionWS, LinearizeDepth(gl_FragCoord.z));
-    gNormal.xyz = normalize(fs_in.TBN * (texture(u_NormalTexture, fs_in.TexCoord).xyz * 2.0 - 1.0) * u_NormalScale);
-    gNormal.w = 1.0;
+    gPositionWS = vec4(fs_in.PositionWS, LinearizeDepth(gl_FragCoord.z));
+    gNormalWS.xyz = normalize(fs_in.TBN * (texture(u_NormalTexture, fs_in.TexCoord).xyz * 2.0 - 1.0) * u_NormalScale);
+    gNormalWS.w = 1.0;
 }

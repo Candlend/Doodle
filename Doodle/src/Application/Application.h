@@ -25,6 +25,7 @@ public:
     public:
         static float GetTime();
         static float GetDeltaTime();
+        static uint64_t GetFrameCount();
         static float GetFPS();
 
     private:
@@ -32,6 +33,7 @@ public:
         static float s_Time;
         static float s_DeltaTime;
         static float s_LastFrameTime;
+        static uint64_t s_FrameCount;
         static void Update();
         static void Freeze();
         friend class Application;

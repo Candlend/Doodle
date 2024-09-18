@@ -18,6 +18,7 @@ float Application::Time::s_FPS = 0.0f;
 float Application::Time::s_Time = 0.0f;
 float Application::Time::s_DeltaTime = 0.0f;
 float Application::Time::s_LastFrameTime = 0.0f;
+uint64_t Application::Time::s_FrameCount = 0;
 
 float Application::Time::GetTime()
 {
@@ -29,9 +30,15 @@ float Application::Time::GetDeltaTime()
     return s_DeltaTime;
 }
 
+uint64_t Application::Time::GetFrameCount()
+{
+    return s_FrameCount;
+}
+
 void Application::Time::Update()
 {
     s_Time = static_cast<float>(glfwGetTime());
+    s_FrameCount++;
     s_DeltaTime = GetTime() - s_LastFrameTime;
     s_FPS = 1.0f / s_DeltaTime;
     s_LastFrameTime = GetTime();

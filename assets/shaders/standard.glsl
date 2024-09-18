@@ -72,7 +72,7 @@ uniform sampler2D u_ShadowMap;
 uniform float u_ShadowBias;
 uniform float u_ShadowNormalBias;
 
-const float PI = 3.14159265359;
+const float PI = 3.141592;
 
 uniform sampler2D u_LTC1; // for inverse M
 uniform sampler2D u_LTC2; // GGX norm, fresnel, 0(unused), sphere

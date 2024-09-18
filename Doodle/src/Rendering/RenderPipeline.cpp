@@ -1,6 +1,7 @@
 #include "RenderPipeline.h"
 #include "BloomPass.h"
 #include "GeometryPass.h"
+#include "OcclusionPass.h"
 #include "PreDepthPass.h"
 #include "SceneRenderer.h"
 #include "ShadingPass.h"
@@ -24,6 +25,8 @@ RenderPipeline::RenderPipeline()
          1080,
          {FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::Depth}});
     m_frameBuffers["ShadowMap"] = FrameBuffer::Create({4096, 4096, {FramebufferTextureFormat::Depth}});
+
+    m_frameBuffers["OcculusionMap"] = FrameBuffer::Create({1920, 1080, {FramebufferTextureFormat::RGBA8}});
 }
 
 void RenderPipeline::RegisterRenderPasses()
@@ -31,6 +34,7 @@ void RenderPipeline::RegisterRenderPasses()
     CreateRenderPass<SkyboxPass>("SkyboxPass", {m_targetFrameBuffer});
     CreateRenderPass<PreDepthPass>("PreDepthPass", {m_targetFrameBuffer});
     CreateRenderPass<GeometryPass>("GeometryPass", {m_frameBuffers["GBuffer"]});
+    CreateRenderPass<OcclusionPass>("OcclusionPass", {m_frameBuffers["OcculusionMap"]});
     CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
     CreateRenderPass<ShadingPass>("ShadingPass", {m_targetFrameBuffer});
     CreateRenderPass<BloomPass>("BloomPass", {m_targetFrameBuffer});

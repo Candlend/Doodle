@@ -79,6 +79,8 @@ public:
         ReadShaderFromFile(m_filepath);
         Renderer::Submit([this]() {
             glDeleteProgram(m_rendererID);
+            m_uniformsCache.clear();
+            m_uniformBlocksCache.clear();
             CompileAndUploadShader();
             DOO_CORE_TRACE("OpenGLShader <{0}> reloaded", m_rendererID);
             PrintActiveUniforms();
