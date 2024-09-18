@@ -113,6 +113,22 @@ void ViewportPanel::OnPanelLayout()
             editorCamera->Focus(transform.Position);
         }
     }
+
+    auto childFlags = ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_FrameStyle;
+    auto windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_UnsavedDocument |
+                       ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoNav;
+
+    std::string overlayText = "FPS: " + std::to_string(ImGui::GetIO().Framerate);
+    float padding = 8.0f;
+    ImVec2 overlayPos;
+    overlayPos.x = m_panelData.CursorPos.x + padding;
+    overlayPos.y = m_panelData.CursorPos.y + padding;
+    ImGui::SetCursorPos(overlayPos);
+    ImVec2 overlaySize = ImGui::CalcTextSize(overlayText.c_str()) + ImVec2(padding, padding);
+
+    ImGui::BeginChild("ViewportOverlay", overlaySize, childFlags, windowFlags);
+    ImGui::TextUnformatted(overlayText.c_str());
+    ImGui::EndChild();
 }
 
 void ViewportPanel::OnLayout()
