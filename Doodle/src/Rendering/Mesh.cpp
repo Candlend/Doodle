@@ -79,10 +79,10 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
 
     // Create Vertex Buffer Object
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
-    m_vertexBuffer->PushElement("a_Position", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_Normal", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_Tangent", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_Binormal", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_PositionOS", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_NormalOS", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_TangentOS", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_BinormalOS", VertexDataType::Vec3);
     m_vertexBuffer->PushElement("a_TexCoord", VertexDataType::Vec2);
 
     // Extract indices from model
