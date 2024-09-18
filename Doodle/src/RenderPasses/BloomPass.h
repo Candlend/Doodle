@@ -175,7 +175,7 @@ public:
         ImGui::DragInt("Mip Count", reinterpret_cast<int *>(&mipCount), 1, 1, 10);
         m_bloomFbo->SetMipCount(mipCount);
 
-        ImGui::DragFloat("Blur Radius", &m_bloomFbo->m_blurRadius, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("Blur Radius", &m_bloomFbo->m_blurRadius, 0.001f, 0.0f, 0.01f);
         ImGui::DragFloat("Bloom Strength", &m_bloomStrength, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("Exposure", &m_exposure, 0.1f, 0.0f, 10.0f);
     }
