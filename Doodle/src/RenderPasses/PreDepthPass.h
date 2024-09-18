@@ -17,7 +17,7 @@ class DOO_API PreDepthPass : public RenderPass
 public:
     PreDepthPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
-        m_shader = ShaderLibrary::Get()->GetShader("preDepth");
+        m_shader = ShaderLibrary::Get()->GetShader("depthOnly");
     }
 
     void BeginScene() override

@@ -99,6 +99,8 @@ public:
             else
                 m_depthAttachmentSpecification = attachment;
         }
+        m_colorAttachments.resize(m_colorAttachmentSpecifications.size());
+        m_colorAttachmentTextureHandles.resize(m_colorAttachmentSpecifications.size());
         Renderer::Submit([this]() { Invalidate(); });
     }
     ~OpenGLFramebuffer()
@@ -199,14 +201,6 @@ public:
         });
     }
 
-    void BlitToWithShader(std::shared_ptr<FrameBuffer> target, std::shared_ptr<Shader> shader) override
-    {
-        BlitTo(target);
-        Renderer::Submit([shader]() {
-            shader->Bind();
-        });
-    }
-
 private:
     void Invalidate()
     {
@@ -214,12 +208,8 @@ private:
         {
             glDeleteFramebuffers(1, &m_rendererId);
             glDeleteTextures(m_colorAttachments.size(), m_colorAttachments.data());
-            {
+            if (m_depthAttachment)
                 glDeleteTextures(1, &m_depthAttachment);
-            }
-
-            m_colorAttachments.clear();
-            m_depthAttachment = 0;
         }
 
         glCreateFramebuffers(1, &m_rendererId);
@@ -230,8 +220,6 @@ private:
         // Attachments
         if (!m_colorAttachmentSpecifications.empty())
         {
-            m_colorAttachments.resize(m_colorAttachmentSpecifications.size());
-            m_colorAttachmentTextureHandles.resize(m_colorAttachmentSpecifications.size());
             CreateTextures(multisample, m_colorAttachments.data(), m_colorAttachments.size());
 
             for (size_t i = 0; i < m_colorAttachments.size(); i++)
@@ -241,6 +229,10 @@ private:
                 {
                 case FramebufferTextureFormat::RGBA8:
                     AttachColorTexture(m_colorAttachments[i], m_specification.Samples, GL_RGBA8, GL_RGBA,
+                                       m_specification.Width, m_specification.Height, i);
+                    break;
+                case FramebufferTextureFormat::RGBA16F:
+                    AttachColorTexture(m_colorAttachments[i], m_specification.Samples, GL_RGBA16F, GL_RGBA,
                                        m_specification.Width, m_specification.Height, i);
                     break;
                 case FramebufferTextureFormat::RED_INTEGER:

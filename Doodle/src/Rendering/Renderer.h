@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <typeinfo>
 
 #include "ApplicationEvent.h"
@@ -12,6 +13,7 @@ namespace Doodle
 
 class Shader;
 class Texture;
+class FrameBuffer;
 class DOO_API Renderer : public Singleton<Renderer>
 {
 public:
@@ -36,6 +38,8 @@ public:
 
     static void RenderFullscreenQuad(std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader = nullptr);
     static void RenderFullscreenQuad(uint32_t textureID, std::shared_ptr<Shader> shader = nullptr);
+    static void RenderFullscreenQuad(std::shared_ptr<FrameBuffer> framebuffer, uint32_t colorAttachment = 0,
+                                     std::shared_ptr<Shader> shader = nullptr);
 
     static void SetDepthWrite(bool write);
     static void SetDepthTest(DepthTestType type);

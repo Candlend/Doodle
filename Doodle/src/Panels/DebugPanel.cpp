@@ -10,21 +10,30 @@ void DebugPanel::OnPanelLayout()
     ImGuiUtils::ReadOnlyInputText("Time", "{}", Application::Time::GetTime());
     ImGuiUtils::ReadOnlyInputText("FPS", "{}", Application::Time::GetFPS());
     ImGui::Checkbox("Wireframe Mode", &m_useWireframe);
-    auto shadowMap = RenderPipeline::Get()->GetFrameBuffer("ShadowMap");
     auto width = ImGui::GetContentRegionAvail().x;
-    if (shadowMap)
+
+    for (auto &frameBuffer : RenderPipeline::Get()->m_frameBuffers)
     {
-        if (ImGui::CollapsingHeader("Shadow Map"))
+        if (ImGui::CollapsingHeader(frameBuffer.first.c_str()))
         {
-            ImGui::Image(reinterpret_cast<void *>(static_cast<uintptr_t>(shadowMap->GetDepthAttachmentRendererID())),
-                         ImVec2(width, width), ImVec2(0, 1), ImVec2(1, 0));
+            auto spec = frameBuffer.second->GetSpecification();
+            int colorAttachmentIndex = 0;
+            for (auto &attachment : spec.Attachments.Attachments)
+            {
+                if (attachment.TextureFormat == FramebufferTextureFormat::Depth)
+                {
+                    ImGui::Image(reinterpret_cast<void *>(
+                                     static_cast<uintptr_t>(frameBuffer.second->GetDepthAttachmentRendererID())),
+                                 ImVec2(width, width), ImVec2(0, 1), ImVec2(1, 0));
+                }
+                else
+                {
+                    ImGui::Image(reinterpret_cast<void *>(static_cast<uintptr_t>(
+                                     frameBuffer.second->GetColorAttachmentRendererID(colorAttachmentIndex++))),
+                                 ImVec2(width, width), ImVec2(0, 1), ImVec2(1, 0));
+                }
+            }
         }
-    }
-    auto preDepthMap = RenderPipeline::Get()->GetFrameBuffer("PreDepthMap");
-    if (ImGui::CollapsingHeader("Pre Depth Map"))
-    {
-        ImGui::Image(reinterpret_cast<void *>(static_cast<uintptr_t>(preDepthMap->GetDepthAttachmentRendererID())),
-                     ImVec2(width, width), ImVec2(0, 1), ImVec2(1, 0));
     }
 }
 

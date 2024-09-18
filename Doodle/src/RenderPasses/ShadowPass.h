@@ -47,8 +47,6 @@ public:
 
         RenderPipeline::Get()->SetUniformMatrix4f("u_LightSpaceMatrix", lightProjection * lightView);
 
-        Renderer::SetCullFace(CullFaceType::Front);
-
         auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
         for (auto entity : vaoView)
         {
@@ -74,8 +72,6 @@ public:
             mesh.Render();
             m_shader->Unbind();
         }
-
-        Renderer::SetCullFace(CullFaceType::Back);
     }
 
 private:

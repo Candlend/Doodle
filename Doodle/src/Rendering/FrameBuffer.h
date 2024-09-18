@@ -3,6 +3,8 @@
 #include "pch.h"
 
 #include "Shader.h"
+#include <cstdint>
+#include <memory>
 
 namespace Doodle
 {
@@ -11,6 +13,7 @@ enum class FramebufferTextureFormat
 {
     None = 0,
     RGBA8,
+    RGBA16F,
     RED_INTEGER, // NOLINT
     DEPTH24STENCIL8,
 
@@ -32,7 +35,7 @@ struct FramebufferTextureSpecification
 struct FramebufferAttachmentSpecification
 {
     FramebufferAttachmentSpecification() = default;
-    FramebufferAttachmentSpecification(std::initializer_list<FramebufferTextureSpecification> attachments)
+    FramebufferAttachmentSpecification(const std::initializer_list<FramebufferTextureSpecification> &attachments)
         : Attachments(attachments)
     {
     }
@@ -80,7 +83,6 @@ public:
     virtual FramebufferSpecification &GetSpecification() = 0;
 
     virtual void BlitTo(std::shared_ptr<FrameBuffer> target) = 0;
-    virtual void BlitToWithShader(std::shared_ptr<FrameBuffer> target, std::shared_ptr<Shader> shader) = 0;
 };
 
 } // namespace Doodle

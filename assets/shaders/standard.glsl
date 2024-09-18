@@ -464,11 +464,8 @@ void main()
 
 		// Add contribution
 		color += (specular + kD * diffuse) * light.Radiance * light.Intensity;
-		//result += vec3(0.5, 0.5, 0.5);
     }
 
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2)); 
     // Final color output
     finalColor = vec4(color, 1.0);
 }

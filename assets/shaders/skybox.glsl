@@ -40,7 +40,6 @@ void main()
     // Sample the cube map texture using the fragment's position
     vec3 rotatedPosition = RotateVectorAboutY(-u_Rotation, v_Position);
     vec3 color = textureLod(u_Skybox, normalize(rotatedPosition), 0).rgb * u_Intensity;
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2)); 
+
     finalColor = vec4(color, 1.0);
 }

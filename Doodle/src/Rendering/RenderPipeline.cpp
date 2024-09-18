@@ -1,4 +1,5 @@
 #include "RenderPipeline.h"
+#include "PostProcessPass.h"
 #include "PreDepthPass.h"
 #include "SceneRenderer.h"
 #include "ShadingPass.h"
@@ -22,15 +23,15 @@ RenderPipeline::RenderPipeline()
 
     spec = {1920, 1080, attachments};
     m_frameBuffers["PreDepthMap"] = FrameBuffer::Create(spec);
-
-    RegisterRenderPasses();
 }
+
 void RenderPipeline::RegisterRenderPasses()
 {
-    CreateRenderPass<SkyboxPass>("SkyboxPass", {SceneRenderer::Get()->GetFrameBuffer()});
-    CreateRenderPass<PreDepthPass>("PreDepthPass", {SceneRenderer::Get()->GetFrameBuffer()});
+    CreateRenderPass<SkyboxPass>("SkyboxPass", {m_targetFrameBuffer});
+    CreateRenderPass<PreDepthPass>("PreDepthPass", {m_targetFrameBuffer});
     CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
-    CreateRenderPass<ShadingPass>("ShadingPass", {SceneRenderer::Get()->GetFrameBuffer()});
+    CreateRenderPass<ShadingPass>("ShadingPass", {m_targetFrameBuffer});
+    CreateRenderPass<PostProcessPass>("PostProcessPass", {m_targetFrameBuffer});
 }
 void RenderPipeline::AddRenderPass(const std::string &name, std::shared_ptr<RenderPass> renderPass)
 {
@@ -106,6 +107,11 @@ void RenderPipeline::Execute()
         renderPass->Execute();
         renderPass->GetSpecification().TargetFrameBuffer->Unbind();
     }
+}
+
+void RenderPipeline::SetTargetFrameBuffer(std::shared_ptr<FrameBuffer> targetFrameBuffer)
+{
+    m_targetFrameBuffer = targetFrameBuffer;
 }
 
 void RenderPipeline::SetUniformBuffer(const std::string &name, std::shared_ptr<UniformBuffer> uniformBuffer)

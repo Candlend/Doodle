@@ -62,10 +62,10 @@ public:
     {
         Application::Initialize();
         ActivateImGuiContext();
+        ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
         InitializeLayout();
         m_scene = SceneManager::Get()->CreateScene("Main");
         Renderer::SetClearColor(0.3f, 0.3f, 0.3f, 1.f);
-        ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
         m_scene->LoadEnvironment("assets/envs/pink_sunrise_4k.hdr");
         BuildScene();
         m_scene->BeginScene();

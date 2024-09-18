@@ -43,7 +43,7 @@ std::shared_ptr<Shader> ShaderLibrary::LoadShader(const std::string &name, const
 
 std::shared_ptr<Shader> ShaderLibrary::GetShader(const std::string &name)
 {
-    DOO_CORE_ASSERT(Exists(name), "Shader not found!");
+    DOO_CORE_ASSERT(Exists(name), "Shader <{0}> not found!", name);
     return m_shaders[name];
 }
 

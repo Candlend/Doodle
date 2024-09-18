@@ -20,13 +20,16 @@ namespace Doodle
 
 SceneRenderer::SceneRenderer()
 {
-    FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::RGBA8,
+    FramebufferAttachmentSpecification attachments = {FramebufferTextureFormat::RGBA16F,
                                                       FramebufferTextureFormat::RED_INTEGER,
                                                       FramebufferTextureFormat::DEPTH24STENCIL8};
     FramebufferSpecification spec = {1920, 1080, attachments};
     m_frameBuffer = FrameBuffer::Create(spec);
 
     EventManager::Get()->AddListener<AppRenderEvent>(this, &SceneRenderer::Render);
+
+    RenderPipeline::Get()->SetTargetFrameBuffer(m_frameBuffer);
+    RenderPipeline::Get()->RegisterRenderPasses();
 }
 
 SceneRenderer::~SceneRenderer()

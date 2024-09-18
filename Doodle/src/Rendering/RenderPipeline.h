@@ -14,8 +14,11 @@ namespace Doodle
 
 class RenderPass;
 class RenderPassSpecification;
+class DebugPanel;
 class DOO_API RenderPipeline : public Singleton<RenderPipeline>
 {
+    friend class DebugPanel;
+
 public:
     RenderPipeline();
 
@@ -34,6 +37,8 @@ public:
     void EndScene();
 
     void Execute();
+
+    void SetTargetFrameBuffer(std::shared_ptr<FrameBuffer> targetFrameBuffer);
 
     void SetUniformBuffer(const std::string &name, std::shared_ptr<UniformBuffer> uniformBuffer);
     void SetFrameBuffer(const std::string &name, std::shared_ptr<FrameBuffer> frameBuffer);
@@ -65,6 +70,7 @@ public:
 
 private:
     Scene *m_scene;
+    std::shared_ptr<FrameBuffer> m_targetFrameBuffer;
     std::unordered_map<std::string, std::shared_ptr<RenderPass>> m_renderPasses;
     std::unordered_map<std::string, std::shared_ptr<UniformBuffer>> m_uniformBuffers;
     std::unordered_map<std::string, std::shared_ptr<FrameBuffer>> m_frameBuffers;
