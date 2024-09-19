@@ -373,6 +373,16 @@ float ShadowCalculation(vec4 PositionHLS, vec3 lightDir)
     return shadow;
 }
 
+vec3 MultiBounceAO(float ao, vec3 albedo)
+{
+    vec3 a = 2.0404 * albedo - 0.3324;
+    vec3 b = -4.7951 * albedo + 0.6417;
+    vec3 c = 2.7552 * albedo + 0.6903;
+    
+    vec3 x = vec3(ao);
+    return max(x, ((x * a + b) * x + c) * x);
+}
+
 void main()
 {
     // Sample textures
@@ -483,6 +493,6 @@ void main()
     }
 
     // Final color output
-    color *= ao;
+    color *= MultiBounceAO(ao, albedo.rgb);
     FinalColor = vec4(color, 1.0);
 }
