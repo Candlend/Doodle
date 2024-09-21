@@ -23,7 +23,7 @@ public:
     void OnPanelLayout() override;
 
 private:
-    void RenderEntityTree(std::vector<Entity> &entities);
+    void DrawEntityTree(std::vector<Entity> &entities);
 };
 
 } // namespace Doodle

@@ -10,7 +10,7 @@
 namespace Doodle
 {
 
-void HierarchyPanel::RenderEntityTree(std::vector<Entity> &entities)
+void HierarchyPanel::DrawEntityTree(std::vector<Entity> &entities)
 {
     for (const auto &entity : entities)
     {
@@ -23,23 +23,24 @@ void HierarchyPanel::RenderEntityTree(std::vector<Entity> &entities)
         auto flags = ImGuiTreeNodeFlags_OpenOnArrow | (isSelected ? ImGuiTreeNodeFlags_Selected : 0) |
                      (children.empty() ? ImGuiTreeNodeFlags_Leaf : 0);
 
-        if (ImGui::TreeNodeEx(tag.c_str(), flags))
+        bool opened = ImGui::TreeNodeEx(tag.c_str(), flags);
+        // Handle selection
+        if (ImGui::IsItemClicked())
         {
-            // Handle selection
-            if (ImGui::IsItemClicked())
+            SelectionManager::DeselectAll(SelectionContext::Global);
+            SelectionManager::Select(SelectionContext::Global, entity.GetUUID());
+            ImGui::SetWindowFocus("Viewport");
+            if (ImGui::IsMouseDoubleClicked(0))
             {
-                SelectionManager::DeselectAll(SelectionContext::Global);
-                SelectionManager::Select(SelectionContext::Global, entity.GetUUID());
-                ImGui::SetWindowFocus("Viewport");
-                if (ImGui::IsMouseDoubleClicked(0))
-                {
-                    EditorCamera::Get()->Focus(entity.GetComponent<TransformComponent>().GetPosition());
-                }
+                EditorCamera::Get()->Focus(entity.GetComponent<TransformComponent>().GetPosition());
             }
+        }
 
+        if (opened)
+        {
             // Render the children of the entity recursively
             ImGui::Indent(16);
-            RenderEntityTree(children);
+            DrawEntityTree(children);
             ImGui::Unindent(16);
             // Close the tree node after rendering children
             ImGui::TreePop();
@@ -58,7 +59,7 @@ void HierarchyPanel::OnPanelLayout()
             rootEntities.push_back(entity);
         }
     }
-    RenderEntityTree(rootEntities);
+    DrawEntityTree(rootEntities);
 
     // 右键菜单
     if (ImGui::BeginPopupContextWindow())
