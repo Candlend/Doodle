@@ -14,7 +14,6 @@ public:
     {
         if (m_object)
         {
-            DOO_CORE_TRACE("RenderScope: Binding object");
             m_object->Bind();
         }
     }
@@ -23,7 +22,6 @@ public:
     {
         if (m_object)
         {
-            DOO_CORE_TRACE("RenderScope: Unbinding object");
             m_object->Unbind();
         }
     }

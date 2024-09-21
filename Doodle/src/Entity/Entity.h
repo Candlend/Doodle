@@ -32,14 +32,12 @@ public:
 
     template <typename T> void OnComponentAdded()
     {
-        DOO_CORE_DEBUG("Component added <{}>", typeid(T).name());
         Scene *scene = GetScene();
         scene->m_entityComponents[GetUUID()].push_back(&GetComponent<T>());
     }
 
     template <typename T> void OnComponentRemoved()
     {
-        DOO_CORE_DEBUG("Component removed");
         Scene *scene = GetScene();
         auto &components = scene->m_entityComponents[GetUUID()];
         auto it = std::find_if(components.begin(), components.end(),

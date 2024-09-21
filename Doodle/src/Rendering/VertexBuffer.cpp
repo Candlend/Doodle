@@ -56,16 +56,12 @@ public:
         Renderer::Submit([this, data]() {
             glCreateBuffers(1, &m_rendererId);
             glNamedBufferData(m_rendererId, m_size, data, m_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-            DOO_CORE_TRACE("VBO <{0}> created: size={1}, dynamic={2}", m_rendererId, m_size, m_dynamic);
         });
     }
 
     ~OpenGLVertexBuffer()
     {
-        Renderer::Submit([this]() {
-            glDeleteBuffers(1, &m_rendererId);
-            DOO_CORE_TRACE("VBO <{0}> destroyed", m_rendererId);
-        });
+        Renderer::Submit([this]() { glDeleteBuffers(1, &m_rendererId); });
     }
 
     void SetSubData(void *buffer, size_t size, size_t offset) override
@@ -75,26 +71,17 @@ public:
             DOO_CORE_ERROR("VBO <{0}> size exceeded", m_rendererId);
             return;
         }
-        Renderer::Submit([this, buffer, size, offset]() {
-            glNamedBufferSubData(m_rendererId, offset, size, buffer);
-            DOO_CORE_TRACE("VBO <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);
-        });
+        Renderer::Submit([this, buffer, size, offset]() { glNamedBufferSubData(m_rendererId, offset, size, buffer); });
     }
 
     void Bind() const override
     {
-        Renderer::Submit([this]() {
-            glBindBuffer(GL_ARRAY_BUFFER, m_rendererId);
-            DOO_CORE_TRACE("VBO <{0}> bound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindBuffer(GL_ARRAY_BUFFER, m_rendererId); });
     }
 
     void Unbind() const override
     {
-        Renderer::Submit([this]() {
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            DOO_CORE_TRACE("VBO <{0}> unbound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindBuffer(GL_ARRAY_BUFFER, 0); });
     }
 
     void PushElement(const std::string &name, VertexDataType type, bool normalized) override

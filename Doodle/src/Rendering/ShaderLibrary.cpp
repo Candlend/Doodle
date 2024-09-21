@@ -8,7 +8,6 @@ namespace Doodle
 
 void ShaderLibrary::LoadShadersFromDirectory(const std::string &directory)
 {
-    DOO_CORE_TRACE("ShaderLibrary: Loading shaders from directory <{0}>", directory);
     for (const auto &entry : std::filesystem::directory_iterator(directory))
     {
         if (entry.is_regular_file())
@@ -37,7 +36,6 @@ std::shared_ptr<Shader> ShaderLibrary::LoadShader(const std::string &name, const
 {
     auto shader = Shader::Create(filepath);
     AddShader(name, shader);
-    DOO_CORE_TRACE("ShaderLibrary: Loaded shader <{0}> from <{1}>", name, filepath);
     return shader;
 }
 

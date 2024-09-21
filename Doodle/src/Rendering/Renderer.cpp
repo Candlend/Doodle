@@ -14,10 +14,7 @@ namespace Doodle
 
 void Renderer::Initialize()
 {
-    Renderer::Submit([]() {
-        RendererAPI::Initialize();
-        DOO_CORE_TRACE("Renderer initialized");
-    });
+    Renderer::Submit([]() { RendererAPI::Initialize(); });
 
     EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::BeginFrame, ExecutionOrder::First);
     EventManager::Get()->AddListener<AppRenderEvent>(this, &Renderer::EndFrame, ExecutionOrder::Last);
@@ -40,34 +37,22 @@ void Renderer::EndFrame()
 
 void Renderer::Clear(BufferFlags bufferFlags)
 {
-    Renderer::Submit([bufferFlags]() {
-        RendererAPI::Clear(bufferFlags);
-        DOO_CORE_TRACE("Renderer cleared");
-    });
+    Renderer::Submit([bufferFlags]() { RendererAPI::Clear(bufferFlags); });
 }
 
 void Renderer::SetClearColor(float r, float g, float b, float a)
 {
-    Renderer::Submit([r, g, b, a]() {
-        RendererAPI::SetClearColor(r, g, b, a);
-        DOO_CORE_TRACE("Renderer set clear color: {0}, {1}, {2}, {3}", r, g, b, a);
-    });
+    Renderer::Submit([r, g, b, a]() { RendererAPI::SetClearColor(r, g, b, a); });
 }
 
 void Renderer::DrawIndexed(unsigned int count)
 {
-    Renderer::Submit([count]() {
-        RendererAPI::DrawIndexed(count);
-        DOO_CORE_TRACE("Renderer draw indexed: {0}", count);
-    });
+    Renderer::Submit([count]() { RendererAPI::DrawIndexed(count); });
 }
 
 void Renderer::Draw(unsigned int count, PrimitiveType type)
 {
-    Renderer::Submit([count, type]() {
-        RendererAPI::Draw(count, type);
-        DOO_CORE_TRACE("Renderer draw triangles: {0}", count);
-    });
+    Renderer::Submit([count, type]() { RendererAPI::Draw(count, type); });
 }
 
 void Renderer::RenderFullscreenQuad(std::shared_ptr<Texture> texture, std::shared_ptr<Shader> shader)
@@ -114,66 +99,42 @@ void Renderer::RenderFullscreenQuad(std::shared_ptr<FrameBuffer> framebuffer, st
 
 void Renderer::SetDepthTest(DepthTestType type)
 {
-    Renderer::Submit([type]() {
-        RendererAPI::SetDepthTest(type);
-        DOO_CORE_TRACE("Renderer set depth test: {0}", static_cast<int>(type));
-    });
+    Renderer::Submit([type]() { RendererAPI::SetDepthTest(type); });
 }
 
 void Renderer::SetDepthWrite(bool write)
 {
-    Renderer::Submit([write]() {
-        RendererAPI::SetDepthWrite(write);
-        DOO_CORE_TRACE("Renderer set depth write: {0}", write);
-    });
+    Renderer::Submit([write]() { RendererAPI::SetDepthWrite(write); });
 }
 
 void Renderer::SetCullFace(CullFaceType type)
 {
-    Renderer::Submit([type]() {
-        RendererAPI::SetCullFace(type);
-        DOO_CORE_TRACE("Renderer set cull face: {0}", static_cast<int>(type));
-    });
+    Renderer::Submit([type]() { RendererAPI::SetCullFace(type); });
 }
 
 void Renderer::SetBlend(BlendType src, BlendType dst)
 {
-    Renderer::Submit([src, dst]() {
-        RendererAPI::SetBlend(src, dst);
-        DOO_CORE_TRACE("Renderer set blend: {0}, {1}", static_cast<int>(src), static_cast<int>(dst));
-    });
+    Renderer::Submit([src, dst]() { RendererAPI::SetBlend(src, dst); });
 }
 
 void Renderer::SetBlendEquation(BlendEquationType type)
 {
-    Renderer::Submit([type]() {
-        RendererAPI::SetBlendEquation(type);
-        DOO_CORE_TRACE("Renderer set blend equation: {0}", static_cast<int>(type));
-    });
+    Renderer::Submit([type]() { RendererAPI::SetBlendEquation(type); });
 }
 
 void Renderer::SetPolygonMode(PolygonModeType type)
 {
-    Renderer::Submit([type]() {
-        RendererAPI::SetPolygonMode(type);
-        DOO_CORE_TRACE("Renderer set polygon mode: {0}", static_cast<int>(type));
-    });
+    Renderer::Submit([type]() { RendererAPI::SetPolygonMode(type); });
 }
 
 void Renderer::SetFrontFace(FrontFaceType type)
 {
-    Renderer::Submit([type]() {
-        RendererAPI::SetFrontFace(type);
-        DOO_CORE_TRACE("Renderer set front face: {0}", static_cast<int>(type));
-    });
+    Renderer::Submit([type]() { RendererAPI::SetFrontFace(type); });
 }
 
 void Renderer::SetPrimitiveType(PrimitiveType type)
 {
-    Renderer::Submit([type]() {
-        RendererAPI::SetPrimitiveType(type);
-        DOO_CORE_TRACE("Renderer set primitive type: {0}", static_cast<int>(type));
-    });
+    Renderer::Submit([type]() { RendererAPI::SetPrimitiveType(type); });
 }
 
 void Renderer::WaitAndRender()

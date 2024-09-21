@@ -43,18 +43,12 @@ class OpenGLVertexArray : public VertexArray
 public:
     OpenGLVertexArray()
     {
-        Renderer::Submit([this]() {
-            glGenVertexArrays(1, &m_rendererId);
-            DOO_CORE_TRACE("VAO <{0}> created", m_rendererId);
-        });
+        Renderer::Submit([this]() { glGenVertexArrays(1, &m_rendererId); });
     }
 
     ~OpenGLVertexArray()
     {
-        Renderer::Submit([this]() {
-            glDeleteVertexArrays(1, &m_rendererId);
-            DOO_CORE_TRACE("VAO <{0}> destroyed", m_rendererId);
-        });
+        Renderer::Submit([this]() { glDeleteVertexArrays(1, &m_rendererId); });
     }
 
     uint32_t GetRendererID() const override
@@ -64,18 +58,12 @@ public:
 
     void Bind() const override
     {
-        Renderer::Submit([this]() {
-            glBindVertexArray(m_rendererId);
-            DOO_CORE_TRACE("VAO <{0}> bound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindVertexArray(m_rendererId); });
     }
 
     void Unbind() const override
     {
-        Renderer::Submit([this]() {
-            glBindVertexArray(0);
-            DOO_CORE_TRACE("VAO <{0}> unbound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindVertexArray(0); });
     }
 
     void AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer) override
@@ -96,7 +84,6 @@ public:
                                       element.Size / glSize, // 计算属性的数量
                                       glType, element.Normalized ? GL_TRUE : GL_FALSE, vertexBuffer->GetStride(),
                                       reinterpret_cast<void *>(offset));
-                DOO_CORE_TRACE("VAO <{0}> added vertex buffer <{1}>", m_rendererId, vertexBuffer->GetRendererID());
                 offset += element.Size; // 更新偏移量
             }
         });
@@ -128,7 +115,6 @@ public:
             Renderer::Submit([this]() {
                 auto count = m_vertexBuffers[0]->GetSize() / m_vertexBuffers[0]->GetStride();
                 RendererAPI::Draw(count, PrimitiveType::Triangles);
-                DOO_CORE_TRACE("Renderer draw triangles: {0}", count);
             });
     }
 

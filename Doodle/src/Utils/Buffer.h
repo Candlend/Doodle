@@ -130,7 +130,7 @@ struct Buffer
             }
             oss << ' '; // 每个字节之间加个空格
         }
-        DOO_CORE_TRACE("Buffer: {0}", oss.str());
+        DOO_CORE_DEBUG("Buffer: {0}", oss.str());
     }
 };
 

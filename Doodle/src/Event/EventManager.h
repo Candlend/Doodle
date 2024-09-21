@@ -71,7 +71,6 @@ public:
     {
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
-        DOO_DEBUG("AddListener {0}", typeid(callback).name());
         EventCallback eventCallback{nullptr, reinterpret_cast<void *>(&callback),
                                     [callback](Event &event) -> bool { return callback(static_cast<T &>(event)); },
                                     executionOrder}; // 设置优先级
@@ -83,7 +82,6 @@ public:
     {
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
-        DOO_DEBUG("AddListener {0}", typeid(callback).name());
         EventCallback eventCallback{nullptr, reinterpret_cast<void *>(&callback),
                                     [callback](Event & /*event*/) {
                                         callback();
@@ -99,7 +97,6 @@ public:
         EventType eventType = T::GetStaticType();
         auto callback = [obj, func](Event &event) -> bool { return (obj->*func)(static_cast<T &>(event)); };
         auto &listeners = m_eventListeners[eventType];
-        DOO_DEBUG("AddListener {0}", typeid(callback).name());
         EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback,
                                     executionOrder}; // 设置优先级
         listeners.emplace_back(eventCallback);
@@ -113,7 +110,6 @@ public:
             return false;
         };
         auto &listeners = m_eventListeners[eventType];
-        DOO_DEBUG("AddListener {0}", typeid(callback).name());
         EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback,
                                     executionOrder}; // 设置优先级
         listeners.emplace_back(eventCallback);
@@ -124,8 +120,6 @@ public:
         if (m_destroyed) return;
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
-
-        DOO_DEBUG("RemoveListener {0}", typeid(callback).name());
 
         // 使用 std::remove_if 和比较函数进行移除
         auto it = std::remove_if(listeners.begin(), listeners.end(), [&](const EventCallback &listener) {
@@ -141,8 +135,6 @@ public:
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
 
-        DOO_DEBUG("RemoveListener {0}", typeid(callback).name());
-
         // 使用 std::remove_if 和比较函数进行移除
         auto it = std::remove_if(listeners.begin(), listeners.end(), [&](const EventCallback &listener) {
             return listener.Obj == nullptr && listener.Func == reinterpret_cast<void *>(&callback);
@@ -156,7 +148,6 @@ public:
         if (m_destroyed) return;
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
-        DOO_DEBUG("RemoveListener {0}", typeid(func).name());
         void *a = void_cast(func);
         auto it = std::remove_if(listeners.begin(), listeners.end(), [&](const EventCallback &listener) {
             return listener.Obj == static_cast<void *>(obj) && listener.Func == void_cast(func);
@@ -170,7 +161,6 @@ public:
         if (m_destroyed) return;
         EventType eventType = T::GetStaticType();
         auto &listeners = m_eventListeners[eventType];
-        DOO_DEBUG("RemoveListener {0}", typeid(func).name());
         void *a = void_cast(func);
         auto it = std::remove_if(listeners.begin(), listeners.end(), [&](const EventCallback &listener) {
             return listener.Obj == static_cast<void *>(obj) && listener.Func == void_cast(func);

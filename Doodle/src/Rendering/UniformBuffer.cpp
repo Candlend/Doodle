@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <sstream>
 
+#include "Log.h"
 #include "Renderer.h"
 #include "UniformBuffer.h"
 
@@ -18,7 +19,7 @@ public:
         Renderer::Submit([this, data]() {
             glCreateBuffers(1, &m_rendererId);
             glNamedBufferData(m_rendererId, m_size, data, m_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-            DOO_CORE_TRACE("UBO <{0}> created: size={1}, dynamic={2}", m_rendererId, m_size, m_dynamic);
+            DOO_CORE_DEBUG("UBO <{0}> created: size={1}, dynamic={2}", m_rendererId, m_size, m_dynamic);
         });
     }
 
@@ -29,16 +30,13 @@ public:
         Renderer::Submit([this]() {
             glCreateBuffers(1, &m_rendererId);
             glNamedBufferData(m_rendererId, m_size, nullptr, m_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-            DOO_CORE_TRACE("UBO <{0}> created: size={1}, dynamic={2}", m_rendererId, m_size, m_dynamic);
+            DOO_CORE_DEBUG("UBO <{0}> created: size={1}, dynamic={2}", m_rendererId, m_size, m_dynamic);
         });
     }
 
     ~OpenGLUniformBuffer()
     {
-        Renderer::Submit([this]() {
-            glDeleteBuffers(1, &m_rendererId);
-            DOO_CORE_TRACE("UBO <{0}> destroyed", m_rendererId);
-        });
+        Renderer::Submit([this]() { glDeleteBuffers(1, &m_rendererId); });
     }
 
     void SetSubData(const void *data, size_t size, size_t offset) override
@@ -49,27 +47,18 @@ public:
             return;
         }
 
-        Renderer::Submit([this, data, size, offset]() {
-            glNamedBufferSubData(m_rendererId, offset, size, data);
-            DOO_CORE_TRACE("UBO <{0}> updated: size={1}, offset={2}", m_rendererId, size, offset);
-        });
+        Renderer::Submit([this, data, size, offset]() { glNamedBufferSubData(m_rendererId, offset, size, data); });
     }
 
     void Bind(uint32_t slot) override
     {
         m_binding = slot;
-        Renderer::Submit([this]() {
-            glBindBufferBase(GL_UNIFORM_BUFFER, m_binding, m_rendererId);
-            DOO_CORE_TRACE("UBO <{0}> bound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindBufferBase(GL_UNIFORM_BUFFER, m_binding, m_rendererId); });
     }
 
     void Unbind() const override
     {
-        Renderer::Submit([this]() {
-            glBindBufferBase(GL_UNIFORM_BUFFER, m_binding, 0);
-            DOO_CORE_TRACE("UBO <{0}> unbound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindBufferBase(GL_UNIFORM_BUFFER, m_binding, 0); });
     }
 
     uint32_t GetRendererID() const override

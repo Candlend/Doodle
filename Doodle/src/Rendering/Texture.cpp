@@ -187,25 +187,18 @@ public:
         Renderer::Submit([this]() {
             glMakeTextureHandleNonResidentARB(m_textureHandle);
             glDeleteTextures(1, &m_rendererId);
-            DOO_CORE_TRACE("Texture <{0}> destroyed", m_rendererId);
         });
     }
 
     void Bind(uint32_t slot) override
     {
         m_binding = slot;
-        Renderer::Submit([this]() {
-            glBindTextureUnit(m_binding, m_rendererId);
-            DOO_CORE_TRACE("Texture <{0}> bound to slot {1}", m_rendererId, m_binding);
-        });
+        Renderer::Submit([this]() { glBindTextureUnit(m_binding, m_rendererId); });
     }
 
     void Unbind() const override
     {
-        Renderer::Submit([this]() {
-            glBindTextureUnit(m_binding, 0);
-            DOO_CORE_TRACE("Texture <{0}> unbound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindTextureUnit(m_binding, 0); });
     }
 
     std::string GetPath() const
@@ -308,7 +301,6 @@ private:
 
             m_textureHandle = glGetTextureHandleARB(m_rendererId);
             glMakeTextureHandleResidentARB(m_textureHandle);
-            DOO_CORE_TRACE("Texture <{0}> created: {1}\n{2}", m_rendererId, m_filepath, m_params.ToString());
         });
     }
     TextureParams m_params;
@@ -472,25 +464,18 @@ public:
         Renderer::Submit([this]() {
             glMakeTextureHandleNonResidentARB(m_textureHandle);
             glDeleteTextures(1, &m_rendererId);
-            DOO_CORE_TRACE("Cube Texture <{0}> destroyed", m_rendererId);
         });
     }
 
     void Bind(uint32_t slot) override
     {
         m_binding = slot;
-        Renderer::Submit([this]() {
-            glBindTextureUnit(m_binding, m_rendererId);
-            DOO_CORE_TRACE("Cube Texture <{0}> bound to slot {1}", m_rendererId, m_binding);
-        });
+        Renderer::Submit([this]() { glBindTextureUnit(m_binding, m_rendererId); });
     }
 
     void Unbind() const override
     {
-        Renderer::Submit([this]() {
-            glBindTextureUnit(m_binding, 0);
-            DOO_CORE_TRACE("Cube Texture <{0}> unbound", m_rendererId);
-        });
+        Renderer::Submit([this]() { glBindTextureUnit(m_binding, 0); });
     }
 
     std::array<std::string, 6> GetPath() const
@@ -609,7 +594,6 @@ private:
 
             m_textureHandle = glGetTextureHandleARB(m_rendererId);
             glMakeTextureHandleResidentARB(m_textureHandle);
-            DOO_CORE_TRACE("Texture <{0}> created: {1}\n{2}", m_rendererId, m_facePaths[0], m_params.ToString());
         });
     }
 

@@ -33,7 +33,6 @@ Scene::Scene(const std::string &name)
 
 Scene::~Scene()
 {
-    DOO_CORE_TRACE("Scene <{0}> destroyed", m_name);
     m_registry.clear();
 }
 
@@ -87,9 +86,7 @@ Entity Scene::GetMainCameraEntity()
 Entity Scene::CreateEntity(const std::string &name)
 {
     auto entity = Entity::Create(this);
-    DOO_CORE_DEBUG("Entity created with Handle: {0}", (int)entity.GetEntityHandle());
     entity.AddComponent<IDComponent>();
-    DOO_CORE_DEBUG("Entity created with Handle: {0}", (int)entity.GetEntityHandle());
     m_entityMap[entity.GetComponent<IDComponent>()] = entity;
     m_entityComponents[entity.GetComponent<IDComponent>()] = {&entity.GetComponent<IDComponent>()};
     entity.AddComponent<TagComponent>(name);

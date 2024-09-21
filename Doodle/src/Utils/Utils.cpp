@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include "Log.h"
 
 std::string NormalizePath(const std::string &path)
 {
@@ -46,5 +47,5 @@ DOO_API void PrintBinary(const void *ptr, size_t size)
         }
         oss << ' '; // 每个字节之间加个空格
     }
-    DOO_CORE_TRACE("Binary: {0}", oss.str());
+    DOO_CORE_DEBUG("Binary: {0}", oss.str());
 }

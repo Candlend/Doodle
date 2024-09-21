@@ -133,8 +133,8 @@ Model::Model(const std::string &filepath)
     LogStream::Initialize();
     DOO_CORE_INFO("Loading model: {0}", filepath.c_str());
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-                                                           aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    const aiScene *scene =
+        importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
     // check for errors
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {

@@ -55,7 +55,6 @@ public:
         ReadShaderFromFile(filepath);
         Renderer::Submit([this, filepath]() {
             CompileAndUploadShader();
-            DOO_CORE_TRACE("OpenGLShader <{0}> created: {1}", m_rendererID, filepath);
             PrintActiveUniforms();
             PrintActiveUniformBlocks();
         });
@@ -63,10 +62,7 @@ public:
 
     ~OpenGLShader()
     {
-        Renderer::Submit([this]() {
-            glDeleteProgram(m_rendererID);
-            DOO_CORE_TRACE("OpenGLShader <{0}> destroyed", m_rendererID);
-        });
+        Renderer::Submit([this]() { glDeleteProgram(m_rendererID); });
     }
 
     std::string GetPath() const override
@@ -82,7 +78,6 @@ public:
             m_uniformsCache.clear();
             m_uniformBlocksCache.clear();
             CompileAndUploadShader();
-            DOO_CORE_TRACE("OpenGLShader <{0}> reloaded", m_rendererID);
             PrintActiveUniforms();
             PrintActiveUniformBlocks();
         });
@@ -90,18 +85,12 @@ public:
 
     void Bind() override
     {
-        Renderer::Submit([this]() {
-            glUseProgram(m_rendererID);
-            DOO_CORE_TRACE("OpenGLShader <{0}> bound", m_rendererID);
-        });
+        Renderer::Submit([this]() { glUseProgram(m_rendererID); });
     }
 
     void Unbind() override
     {
-        Renderer::Submit([this]() {
-            glUseProgram(0);
-            DOO_CORE_TRACE("OpenGLShader <{0}> unbound", m_rendererID);
-        });
+        Renderer::Submit([this]() { glUseProgram(0); });
     }
 
     uint32_t GetRendererID() const override
@@ -360,7 +349,7 @@ private:
         GLsizei length;
         int location;
         std::vector<GLchar> uniformName(uniformMaxLength);
-        oss << "Active uniforms for shader <" << m_rendererID << ">:" << std::endl;
+        oss << "Active uniforms for shader (" << m_filepath << "):" << std::endl;
         for (int i = 0; i < numUniforms; i++)
         {
             glGetActiveUniform(m_rendererID, i, uniformMaxLength, &length, &count, &type, uniformName.data());
@@ -389,7 +378,7 @@ private:
         std::ostringstream oss;
         GLsizei length;
         std::vector<GLchar> uniformBlockName(uniformBlockMaxLength);
-        oss << "Active uniform blocks for shader <" << m_rendererID << ">:" << std::endl;
+        oss << "Active uniform blocks for shader (" << m_filepath << "):" << std::endl;
         for (int i = 0; i < numUniformBlocks; i++)
         {
             int blockBinding;

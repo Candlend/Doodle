@@ -35,7 +35,6 @@ SceneRenderer::SceneRenderer()
 SceneRenderer::~SceneRenderer()
 {
     EventManager::Get()->RemoveListener<AppRenderEvent>(this, &SceneRenderer::Render);
-    DOO_CORE_TRACE("SceneRenderer destroyed");
 }
 
 void SceneRenderer::Render()
