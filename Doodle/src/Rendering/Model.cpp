@@ -106,7 +106,13 @@ ModelNode Model::ProcessNode(aiNode *node, const aiScene *scene)
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        modelNode.Meshes[mesh->mName.C_Str()] = LoadMesh(mesh, scene);
+        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+        std::string name = material->GetName().C_Str();
+        if (modelNode.Meshes.contains(name))
+        {
+            name += std::string("_") + std::to_string(i);
+        }
+        modelNode.Meshes[name] = LoadMesh(mesh, scene);
     }
     // then do the same for each of its children
     for (unsigned int i = 0; i < node->mNumChildren; i++)

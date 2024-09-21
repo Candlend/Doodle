@@ -85,6 +85,9 @@ public:
         auto nanosuitModel = Model::Create("assets/models/nanosuit/nanosuit.obj");
         auto nanosuit = m_scene->CreateEntityFromModel(nanosuitModel);
         nanosuit.GetComponent<TransformComponent>().SetLocalScale(0.1);
+
+        auto sponzaModel = Model::Create("assets/models/sponza/sponza.obj");
+        auto sponza = m_scene->CreateEntityFromModel(sponzaModel);
     }
 
     void BeforeUpdate() override
