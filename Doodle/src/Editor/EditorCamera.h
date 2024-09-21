@@ -31,8 +31,8 @@ public:
     {
         m_moveSpeed = 2.0f;
         m_rotateSpeed = 20.0f;
-        m_transform.Position = glm::vec3(0.0f, 0.0f, 3.0f);
-        m_transform.Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+        m_transform.Position = glm::vec3(0.0f, 1.0f, 3.0f);
+        m_transform.LookAt(glm::vec3(0.0f));
 
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
         EventManager::Get()->AddListener<AppUpdateEvent>(this, &EditorCamera::OnUpdate);
