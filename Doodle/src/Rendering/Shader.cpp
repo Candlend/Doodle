@@ -494,18 +494,21 @@ private:
 
     void SetUniformMatrix3f(const std::string &name, const glm::mat3 &mat) override
     {
-        std::function<void(GLint, glm::mat3)> func = [=](GLint location, glm::mat3 m) {
+
+        std::function<void(GLint)> func = [mat](GLint location) {
+            auto m = mat;
             glUniformMatrix3fv(location, 1, GL_FALSE, &m[0][0]);
         };
-        SetUniform(name, func, mat);
+        SetUniform(name, func);
     }
 
     void SetUniformMatrix4f(const std::string &name, const glm::mat4 &mat) override
     {
-        std::function<void(GLint, glm::mat4)> func = [=](GLint location, glm::mat4 m) {
+        std::function<void(GLint)> func = [mat](GLint location) {
+            auto m = mat;
             glUniformMatrix4fv(location, 1, GL_FALSE, &m[0][0]);
         };
-        SetUniform(name, func, mat);
+        SetUniform(name, func);
     }
 
     void SetUniformTexture(const std::string &name, std::shared_ptr<Texture> texture) override

@@ -48,8 +48,6 @@ void SceneRenderer::Render()
     {
         return;
     }
-
-    scene->SetupSceneData();
     RenderPipeline::Get()->Execute();
 }
 

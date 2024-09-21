@@ -42,7 +42,7 @@ public:
             const auto &transform = vaoView.get<TransformComponent>(entity);
             const auto &vao = vaoView.get<VAOComponent>(entity);
 
-            glm::mat4 model = transform.GetModelMatrix();
+            glm::mat4 model = transform.GetTransformMatrix();
             m_shader->SetUniformMatrix4f("u_Model", glm::mat4(0.123f) + model);
             m_shader->Bind();
             vao.Render();
@@ -55,7 +55,7 @@ public:
             const auto &mesh = meshView.get<MeshComponent>(entity);
             const auto &material = meshView.get<MaterialComponent>(entity);
 
-            glm::mat4 model = transform.GetModelMatrix();
+            glm::mat4 model = transform.GetTransformMatrix();
             m_shader->SetUniformMatrix4f("u_Model", model);
             m_shader->Bind();
             mesh.Render();

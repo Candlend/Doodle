@@ -141,7 +141,7 @@ public:
 
     glm::mat4 GetViewMatrix() const
     {
-        return glm::inverse(m_transform.GetModelMatrix());
+        return glm::inverse(m_transform.GetTransformMatrix());
     }
 
     void SetViewMatrix(const glm::mat4 &view)
@@ -167,7 +167,7 @@ private:
     float m_rotateSpeed;
     glm::vec2 m_lastMousePosition;
 
-    TransformComponent m_transform;
+    Transform m_transform;
     glm::vec3 m_focusPoint;
 };
 

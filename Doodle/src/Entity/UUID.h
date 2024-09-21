@@ -11,11 +11,20 @@ namespace Doodle
 class DOO_API UUID
 {
 public:
+    static UUID Nil()
+    {
+        return UUID(boost::uuids::nil_uuid());
+    }
+
     // 默认构造函数，生成一个随机 UUID
     UUID()
     {
         m_generator = boost::uuids::random_generator();
         m_uuid = m_generator();
+    }
+
+    UUID(boost::uuids::uuid uuid) : m_uuid(uuid)
+    {
     }
 
     // 从字符串构造 UUID

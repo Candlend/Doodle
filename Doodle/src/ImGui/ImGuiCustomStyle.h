@@ -24,8 +24,8 @@ void SetupImGuiStyle()
 	style.ChildBorderSize = 1.0f;
 	style.PopupRounding = 5.0f;
 	style.PopupBorderSize = 1.0f;
-	style.FramePadding = ImVec2(6.0f, 3.400000095367432f);
-	style.FrameRounding = 11.89999961853027f;
+    style.FramePadding = ImVec2(3.0f, 3.400000095367432f);
+    style.FrameRounding = 11.89999961853027f;
 	style.FrameBorderSize = 0.0f;
 	style.ItemSpacing = ImVec2(4.300000190734863f, 5.5f);
 	style.ItemInnerSpacing = ImVec2(7.099999904632568f, 1.799999952316284f);

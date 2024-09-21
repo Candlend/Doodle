@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Entity.h"
 #include "pch.h"
 #include <imgui.h>
 
@@ -12,6 +13,7 @@
 namespace Doodle
 {
 
+class Entity;
 class DOO_API HierarchyPanel : public EditorPanel
 {
 public:
@@ -19,6 +21,9 @@ public:
     void OnUpdate() override;
 
     void OnPanelLayout() override;
+
+private:
+    void RenderEntityTree(std::vector<Entity> &entities);
 };
 
 } // namespace Doodle

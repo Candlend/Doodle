@@ -42,40 +42,49 @@ public:
             float deltaTime = Application::Time::GetDeltaTime();
             if (Input::IsKeyDown(KeyCode::W))
             {
-                transform.Position += transform.GetFront() * m_moveSpeed * deltaTime;
+                auto localPosition = transform.GetLocalPosition() + transform.GetFront() * m_moveSpeed * deltaTime;
+                transform.SetLocalPosition(localPosition);
             }
             if (Input::IsKeyDown(KeyCode::S))
             {
-                transform.Position -= transform.GetFront() * m_moveSpeed * deltaTime;
+                auto localPosition = transform.GetLocalPosition() - transform.GetFront() * m_moveSpeed * deltaTime;
+                transform.SetLocalPosition(localPosition);
             }
             if (Input::IsKeyDown(KeyCode::A))
             {
-                transform.Position -= transform.GetRight() * m_moveSpeed * deltaTime;
+                auto localPosition = transform.GetLocalPosition() - transform.GetRight() * m_moveSpeed * deltaTime;
+                transform.SetLocalPosition(localPosition);
             }
             if (Input::IsKeyDown(KeyCode::D))
             {
-                transform.Position += transform.GetRight() * m_moveSpeed * deltaTime;
+                auto localPosition = transform.GetLocalPosition() + transform.GetRight() * m_moveSpeed * deltaTime;
+                transform.SetLocalPosition(localPosition);
             }
             if (Input::IsKeyDown(KeyCode::Q))
             {
-                transform.Position -= transform.GetUp() * m_moveSpeed * deltaTime;
+                auto localPosition = transform.GetLocalPosition() - transform.GetUp() * m_moveSpeed * deltaTime;
+                transform.SetLocalPosition(localPosition);
             }
             if (Input::IsKeyDown(KeyCode::E))
             {
-                transform.Position += transform.GetUp() * m_moveSpeed * deltaTime;
+                auto localPosition = transform.GetLocalPosition() + transform.GetUp() * m_moveSpeed * deltaTime;
+                transform.SetLocalPosition(localPosition);
             }
             // 处理相机旋转
             glm::vec2 currentMousePosition =
                 glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
             glm::vec2 mouseDelta = currentMousePosition - m_lastMousePosition;
 
-            transform.Rotation.y -= mouseDelta.x * m_rotateSpeed * deltaTime; // 偏航角
-            transform.Rotation.x -= mouseDelta.y * m_rotateSpeed * deltaTime; // 俯仰角
+            auto localRotation = transform.GetLocalRotation();
+            localRotation.y -= mouseDelta.x * m_rotateSpeed * deltaTime; // 偏航角
+            localRotation.x -= mouseDelta.y * m_rotateSpeed * deltaTime; // 俯仰角
 
-            if (transform.Rotation.x > 89.0f)
-                transform.Rotation.x = 89.0f;
-            if (transform.Rotation.x < -89.0f)
-                transform.Rotation.x = -89.0f;
+            if (localRotation.x > 89.0f)
+                localRotation.x = 89.0f;
+            if (localRotation.x < -89.0f)
+                localRotation.x = -89.0f;
+
+            transform.SetLocalRotation(localRotation);
         }
 
         m_lastMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);

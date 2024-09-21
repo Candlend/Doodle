@@ -6,7 +6,6 @@
 #include "pch.h"
 #include <entt/entt.hpp>
 
-
 namespace Doodle
 {
 class BaseComponent;
@@ -137,6 +136,22 @@ public:
     }
 
     entt::registry &GetRegistry() const;
+
+    Entity GetParent() const;
+
+    void SetParent(Entity parent);
+
+    void SetParentUUID(UUID parent);
+    UUID GetParentUUID() const;
+    std::vector<Entity> GetChildren();
+    std::vector<Entity> GetChildren() const;
+    std::vector<UUID> &GetChildrenUUID();
+    const std::vector<UUID> &GetChildrenUUID() const;
+
+    bool RemoveChild(Entity child);
+
+    bool IsAncestorOf(Entity entity) const;
+    bool IsDescendantOf(Entity entity) const;
 
 private:
     Scene *m_scene;

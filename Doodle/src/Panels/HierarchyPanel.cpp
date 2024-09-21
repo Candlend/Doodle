@@ -1,5 +1,6 @@
 #include "HierarchyPanel.h"
 #include "Component.h"
+#include "EditorCamera.h"
 #include "Entity.h"
 #include "PanelManager.h"
 #include "SceneManager.h"
@@ -9,20 +10,56 @@
 namespace Doodle
 {
 
-void HierarchyPanel::OnPanelLayout()
+void HierarchyPanel::RenderEntityTree(std::vector<Entity> &entities)
 {
-    auto scene = SceneManager::Get()->GetActiveScene();
-    auto entities = scene->GetEntities();
-    for (auto &entity : entities)
+    for (const auto &entity : entities)
     {
-        if (ImGui::Selectable(entity.GetComponent<TagComponent>().Tag.c_str(),
-                              SelectionManager::IsSelected(SelectionContext::Global, entity.GetUUID())))
+        // Get the tag for the current entity
+        const auto &tag = entity.GetComponent<TagComponent>().Tag;
+        // Create a tree node for the entity
+        bool isSelected = SelectionManager::IsSelected(SelectionContext::Global, entity.GetUUID());
+        auto children = entity.GetChildren();
+        // 有没有子节点
+        auto flags = ImGuiTreeNodeFlags_OpenOnArrow | (isSelected ? ImGuiTreeNodeFlags_Selected : 0) |
+                     (children.empty() ? ImGuiTreeNodeFlags_Leaf : 0);
+
+        if (ImGui::TreeNodeEx(tag.c_str(), flags))
         {
-            SelectionManager::DeselectAll(SelectionContext::Global);
-            SelectionManager::Select(SelectionContext::Global, entity.GetUUID());
-            ImGui::SetWindowFocus("Viewport");
+            // Handle selection
+            if (ImGui::IsItemClicked())
+            {
+                SelectionManager::DeselectAll(SelectionContext::Global);
+                SelectionManager::Select(SelectionContext::Global, entity.GetUUID());
+                ImGui::SetWindowFocus("Viewport");
+                if (ImGui::IsMouseDoubleClicked(0))
+                {
+                    EditorCamera::Get()->Focus(entity.GetComponent<TransformComponent>().GetPosition());
+                }
+            }
+
+            // Render the children of the entity recursively
+            ImGui::Indent(16);
+            RenderEntityTree(children);
+            ImGui::Unindent(16);
+            // Close the tree node after rendering children
+            ImGui::TreePop();
         }
     }
+}
+void HierarchyPanel::OnPanelLayout()
+{
+    ImGui::ShowDemoWindow();
+    auto scene = SceneManager::Get()->GetActiveScene();
+    auto entities = scene->GetEntities();
+    std::vector<Entity> rootEntities;
+    for (const auto &entity : entities)
+    {
+        if (entity.GetParentUUID() == UUID::Nil())
+        {
+            rootEntities.push_back(entity);
+        }
+    }
+    RenderEntityTree(rootEntities);
 
     // 右键菜单
     if (ImGui::BeginPopupContextWindow())

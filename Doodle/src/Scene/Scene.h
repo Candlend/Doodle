@@ -2,6 +2,7 @@
 
 #include "Texture.h"
 #include "entt/entity/fwd.hpp"
+#include "glm/fwd.hpp"
 #include "pch.h"
 #include <entt/entt.hpp>
 
@@ -70,6 +71,7 @@ struct SceneData
 class Entity;
 class BaseComponent;
 class SceneRenderer;
+class TransformComponent;
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
@@ -119,16 +121,21 @@ public:
         return m_sceneData;
     }
 
-    void SetupSceneData();
+    void UpdateGlobalTransforms();
 
 private:
     std::string m_name;
     bool m_active = false;
     std::unordered_map<UUID, Entity> m_entityMap;
     std::unordered_map<UUID, std::vector<BaseComponent *>> m_entityComponents;
+    std::unordered_map<UUID, glm::mat4> m_entityGlobalTransforms;
     entt::registry m_registry;
 
     SceneData m_sceneData;
+
+    void OnUpdate();
+    void UpdateSceneData();
+    void UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty);
 };
 
 } // namespace Doodle

@@ -2,11 +2,16 @@
 
 #include "BaseComponent.h"
 #include "CameraComponent.h"
+#include "Core.h"
 #include "ImGuiUtils.h"
 #include "LightComponent.h"
 #include "MaterialComponent.h"
 #include "Renderable.h"
 #include "Scriptable.h"
+#include "UUID.h"
+#include "glm/detail/type_quat.hpp"
+#include "glm/fwd.hpp"
+#include <vector>
 
 namespace Doodle
 {
@@ -67,24 +72,22 @@ struct TagComponent : public BaseComponent
     }
 };
 
-struct TransformComponent : public BaseComponent
+struct Transform
 {
-    COMPONENT_CLASS_TYPE(Transform)
-
     glm::vec3 Position;
     glm::vec3 Rotation; // Euler angles in degrees
     glm::vec3 Scale;
 
-    TransformComponent() : Position(0.0f), Rotation(0.0f), Scale(1.0f)
+    Transform() : Position(0.0f), Rotation(0.0f), Scale(1.0f)
     {
     }
 
-    glm::quat GetRotation() const
+    glm::quat GetQuaternion() const
     {
         return glm::quat(glm::radians(Rotation));
     }
 
-    glm::mat4 GetModelMatrix() const
+    glm::mat4 GetTransformMatrix() const
     {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, Position);
@@ -154,31 +157,221 @@ struct TransformComponent : public BaseComponent
         Rotation = glm::vec3(0.0f);
         Scale = glm::vec3(1.0f);
     }
+};
 
-    void ResetPosition()
-    {
-        Position = glm::vec3(0.0f);
-    }
+struct TransformComponent : public BaseComponent
+{
+    COMPONENT_CLASS_TYPE(Transform)
 
-    void ResetRotation()
-    {
-        Rotation = glm::vec3(0.0f);
-    }
+    UUID ParentHandle = UUID::Nil();
+    std::vector<UUID> Children;
+    Transform LocalTransform;
+    Transform GlobalTransform;
 
-    void ResetScale()
-    {
-        Scale = glm::vec3(1.0f);
-    }
+    bool Dirty = true;
 
     void OnInspectorLayout() override
     {
         ImGui::Text("Position");
-        ImGui::DragFloat3("##Position", &Position.x, 0.1f);
+        if (ImGui::DragFloat3("##Position", &LocalTransform.Position.x, 0.1f))
+        {
+            Dirty = true;
+        }
         ImGui::Text("Rotation");
-        ImGui::DragFloat3("##Rotation", &Rotation.x, 1.0f);
+        if (ImGui::DragFloat3("##Rotation", &LocalTransform.Rotation.x, 1.0f))
+        {
+            Dirty = true;
+        }
         ImGui::Text("Scale");
-        ImGui::DragFloat3("##Scale", &Scale.x, 0.1f);
+        if (ImGui::DragFloat3("##Scale", &LocalTransform.Scale.x, 0.1f))
+        {
+            Dirty = true;
+        }
+        if (ImGuiUtils::SizedButton("Reset"))
+        {
+            Reset();
+        }
     }
+
+    void SetLocalPosition(const glm::vec3 &position)
+    {
+        LocalTransform.Position = position;
+        Dirty = true;
+    }
+
+    void SetLocalRotation(const glm::vec3 &rotation)
+    {
+        LocalTransform.Rotation = rotation;
+        Dirty = true;
+    }
+
+    void SetLocalScale(const glm::vec3 &scale)
+    {
+        LocalTransform.Scale = scale;
+        Dirty = true;
+    }
+
+    void SetLocalScale(float scale)
+    {
+        LocalTransform.Scale = glm::vec3(scale);
+        Dirty = true;
+    }
+
+    void Translate(const glm::vec3 &translation)
+    {
+        LocalTransform.Translate(translation);
+        Dirty = true;
+    }
+
+    void Rotate(const glm::vec3 &eulerAngles)
+    {
+        LocalTransform.Rotate(eulerAngles);
+        Dirty = true;
+    }
+
+    void Scale(const glm::vec3 &scale)
+    {
+        LocalTransform.ScaleBy(scale);
+        Dirty = true;
+    }
+
+    void Scale(float scale)
+    {
+        LocalTransform.ScaleBy(scale);
+        Dirty = true;
+    }
+
+    void LookAt(const glm::vec3 &target)
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        auto localTarget =
+            glm::inverse(m_parentTransformMatrix) * glm::vec4(target, 1.0f); // TODO - Check if this is correct
+        LocalTransform.LookAt(localTarget);
+        Dirty = true;
+    }
+
+    void UpdateGlobalTransform(const Transform &parentTransform = Transform())
+    {
+        m_parentTransformMatrix = parentTransform.GetTransformMatrix();
+        GlobalTransform.Position = m_parentTransformMatrix * glm::vec4(LocalTransform.Position, 1.0f);
+        GlobalTransform.Rotation = parentTransform.Rotation + LocalTransform.Rotation;
+        GlobalTransform.Scale = parentTransform.Scale * LocalTransform.Scale;
+        Dirty = false;
+    }
+
+    glm::mat4 GetTransformMatrix() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.GetTransformMatrix();
+    }
+
+    glm::vec3 GetFront() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.GetFront();
+    }
+
+    glm::vec3 GetRight() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.GetRight();
+    }
+
+    glm::vec3 GetUp() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.GetUp();
+    }
+
+    glm::vec3 GetPosition() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.Position;
+    }
+
+    glm::vec3 GetRotation() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.Rotation;
+    }
+
+    glm::quat GetQuaternion() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.GetQuaternion();
+    }
+
+    glm::vec3 GetScale() const
+    {
+        if (Dirty)
+        {
+            GetScene()->UpdateGlobalTransforms();
+        }
+        return GlobalTransform.Scale;
+    }
+
+    glm::vec3 GetLocalPosition() const
+    {
+        return LocalTransform.Position;
+    }
+
+    glm::vec3 GetLocalRotation() const
+    {
+        return LocalTransform.Rotation;
+    }
+
+    glm::vec3 GetLocalScale() const
+    {
+        return LocalTransform.Scale;
+    }
+
+    glm::vec3 GetLocalFront() const
+    {
+        return LocalTransform.GetFront();
+    }
+
+    glm::vec3 GetLocalRight() const
+    {
+        return LocalTransform.GetRight();
+    }
+
+    glm::vec3 GetLocalUp() const
+    {
+        return LocalTransform.GetUp();
+    }
+
+    void Reset()
+    {
+        LocalTransform.Reset();
+        Dirty = true;
+    }
+
+private:
+    glm::mat4 m_parentTransformMatrix = glm::mat4(1.0f);
 };
 
 } // namespace Doodle

@@ -1,5 +1,6 @@
 #include "EditorCamera.h"
 #include "KeyCode.h"
+#include "UUID.h"
 #include "pch.h"
 #include <glm/ext/vector_float3.hpp>
 #include <imgui.h>
@@ -37,6 +38,7 @@ void ViewportPanel::OnUpdate()
 
 void ViewportPanel::OnPanelLayout()
 {
+    ImGui::ShowDemoWindow();
     ImGui::SetKeyOwner(ImGuiMod_Alt, m_panelData.ID);
 
     auto frameBuffer = m_sceneRenderer->GetFrameBuffer();
@@ -91,26 +93,30 @@ void ViewportPanel::OnPanelLayout()
     {
         auto entity = scene->GetEntity(uuids[0]);
         auto &transform = entity.GetComponent<TransformComponent>();
-        glm::mat4 model = transform.GetModelMatrix();
+        glm::mat4 model = transform.GetTransformMatrix();
 
-        ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), s_Operation, s_Mode,
-                             glm::value_ptr(model));
-
-        if (ImGuizmo::IsUsing())
+        if (ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), s_Operation, s_Mode,
+                                 glm::value_ptr(model)))
         {
+            if (auto parent = entity.GetParent())
+            {
+                auto &parentTransform = parent.GetComponent<TransformComponent>();
+                model = glm::inverse(parentTransform.GetTransformMatrix()) * model;
+            }
+
             glm::vec3 translation;
             glm::vec3 rotation;
             glm::vec3 scale;
             DecomposeTransform(model, translation, rotation, scale);
 
-            transform.Position = translation;
-            transform.Rotation = rotation;
-            transform.Scale = scale;
+            transform.SetLocalPosition(translation);
+            transform.SetLocalRotation(rotation);
+            transform.SetLocalScale(scale);
         }
 
         if (Input::IsKeyPressed(KeyCode::F))
         {
-            editorCamera->Focus(transform.Position);
+            editorCamera->Focus(transform.GetPosition());
         }
     }
 

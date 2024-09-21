@@ -54,7 +54,7 @@ public:
             const auto &vao = vaoView.get<VAOComponent>(entity);
             const auto &material = vaoView.get<MaterialComponent>(entity);
 
-            glm::mat4 model = transform.GetModelMatrix();
+            glm::mat4 model = transform.GetTransformMatrix();
             auto normalScale = material.MaterialInstance->GetUniform1f("u_NormalScale");
             auto normalTexture = material.MaterialInstance->GetUniformTexture("u_NormalTexture");
 
@@ -72,7 +72,7 @@ public:
             const auto &mesh = meshView.get<MeshComponent>(entity);
             const auto &material = meshView.get<MaterialComponent>(entity);
 
-            glm::mat4 model = transform.GetModelMatrix();
+            glm::mat4 model = transform.GetTransformMatrix();
             auto normalScale = material.MaterialInstance->GetUniform1f("u_NormalScale");
             auto normalTexture = material.MaterialInstance->GetUniformTexture("u_NormalTexture");
 

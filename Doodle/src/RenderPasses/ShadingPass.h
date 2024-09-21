@@ -75,7 +75,7 @@ public:
             const auto &vao = vaoView.get<VAOComponent>(entity);
             const auto &material = vaoView.get<MaterialComponent>(entity);
 
-            glm::mat4 model = transform.GetModelMatrix();
+            glm::mat4 model = transform.GetTransformMatrix();
 
             SET_UNIFORMS();
 
@@ -92,7 +92,7 @@ public:
             const auto &mesh = meshView.get<MeshComponent>(entity);
             const auto &material = meshView.get<MaterialComponent>(entity);
 
-            glm::mat4 model = transform.GetModelMatrix();
+            glm::mat4 model = transform.GetTransformMatrix();
 
             SET_UNIFORMS();
 

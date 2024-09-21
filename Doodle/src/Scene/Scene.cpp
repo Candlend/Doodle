@@ -1,7 +1,10 @@
 
+#include "ApplicationEvent.h"
+#include "UUID.h"
 #include "glm/fwd.hpp"
 #include "pch.h"
 #include <glad/glad.h>
+#include <vector>
 
 #include "Component.h"
 #include "EditorCamera.h"
@@ -28,6 +31,39 @@ Scene::~Scene()
 {
     DOO_CORE_TRACE("Scene <{0}> destroyed", m_name);
     m_registry.clear();
+}
+
+void Scene::OnUpdate()
+{
+    UpdateGlobalTransforms();
+    UpdateSceneData();
+}
+
+void Scene::UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty)
+{
+    for (const auto &child : parentTransform.Children)
+    {
+        auto entity = m_entityMap[child];
+        auto &transform = entity.GetComponent<TransformComponent>();
+        transform.UpdateGlobalTransform(parentTransform.GlobalTransform);
+        bool dirty = parentDirty || transform.Dirty;
+        UpdateGlobalTransformTree(transform, dirty);
+    }
+}
+
+void Scene::UpdateGlobalTransforms()
+{
+    auto view = m_registry.view<TransformComponent>();
+    for (auto entity : view)
+    {
+        auto &transform = view.get<TransformComponent>(entity);
+        if (transform.ParentHandle == UUID::Nil())
+        {
+            auto &globalTransform = transform.GlobalTransform;
+            transform.UpdateGlobalTransform();
+            UpdateGlobalTransformTree(transform, transform.Dirty);
+        }
+    }
 }
 
 Entity Scene::GetMainCameraEntity()
@@ -104,6 +140,7 @@ void Scene::RemoveEntity(const UUID &id)
     m_registry.destroy(m_entityMap[id].GetEntityHandle());
     m_entityMap.erase(id);
     m_entityComponents.erase(id);
+    m_entityGlobalTransforms.erase(id);
 }
 
 void Scene::DestroyEntity(const Entity &entity)
@@ -193,6 +230,8 @@ void Scene::BeginScene()
     m_active = true;
     SceneManager::Get()->m_activeScene = shared_from_this();
     DOO_CORE_TRACE("Scene <{0}> Activated", m_name);
+    EventManager::Get()->AddListener<AppUpdateEvent>(this, &Scene::OnUpdate, ExecutionOrder::Last);
+    OnUpdate();
     EventManager::Get()->Dispatch<SceneActivateEvent>(this);
 }
 
@@ -203,9 +242,10 @@ void Scene::EndScene()
         SceneManager::Get()->m_activeScene = nullptr;
     DOO_CORE_TRACE("Scene <{0}> Deactivated", m_name);
     EventManager::Get()->Dispatch<SceneDeactivateEvent>(this);
+    EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &Scene::OnUpdate);
 }
 
-void Scene::SetupSceneData()
+void Scene::UpdateSceneData()
 {
     if (SceneManager::Get()->GetState() == SceneState::Editor)
     {
@@ -223,8 +263,9 @@ void Scene::SetupSceneData()
         {
             return;
         }
-        m_sceneData.CameraData.Position = cameraEntity.GetComponent<TransformComponent>().Position;
-        m_sceneData.CameraData.View = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetModelMatrix());
+        m_sceneData.CameraData.Position = cameraEntity.GetComponent<TransformComponent>().GetPosition();
+        m_sceneData.CameraData.View =
+            glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransformMatrix());
         m_sceneData.CameraData.Projection = cameraEntity.GetComponent<CameraComponent>().GetProjectionMatrix();
         m_sceneData.CameraData.Near = cameraEntity.GetComponent<CameraComponent>().Camera->GetNearClip();
         m_sceneData.CameraData.Far = cameraEntity.GetComponent<CameraComponent>().Camera->GetFarClip();
@@ -242,7 +283,7 @@ void Scene::SetupSceneData()
         {
             auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(e);
             glm::vec3 direction =
-                glm::normalize(glm::mat3(transformComponent.GetModelMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
+                glm::normalize(glm::mat3(transformComponent.GetTransformMatrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
             DOO_CORE_ASSERT(directionalLightIndex < LightData::MAX_DIRECTIONAL_LIGHTS,
                             "More than {} directional lights in scene!", LightData::MAX_DIRECTIONAL_LIGHTS);
             m_sceneData.LightData.DirectionalLights[directionalLightIndex++] = {
@@ -261,8 +302,8 @@ void Scene::SetupSceneData()
                 Entity entity(this, e);
                 auto [transformComponent, lightComponent] = pointLights.get<TransformComponent, PointLightComponent>(e);
                 m_sceneData.LightData.PointLights[pointLightIndex++] = {
-                    transformComponent.Position, lightComponent.Radiance, lightComponent.Intensity,
-                    lightComponent.MinRadius,    lightComponent.Radius,   lightComponent.Falloff,
+                    transformComponent.GetPosition(), lightComponent.Radiance, lightComponent.Intensity,
+                    lightComponent.MinRadius,         lightComponent.Radius,   lightComponent.Falloff,
                     lightComponent.SourceSize,
                 };
             }
@@ -277,10 +318,10 @@ void Scene::SetupSceneData()
                 Entity entity(this, e);
                 auto [transformComponent, lightComponent] = spotLights.get<TransformComponent, SpotLightComponent>(e);
                 glm::vec3 direction =
-                    glm::normalize(glm::rotate(transformComponent.GetRotation(), glm::vec3(1.0f, 0.0f, 0.0f)));
+                    glm::normalize(glm::rotate(transformComponent.GetQuaternion(), glm::vec3(1.0f, 0.0f, 0.0f)));
 
                 m_sceneData.LightData.SpotLights[spotLightIndex++] = {
-                    transformComponent.Position,
+                    transformComponent.GetPosition(),
                     direction,
                     lightComponent.Radiance,
                     lightComponent.Intensity,
@@ -300,7 +341,7 @@ void Scene::SetupSceneData()
             {
                 Entity entity(this, e);
                 auto [transformComponent, lightComponent] = areaLights.get<TransformComponent, AreaLightComponent>(e);
-                glm::mat4 model = transformComponent.GetModelMatrix();
+                glm::mat4 model = transformComponent.GetTransformMatrix();
                 glm::vec2 size = lightComponent.Size;
                 glm::vec3 points[4] = {
                     glm::vec3(-size.x, -size.y, 0.0f),
