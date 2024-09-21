@@ -48,7 +48,6 @@ void HierarchyPanel::RenderEntityTree(std::vector<Entity> &entities)
 }
 void HierarchyPanel::OnPanelLayout()
 {
-    ImGui::ShowDemoWindow();
     auto scene = SceneManager::Get()->GetActiveScene();
     auto entities = scene->GetEntities();
     std::vector<Entity> rootEntities;

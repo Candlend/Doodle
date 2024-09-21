@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <stb_image.h>
+#include <vector>
 
 #include "Buffer.h"
 #include "Log.h"
@@ -205,6 +206,11 @@ public:
             glBindTextureUnit(m_binding, 0);
             DOO_CORE_TRACE("Texture <{0}> unbound", m_rendererId);
         });
+    }
+
+    std::string GetPath() const
+    {
+        return m_filepath;
     }
 
     uint32_t GetWidth() const override
@@ -485,6 +491,11 @@ public:
             glBindTextureUnit(m_binding, 0);
             DOO_CORE_TRACE("Cube Texture <{0}> unbound", m_rendererId);
         });
+    }
+
+    std::array<std::string, 6> GetPath() const
+    {
+        return m_facePaths;
     }
 
     uint32_t GetWidth() const override

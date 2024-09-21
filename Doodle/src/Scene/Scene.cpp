@@ -1,15 +1,19 @@
 
 #include "ApplicationEvent.h"
+#include "MaterialComponent.h"
+#include "Renderable.h"
 #include "UUID.h"
 #include "glm/fwd.hpp"
 #include "pch.h"
 #include <glad/glad.h>
+#include <memory>
 #include <vector>
 
 #include "Component.h"
 #include "EditorCamera.h"
 #include "Entity.h"
 #include "EventManager.h"
+#include "Model.h"
 #include "Scene.h"
 #include "SceneEvent.h"
 #include "SceneManager.h"
@@ -41,9 +45,8 @@ void Scene::OnUpdate()
 
 void Scene::UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty)
 {
-    for (const auto &child : parentTransform.Children)
+    for (auto &entity : parentTransform.GetChildren())
     {
-        auto entity = m_entityMap[child];
         auto &transform = entity.GetComponent<TransformComponent>();
         transform.UpdateGlobalTransform(parentTransform.GlobalTransform);
         bool dirty = parentDirty || transform.Dirty;
@@ -93,6 +96,35 @@ Entity Scene::CreateEntity(const std::string &name)
     entity.AddComponent<TransformComponent>();
 
     return entity;
+}
+
+Entity Scene::ProcessModelNode(ModelNode node)
+{
+    Entity entity = CreateEntity(node.Name);
+    for (auto &[meshName, mesh] : node.Meshes)
+    {
+        Entity meshEntity = CreateEntity(meshName);
+        meshEntity.AddComponent<MeshComponent>(mesh);
+        meshEntity.GetComponent<TransformComponent>().SetParent(entity);
+        auto material = StandardMaterial::Create();
+        for (auto &[name, texture] : mesh->GetTextures())
+        {
+            material->SetUniformTexture(name, texture);
+        }
+        meshEntity.AddComponent<MaterialComponent>(material);
+    }
+
+    for (auto &childNode : node.Children)
+    {
+        auto child = ProcessModelNode(childNode);
+        child.GetComponent<TransformComponent>().SetParent(entity);
+    }
+    return entity;
+}
+
+Entity Scene::CreateEntityFromModel(std::shared_ptr<Model> model)
+{
+    return ProcessModelNode(model->GetRootNode());
 }
 
 Entity Scene::FindEntity(const std::string &name) const

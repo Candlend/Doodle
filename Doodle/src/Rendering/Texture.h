@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "TextureParams.h"
 #include "UUID.h"
+#include <vector>
 
 namespace Doodle
 {
@@ -12,10 +13,6 @@ namespace Doodle
 class DOO_API Texture
 {
 public:
-    Texture()
-    {
-        m_uuid = UUID();
-    }
     virtual ~Texture()
     {
     }
@@ -32,13 +29,6 @@ public:
     virtual uint32_t GetTarget() const = 0;
     virtual TextureFormat GetFormat() const = 0;
     virtual uint32_t GetMipLevelCount() const = 0;
-    virtual UUID GetUUID() const
-    {
-        return m_uuid;
-    }
-
-protected:
-    UUID m_uuid;
 };
 
 class DOO_API Texture2D : public Texture
@@ -56,6 +46,8 @@ public:
     static std::shared_ptr<Texture2D> GetDefaultNormalTexture();
 
     static std::shared_ptr<Texture2D> GetCheckerboardTexture();
+
+    std::string GetPath() const;
 };
 
 class DOO_API TextureCube : public Texture
@@ -71,6 +63,8 @@ public:
     static std::shared_ptr<TextureCube> GetWhiteTexture();
 
     static std::shared_ptr<TextureCube> GetBlackTexture();
+
+    std::array<std::string, 6> GetPath() const;
 };
 
 

@@ -38,7 +38,6 @@ void ViewportPanel::OnUpdate()
 
 void ViewportPanel::OnPanelLayout()
 {
-    ImGui::ShowDemoWindow();
     ImGui::SetKeyOwner(ImGuiMod_Alt, m_panelData.ID);
 
     auto frameBuffer = m_sceneRenderer->GetFrameBuffer();

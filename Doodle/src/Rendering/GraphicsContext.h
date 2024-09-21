@@ -4,7 +4,6 @@
 
 #include "RenderCommandQueue.h"
 #include "RendererAPI.h"
-#include "Singleton.h"
 
 namespace Doodle
 {

@@ -1,14 +1,17 @@
-#include "VertexBuffer.h"
+#include "assimp/material.h"
 #include "pch.h"
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/LogStream.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <filesystem>
 #include <glad/glad.h>
 
 #include "Mesh.h"
+#include "Texture.h"
 #include "VertexArray.h"
+#include "VertexBuffer.h"
 
 namespace Doodle
 {
@@ -37,7 +40,7 @@ struct LogStream : public Assimp::LogStream
     }
 };
 
-Mesh::Mesh(const std::string &filename) : m_filePath(filename)
+Mesh::Mesh(const std::string &filename) : m_filepath(filename)
 {
     LogStream::Initialize();
 
@@ -56,7 +59,8 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
     DOO_CORE_ASSERT(mesh->HasTangentsAndBitangents(), "Meshes require tangents and bitangents.");
     DOO_CORE_ASSERT(mesh->HasTextureCoords(0), "Meshes require texture coordinates.");
 
-    m_vertices.reserve(mesh->mNumVertices);
+    std::vector<Vertex> vertices;
+    vertices.reserve(mesh->mNumVertices);
 
     // Extract vertices from model
     for (size_t i = 0; i < mesh->mNumVertices; i++)
@@ -74,8 +78,76 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
         if (mesh->HasTextureCoords(0))
             vertex.TexCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
 
-        m_vertices.push_back(vertex);
+        vertices.push_back(vertex);
     }
+
+    std::vector<uint32_t> indices;
+    // Extract indices from model
+    indices.reserve(mesh->mNumFaces * 3); // Each face has 3 indices
+    for (size_t i = 0; i < mesh->mNumFaces; i++)
+    {
+        DOO_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
+        for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
+        {
+            indices.push_back(mesh->mFaces[i].mIndices[j]);
+        }
+    }
+
+    aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+
+    std::unordered_map<std::string, std::shared_ptr<Texture2D>> textures;
+
+    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++)
+    {
+        aiString str;
+        material->GetTexture(aiTextureType_DIFFUSE, i, &str);
+        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
+        textures["u_AlbedoTexture"] = Texture2D::Create(texturePath.string());
+        break;
+    }
+
+    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_NORMALS); i++)
+    {
+        aiString str;
+        material->GetTexture(aiTextureType_NORMALS, i, &str);
+        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
+        textures["u_NormalTexture"] = Texture2D::Create(texturePath.string());
+        break;
+    }
+
+    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_METALNESS); i++)
+    {
+        aiString str;
+        material->GetTexture(aiTextureType_SPECULAR, i, &str);
+        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
+        textures["u_SpecularTexture"] = Texture2D::Create(texturePath.string());
+        break;
+    }
+
+    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS); i++)
+    {
+        aiString str;
+        material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, i, &str);
+        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
+        textures["u_RoughnessTexture"] = Texture2D::Create(texturePath.string());
+        break;
+    }
+
+    ProcessMesh(vertices, indices, textures);
+}
+
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
+           const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures)
+{
+    ProcessMesh(vertices, indices, textures);
+}
+
+void Mesh::ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
+                       const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures)
+{
+    m_vertices = vertices;
+    m_indices = indices;
+    m_textures = textures;
 
     // Create Vertex Buffer Object
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
@@ -84,17 +156,6 @@ Mesh::Mesh(const std::string &filename) : m_filePath(filename)
     m_vertexBuffer->PushElement("a_TangentOS", VertexDataType::Vec3);
     m_vertexBuffer->PushElement("a_BinormalOS", VertexDataType::Vec3);
     m_vertexBuffer->PushElement("a_TexCoord", VertexDataType::Vec2);
-
-    // Extract indices from model
-    m_indices.reserve(mesh->mNumFaces * 3); // Each face has 3 indices
-    for (size_t i = 0; i < mesh->mNumFaces; i++)
-    {
-        DOO_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
-        for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
-        {
-            m_indices.push_back(mesh->mFaces[i].mIndices[j]);
-        }
-    }
 
     // Create Index Buffer Object
     m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size() * sizeof(uint32_t));
@@ -119,7 +180,7 @@ std::shared_ptr<Mesh> Mesh::GetQuad()
     static std::shared_ptr<Mesh> s_Quad = nullptr;
     if (!s_Quad)
     {
-        s_Quad = std::make_shared<Mesh>("assets/models/quad.obj");
+        s_Quad = std::make_shared<Mesh>("assets/meshes/quad.obj");
     }
     return s_Quad;
 }
@@ -129,7 +190,7 @@ std::shared_ptr<Mesh> Mesh::GetCube()
     static std::shared_ptr<Mesh> s_Cube = nullptr;
     if (!s_Cube)
     {
-        s_Cube = std::make_shared<Mesh>("assets/models/cube.obj");
+        s_Cube = std::make_shared<Mesh>("assets/meshes/cube.obj");
     }
     return s_Cube;
 }
@@ -139,7 +200,7 @@ std::shared_ptr<Mesh> Mesh::GetSphere()
     static std::shared_ptr<Mesh> s_Sphere = nullptr;
     if (!s_Sphere)
     {
-        s_Sphere = std::make_shared<Mesh>("assets/models/sphere.obj");
+        s_Sphere = std::make_shared<Mesh>("assets/meshes/sphere.obj");
     }
     return s_Sphere;
 }
@@ -149,9 +210,14 @@ std::shared_ptr<Mesh> Mesh::GetPlane()
     static std::shared_ptr<Mesh> s_Plane = nullptr;
     if (!s_Plane)
     {
-        s_Plane = std::make_shared<Mesh>("assets/models/plane.obj");
+        s_Plane = std::make_shared<Mesh>("assets/meshes/plane.obj");
     }
     return s_Plane;
+}
+
+std::shared_ptr<Texture2D> Mesh::GetTexture(const std::string &name)
+{
+    return m_textures[name];
 }
 
 std::shared_ptr<Mesh> Mesh::Create(const std::string &filename)

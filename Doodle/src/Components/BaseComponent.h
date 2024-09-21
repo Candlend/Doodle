@@ -123,8 +123,25 @@ struct DOO_API BaseComponent
     bool IsValid() const;
     operator bool() const;
 
-protected:
     entt::registry &GetRegistry() const;
+
+    Entity GetParent() const;
+
+    void SetParent(Entity parent);
+
+    void SetParentUUID(UUID parent);
+    UUID GetParentUUID() const;
+    std::vector<Entity> GetChildren();
+    std::vector<Entity> GetChildren() const;
+    std::vector<UUID> &GetChildrenUUID();
+    const std::vector<UUID> &GetChildrenUUID() const;
+
+    bool RemoveChild(Entity child);
+
+    bool IsAncestorOf(Entity entity) const;
+    bool IsDescendantOf(Entity entity) const;
+
+protected:
     Entity m_entity;
 };
 

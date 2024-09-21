@@ -72,6 +72,8 @@ class Entity;
 class BaseComponent;
 class SceneRenderer;
 class TransformComponent;
+class Model;
+class ModelNode;
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
@@ -123,6 +125,8 @@ public:
 
     void UpdateGlobalTransforms();
 
+    Entity CreateEntityFromModel(std::shared_ptr<Model> model);
+
 private:
     std::string m_name;
     bool m_active = false;
@@ -136,6 +140,8 @@ private:
     void OnUpdate();
     void UpdateSceneData();
     void UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty);
+
+    Entity ProcessModelNode(ModelNode node);
 };
 
 } // namespace Doodle

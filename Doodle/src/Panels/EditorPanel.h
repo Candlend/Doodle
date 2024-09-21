@@ -7,7 +7,6 @@
 #include "EventManager.h"
 #include "ImGuiUtils.h"
 #include "PanelManager.h"
-#include "Singleton.h"
 #include <cstdint>
 
 namespace Doodle
