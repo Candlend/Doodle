@@ -2,6 +2,7 @@
 #include "ApplicationEvent.h"
 #include "MaterialComponent.h"
 #include "Renderable.h"
+#include "SelectionManager.h"
 #include "UUID.h"
 #include "glm/fwd.hpp"
 #include "pch.h"
@@ -166,18 +167,30 @@ void Scene::AddEntity(const Entity &entity)
 
 void Scene::RemoveEntity(const UUID &id)
 {
-    m_registry.destroy(m_entityMap[id].GetEntityHandle());
+    if (SelectionManager::IsSelected(SelectionContext::Global, id))
+    {
+        SelectionManager::Deselect(SelectionContext::Global, id);
+    }
+    auto entity = m_entityMap[id];
+    auto parent = entity.GetParent();
+    if (parent)
+    {
+        parent.GetComponent<TransformComponent>().RemoveChild(entity);
+    }
+    for (auto &child : entity.GetChildren())
+    {
+        DestroyEntity(child);
+    }
     m_entityMap.erase(id);
     m_entityComponents.erase(id);
-    m_entityGlobalTransforms.erase(id);
+    auto entityHandle = entity.GetEntityHandle();
+    m_registry.destroy(entityHandle);
 }
 
 void Scene::DestroyEntity(const Entity &entity)
 {
-    m_registry.destroy(entity.GetEntityHandle());
     UUID id = entity.GetComponent<IDComponent>();
-    m_entityMap.erase(id);
-    m_entityComponents.erase(id);
+    RemoveEntity(id);
 }
 
 void Scene::LoadEnvironment(const std::string &filepath)

@@ -12,7 +12,7 @@ class aiMesh;
 class aiNode;
 class aiScene;
 class aiMaterial;
-enum aiTextureType;
+enum aiTextureType; // NOLINT
 
 namespace Doodle
 {

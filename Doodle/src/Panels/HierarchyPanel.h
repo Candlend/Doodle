@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include "pch.h"
+#include <cstdint>
 #include <imgui.h>
 
 #include <ImGuizmo.h>
@@ -24,6 +25,8 @@ public:
 
 private:
     void DrawEntityTree(std::vector<Entity> &entities);
+
+    Entity m_hoveredEntity;
 };
 
 } // namespace Doodle

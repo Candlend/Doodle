@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CameraController.h"
 #include "Component.h"
 #include "DebugPanel.h"
 #include "HierarchyPanel.h"

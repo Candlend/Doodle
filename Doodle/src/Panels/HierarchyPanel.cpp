@@ -2,10 +2,12 @@
 #include "Component.h"
 #include "EditorCamera.h"
 #include "Entity.h"
+#include "Input.h"
 #include "PanelManager.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 
 namespace Doodle
 {
@@ -24,6 +26,10 @@ void HierarchyPanel::DrawEntityTree(std::vector<Entity> &entities)
                      (children.empty() ? ImGuiTreeNodeFlags_Leaf : 0);
 
         bool opened = ImGui::TreeNodeEx(tag.c_str(), flags);
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1))
+        {
+            m_hoveredEntity = entity;
+        }
         // Handle selection
         if (ImGui::IsItemClicked())
         {
@@ -38,17 +44,17 @@ void HierarchyPanel::DrawEntityTree(std::vector<Entity> &entities)
 
         if (opened)
         {
-            // Render the children of the entity recursively
-            ImGui::Indent(16);
             DrawEntityTree(children);
-            ImGui::Unindent(16);
-            // Close the tree node after rendering children
             ImGui::TreePop();
         }
     }
 }
 void HierarchyPanel::OnPanelLayout()
 {
+    if (ImGui::IsMouseClicked(1))
+    {
+        m_hoveredEntity = Entity();
+    }
     auto scene = SceneManager::Get()->GetActiveScene();
     auto entities = scene->GetEntities();
     std::vector<Entity> rootEntities;
@@ -64,6 +70,14 @@ void HierarchyPanel::OnPanelLayout()
     // 右键菜单
     if (ImGui::BeginPopupContextWindow())
     {
+        if (m_hoveredEntity)
+        {
+            if (ImGui::MenuItem("Delete"))
+            {
+                scene->DestroyEntity(m_hoveredEntity);
+            }
+        }
+
         if (ImGui::MenuItem("Create Empty Entity"))
         {
             auto entity = scene->CreateEntity("Empty Entity");

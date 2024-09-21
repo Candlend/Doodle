@@ -45,15 +45,25 @@ public:
 
     void OnUpdate()
     {
+        glm::vec2 currentMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
+        glm::vec2 mouseDelta = currentMousePosition - m_lastMousePosition;
+        m_lastMousePosition = currentMousePosition;
         if (!PanelManager::Get()->GetPanel<ViewportPanel>()->IsShowOnTop())
+        {
+            m_active = false;
+            return;
+        }
+
+        if (Input::IsMouseButtonPressed(MouseButton::Right) &&
+            PanelManager::Get()->GetPanel<ViewportPanel>()->IsHovered())
+        {
+            m_active = true;
+        }
+
+        if (!m_active)
             return;
 
         float deltaTime = Application::Time::GetDeltaTime();
-
-        // 获取当前鼠标位置
-        glm::vec2 currentMousePosition = glm::vec2(Input::GetMousePosition().first, Input::GetMousePosition().second);
-        glm::vec2 mouseDelta = currentMousePosition - m_lastMousePosition;
-
         // 处理相机移动
         if (Input::IsMouseButtonDown(MouseButton::Right))
         {
@@ -120,8 +130,6 @@ public:
                     m_transform.Rotation.x = -89.0f;
             }
         }
-
-        m_lastMousePosition = currentMousePosition;
     }
 
     bool OnEvent(ViewportResizeEvent &event) override
@@ -163,6 +171,7 @@ public:
     }
 
 private:
+    bool m_active;
     float m_moveSpeed;
     float m_rotateSpeed;
     glm::vec2 m_lastMousePosition;

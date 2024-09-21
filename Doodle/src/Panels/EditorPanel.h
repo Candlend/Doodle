@@ -75,6 +75,11 @@ public:
         return m_panelData.IsShowOnTop();
     }
 
+    bool IsHovered() const
+    {
+        return m_panelData.Hovered;
+    }
+
     void SetOpened(bool opened)
     {
         m_open = opened;
