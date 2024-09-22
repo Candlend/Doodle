@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "Material.h"
 #include "Shader.h"
+#include "Texture.h"
 #include "imgui.h"
 #include "pch.h"
 
@@ -149,8 +150,21 @@ struct MaterialComponent : public BaseComponent
                 }
             }
             break;
-            case ShaderPropertyType::Sampler2D:
+            case ShaderPropertyType::Sampler2D: {
+                auto texture = MaterialInstance->GetUniformTexture(property.Name);
+                if (texture)
+                {
+                    ImGui::Image(reinterpret_cast<void *>(static_cast<intptr_t>(texture->GetRendererID())),
+                                 ImVec2(64, 64));
+                    ImGui::SameLine();
+                    ImGui::Text("%s", property.Name.c_str());
+                }
+                else
+                {
+                    ImGui::Text("None");
+                }
                 break;
+            }
             case ShaderPropertyType::SamplerCube:
                 break;
             }

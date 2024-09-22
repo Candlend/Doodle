@@ -52,6 +52,7 @@ struct TextureParams
     TextureFilter Filter = TextureFilter::Linear;
     uint32_t Width = 1;
     uint32_t Height = 1;
+    bool InvertColor = false; // only works for LDR textures
 
     std::string ToString() const
     {

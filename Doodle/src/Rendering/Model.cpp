@@ -8,10 +8,14 @@
 #include <string>
 
 #include "Entity.h"
+#include "Log.h"
 #include "Mesh.h"
 #include "Model.h"
+#include "Texture.h"
+#include "TextureParams.h"
 #include "assimp/material.h"
 #include "assimp/mesh.h"
+#include "assimp/types.h"
 
 struct LogStream : public Assimp::LogStream
 {
@@ -33,18 +37,24 @@ struct LogStream : public Assimp::LogStream
 namespace Doodle
 {
 
-void Model::LoadTexture(aiMaterial *material, aiTextureType type, std::string name)
+void Model::LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures, aiMaterial *material,
+                        std::string name, aiTextureType type, int index, TextureParams params)
 {
-    for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
+    if (textures.contains(name))
+        return;
+    aiString str;
+    aiReturn result = material->GetTexture(type, index, &str);
+    if (result != aiReturn_SUCCESS)
+        return;
+    std::filesystem::path texturePath = std::filesystem::path(m_directory) / str.C_Str();
+    DOO_CORE_INFO("Loading texture: {0}", texturePath.string());
+    if (m_loadedTextures.contains(texturePath.string()))
     {
-        aiString str;
-        material->GetTexture(type, i, &str);
-        std::filesystem::path texturePath = std::filesystem::path(m_directory) / str.C_Str();
-        if (m_loadedTextures.contains(texturePath.string()))
-            continue;
-        m_textures[name] = Texture2D::Create(texturePath.string());
-        break;
+        textures[name] = m_loadedTextures[texturePath.string()];
+        return;
     }
+    textures[name] = Texture2D::Create(texturePath.string(), params);
+    m_loadedTextures[texturePath.string()] = textures[name];
 }
 
 std::shared_ptr<Mesh> Model::LoadMesh(const aiMesh *mesh, const aiScene *scene)
@@ -91,12 +101,21 @@ std::shared_ptr<Mesh> Model::LoadMesh(const aiMesh *mesh, const aiScene *scene)
     // process the mesh
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-    LoadTexture(material, aiTextureType_DIFFUSE, "u_AlbedoTexture");
-    LoadTexture(material, aiTextureType_NORMALS, "u_NormalTexture");
-    LoadTexture(material, aiTextureType_METALNESS, "u_MetalnessTexture");
-    LoadTexture(material, aiTextureType_DIFFUSE_ROUGHNESS, "u_RoughnessTexture");
+    std::unordered_map<std::string, std::shared_ptr<Texture2D>> textures;
+    TextureParams srgbParams;
+    srgbParams.Format = TextureFormat::SRGB8ALPHA8;
+    LoadTexture(textures, material, "u_AlbedoTexture", AI_MATKEY_BASE_COLOR_TEXTURE, srgbParams);
+    LoadTexture(textures, material, "u_AlbedoTexture", aiTextureType_DIFFUSE, 0, srgbParams);
+    LoadTexture(textures, material, "u_NormalTexture", aiTextureType_NORMALS);
+    LoadTexture(textures, material, "u_NormalTexture", aiTextureType_HEIGHT);
+    LoadTexture(textures, material, "u_MetalnessTexture", AI_MATKEY_METALLIC_TEXTURE);
+    LoadTexture(textures, material, "u_RoughnessTexture", AI_MATKEY_ROUGHNESS_TEXTURE);
+    TextureParams invertParams;
+    invertParams.InvertColor = true;
+    LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SPECULAR, 0, invertParams);
+    LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SHININESS, 0, invertParams);
 
-    return std::make_shared<Mesh>(vertices, indices, m_textures);
+    return std::make_shared<Mesh>(vertices, indices, textures);
 }
 
 ModelNode Model::ProcessNode(aiNode *node, const aiScene *scene)

@@ -154,6 +154,45 @@ public:
                 stbi_load(m_filepath.c_str(), &width, &height, &channels, desiredChannels));
         }
 
+        if (m_params.InvertColor)
+        {
+            auto size = GetMemorySize(m_params.Format, width, height);
+            if (size == width * height * channels)
+            {
+                unsigned char *revertData = static_cast<unsigned char *>(malloc(width * height * channels));
+                if (revertData == nullptr)
+                {
+                    DOO_CORE_ERROR("Error allocating memory\n");
+                    stbi_image_free(m_data);
+                    return;
+                }
+
+                // 反色处理
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        int invertChannels = std::min(channels, 3);
+                        for (int c = 0; c < channels; c++)
+                        {
+                            if (c < invertChannels)
+                            {
+                                revertData[(y * width + x) * channels + c] =
+                                    255 - static_cast<unsigned char>(m_data[(y * width + x) * channels + c]);
+                            }
+                            else
+                            {
+                                revertData[(y * width + x) * channels + c] =
+                                    static_cast<unsigned char>(m_data[(y * width + x) * channels + c]);
+                            }
+                        }
+                    }
+                }
+                stbi_image_free(m_data);
+                m_data = reinterpret_cast<std::byte *>(revertData);
+            }
+        }
+
         if (!m_data)
         {
             DOO_CORE_ERROR("Failed to load texture: {0}", m_filepath);

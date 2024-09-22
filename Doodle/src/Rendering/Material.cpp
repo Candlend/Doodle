@@ -119,6 +119,10 @@ glm::mat4 Material::GetUniformMatrix4f(const std::string &name)
 
 std::shared_ptr<Texture> Material::GetUniformTexture(const std::string &name)
 {
+    if (!m_textures.contains(name))
+    {
+        return nullptr;
+    }
     return m_textures[name];
 }
 
