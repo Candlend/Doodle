@@ -118,8 +118,8 @@ public:
         SetRoughnessTexture(Texture2D::GetWhiteTexture());
         SetAlbedoColor(glm::vec4(1.0f));
         SetNormalScale(1.0f);
-        SetMetallic(1.0f);
-        SetRoughness(1.0f);
+        SetMetallic(0.0f);
+        SetRoughness(0.4f);
     }
 
     void SetAlbedoColor(const glm::vec4 &color)

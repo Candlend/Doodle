@@ -39,9 +39,11 @@ public:
         {
             return;
         }
-
-        auto lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 20.0f);
-        auto lightView = glm::lookAt(-directionalLight.Direction * 10.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        float range = 20.0f;
+        auto lightProjection = glm::ortho(-range, range, -range, range, -range, range);
+        auto lightView =
+            glm::lookAt(sceneData.CameraData.Position, sceneData.CameraData.Position + directionalLight.Direction,
+                        glm::vec3(0.0f, 1.0f, 0.0f));
 
         m_shader->SetUniformMatrix4f("u_View", lightView);
         m_shader->SetUniformMatrix4f("u_Projection", lightProjection);

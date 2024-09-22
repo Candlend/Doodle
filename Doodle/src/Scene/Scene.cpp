@@ -109,6 +109,14 @@ Entity Scene::ProcessModelNode(ModelNode node)
         {
             material->SetUniformTexture(name, texture);
         }
+        for (auto &[name, value] : mesh->GetUniform1f())
+        {
+            material->SetUniform1f(name, value);
+        }
+        for (auto &[name, value] : mesh->GetUniform4f())
+        {
+            material->SetUniform4f(name, value);
+        }
         meshEntity.AddComponent<MaterialComponent>(material);
     }
 

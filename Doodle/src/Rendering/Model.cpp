@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "Entity.h"
 #include "Log.h"
@@ -114,7 +116,43 @@ std::shared_ptr<Mesh> Model::LoadMesh(const aiMesh *mesh, const aiScene *scene)
     LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SPECULAR, 0, invertParams);
     LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SHININESS, 0, invertParams);
 
-    return std::make_shared<Mesh>(vertices, indices, textures);
+    std::unordered_map<std::string, float> uniform1f;
+    std::unordered_map<std::string, glm::vec4> uniform4f;
+
+    aiColor3D color(1.0f);
+    float alpha = 1.0f;
+    if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
+    {
+        uniform4f["u_AlbedoColor"] = {color.r, color.g, color.b, alpha};
+    }
+    if (material->Get(AI_MATKEY_OPACITY, alpha) == aiReturn_SUCCESS)
+    {
+        uniform4f["u_AlbedoColor"].w = alpha;
+    }
+
+    float roughness, metallic;
+    if (material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == aiReturn_SUCCESS)
+    {
+        uniform1f["u_Roughness"] = roughness;
+    }
+    if (material->Get(AI_MATKEY_REFLECTIVITY, metallic) == aiReturn_SUCCESS)
+    {
+        uniform1f["u_Metallic"] = metallic;
+    }
+    if (textures.contains("u_AlbedoTexture"))
+    {
+        uniform4f["u_AlbedoColor"] = {1.0f, 1.0f, 1.0f, alpha};
+    }
+    if (textures.contains("u_RoughnessTexture"))
+    {
+        uniform1f["u_Roughness"] = 1.0f;
+    }
+    if (textures.contains("u_MetalnessTexture"))
+    {
+        uniform1f["u_Metallic"] = 1.0f;
+    }
+
+    return std::make_shared<Mesh>(vertices, indices, textures, uniform1f, uniform4f);
 }
 
 ModelNode Model::ProcessNode(aiNode *node, const aiScene *scene)

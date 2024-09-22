@@ -1,4 +1,5 @@
 #include "assimp/material.h"
+#include "glm/fwd.hpp"
 #include "pch.h"
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/Importer.hpp>
@@ -95,59 +96,27 @@ Mesh::Mesh(const std::string &filename) : m_filepath(filename)
 
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-    std::unordered_map<std::string, std::shared_ptr<Texture2D>> textures;
-
-    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++)
-    {
-        aiString str;
-        material->GetTexture(aiTextureType_DIFFUSE, i, &str);
-        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
-        textures["u_AlbedoTexture"] = Texture2D::Create(texturePath.string());
-        break;
-    }
-
-    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_NORMALS); i++)
-    {
-        aiString str;
-        material->GetTexture(aiTextureType_NORMALS, i, &str);
-        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
-        textures["u_NormalTexture"] = Texture2D::Create(texturePath.string());
-        break;
-    }
-
-    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_METALNESS); i++)
-    {
-        aiString str;
-        material->GetTexture(aiTextureType_SPECULAR, i, &str);
-        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
-        textures["u_SpecularTexture"] = Texture2D::Create(texturePath.string());
-        break;
-    }
-
-    for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS); i++)
-    {
-        aiString str;
-        material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, i, &str);
-        std::filesystem::path texturePath = std::filesystem::path(filename).parent_path() / str.C_Str();
-        textures["u_RoughnessTexture"] = Texture2D::Create(texturePath.string());
-        break;
-    }
-
-    ProcessMesh(vertices, indices, textures);
+    ProcessMesh(vertices, indices, {}, {}, {});
 }
 
 Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
-           const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures)
+           const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures,
+           const std::unordered_map<std::string, float> &uniform1f,
+           const std::unordered_map<std::string, glm::vec4> &uniform4f)
 {
-    ProcessMesh(vertices, indices, textures);
+    ProcessMesh(vertices, indices, textures, uniform1f, uniform4f);
 }
 
 void Mesh::ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
-                       const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures)
+                       const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures,
+                       const std::unordered_map<std::string, float> &uniform1f,
+                       const std::unordered_map<std::string, glm::vec4> &uniform4f)
 {
     m_vertices = vertices;
     m_indices = indices;
     m_textures = textures;
+    m_uniform1f = uniform1f;
+    m_uniform4f = uniform4f;
 
     // Create Vertex Buffer Object
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
