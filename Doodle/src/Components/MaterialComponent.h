@@ -159,10 +159,6 @@ struct MaterialComponent : public BaseComponent
                     ImGui::SameLine();
                     ImGui::Text("%s", property.Name.c_str());
                 }
-                else
-                {
-                    ImGui::Text("None");
-                }
                 break;
             }
             case ShaderPropertyType::SamplerCube:

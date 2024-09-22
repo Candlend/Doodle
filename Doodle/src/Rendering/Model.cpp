@@ -107,7 +107,6 @@ std::shared_ptr<Mesh> Model::LoadMesh(const aiMesh *mesh, const aiScene *scene)
     LoadTexture(textures, material, "u_AlbedoTexture", AI_MATKEY_BASE_COLOR_TEXTURE, srgbParams);
     LoadTexture(textures, material, "u_AlbedoTexture", aiTextureType_DIFFUSE, 0, srgbParams);
     LoadTexture(textures, material, "u_NormalTexture", aiTextureType_NORMALS);
-    LoadTexture(textures, material, "u_NormalTexture", aiTextureType_HEIGHT);
     LoadTexture(textures, material, "u_MetalnessTexture", AI_MATKEY_METALLIC_TEXTURE);
     LoadTexture(textures, material, "u_RoughnessTexture", AI_MATKEY_ROUGHNESS_TEXTURE);
     TextureParams invertParams;

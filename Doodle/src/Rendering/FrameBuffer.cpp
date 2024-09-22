@@ -224,10 +224,10 @@ private:
     {
         if (m_rendererId)
         {
-            glDeleteFramebuffers(1, &m_rendererId);
             glDeleteTextures(m_colorAttachments.size(), m_colorAttachments.data());
             if (m_depthAttachment)
                 glDeleteTextures(1, &m_depthAttachment);
+            glDeleteFramebuffers(1, &m_rendererId);
         }
 
         glCreateFramebuffers(1, &m_rendererId);
