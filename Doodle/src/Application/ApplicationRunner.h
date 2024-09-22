@@ -28,7 +28,8 @@ public:
         std::string iconLarge = "assets/icons/icon_large.png";
 #ifndef DOO_HIDE_SPLASH
         m_window = Window::Create(props, false);
-        if (!m_splashScreen.LoadImage("assets/splash.png")) {
+        if (!m_splashScreen.Load("assets/splash.png"))
+        {
             DOO_CORE_ERROR("Failed to load splash screen image!");
         }
         // 设置m_splashScreen的图标和Window的图标一致
@@ -50,7 +51,7 @@ public:
         std::string iconLarge = "assets/icons/icon_large.png";
 #ifndef DOO_HIDE_SPLASH
         m_window = Window::Create(props, false);
-        if (!m_splashScreen.LoadImage("assets/splash.png"))
+        if (!m_splashScreen.Load("assets/splash.png"))
         {
             DOO_CORE_ERROR("Failed to load splash screen image!");
         }

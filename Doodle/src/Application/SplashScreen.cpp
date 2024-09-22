@@ -16,7 +16,7 @@ SplashScreen::SplashScreen()
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Hide the window until we're ready to show it
 }
 
-bool SplashScreen::LoadImage(const std::string &filename)
+bool SplashScreen::Load(const std::string &filename)
 {
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(filename.c_str(), &m_imageWidth, &m_imageHeight, nullptr, 4);

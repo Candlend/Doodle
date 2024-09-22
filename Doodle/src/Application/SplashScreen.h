@@ -13,8 +13,7 @@ public:
     SplashScreen();
     ~SplashScreen();
 
-    bool LoadImage(const std::string &filename);
-
+    bool Load(const std::string &filename);
     void Begin(float minimumDuration);
 
     void End();
