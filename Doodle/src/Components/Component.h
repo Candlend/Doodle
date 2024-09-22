@@ -1,18 +1,21 @@
 #pragma once
 
+#include <glm/detail/type_quat.hpp>
+#include <glm/fwd.hpp>
+#include <imgui.h>
+
+#include <imGuizmo.h>
+
 #include "BaseComponent.h"
 #include "CameraComponent.h"
 #include "Core.h"
 #include "ImGuiUtils.h"
 #include "LightComponent.h"
 #include "MaterialComponent.h"
+#include "MathUtils.h"
 #include "Renderable.h"
 #include "Scriptable.h"
 #include "UUID.h"
-#include "glm/detail/type_quat.hpp"
-#include "glm/fwd.hpp"
-#include "imgui.h"
-#include <vector>
 
 namespace Doodle
 {

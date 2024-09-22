@@ -107,10 +107,8 @@ struct PointLight
     vec3 PositionWS;
     vec3 Radiance;
     float Intensity;
-    float MinRadius;
-    float Radius;
-    float Falloff; // TODO 未使用
-    float SourceSize; // TODO 未使用
+    float MinRange;
+    float Range;
 };
 
 layout(std140, binding = 1) uniform PointLightData
@@ -125,10 +123,10 @@ struct SpotLight
     vec3 Direction;
     vec3 Radiance;
     float Intensity;
-    float AngleAttenuation;
+    float MinRange;
     float Range;
+    float MinAngle;
     float Angle;
-    float Falloff; // TODO 未使用
 };
 
 layout(std140, binding = 2) uniform SpotLightData
@@ -421,11 +419,11 @@ void main()
     {
         PointLight light = u_PointLights.Lights[i];
         float distance = length(light.PositionWS - fs_in.PositionWS);
-        if (distance > light.Radius)
+        if (distance > light.Range)
             continue;
         vec3 lightDir = normalize(light.PositionWS - fs_in.PositionWS);
         // Attenuation
-        float attenuation = clamp(1.0 - (distance - light.MinRadius) / (light.Radius - light.MinRadius), 0.0, 1.0); // TODO 参数可以调整
+        float attenuation = 1 - smoothstep(light.MinRange, light.Range, distance);
         color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * attenuation;
     }
 
@@ -438,10 +436,10 @@ void main()
             continue;
         vec3 lightDir = normalize(light.PositionWS - fs_in.PositionWS);
         // Attenuation
-        float attenuation = clamp(1.0 - (distance) / (light.Range), 0.0, 1.0);
+        float attenuation = 1 - smoothstep(light.MinRange, light.Range, distance);
         
         // Angle attenuation
-        float angleAttenuation = smoothstep(cos(light.Angle), 1.0, dot(-lightDir, normalize(light.Direction)));  // TODO 参数可以调整
+        float angleAttenuation = 1 - smoothstep(cos(radians(light.MinAngle)), cos(radians(light.Angle)), dot(-lightDir, normalize(light.Direction)));
         attenuation *= angleAttenuation;
         
         color += CookTorranceBRDF(normal, viewDir, lightDir, metallic, roughness, albedo) * light.Radiance * light.Intensity * attenuation;

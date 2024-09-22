@@ -154,10 +154,27 @@ IMGUI_API void SetOrthographic(bool isOrthographic);
 IMGUI_API void DrawCubes(const float *view, const float *projection, const float *matrices, int matrixCount);
 IMGUI_API void DrawGrid(const float *view, const float *projection, const float *matrix, const float gridSize);
 
+IMGUI_API void DrawWireCubes(const float *view, const float *projection, const float *matrices, int matrixCount,
+                             ImU32 color);
+IMGUI_API void DrawWireSphere(const float *view, const float *projection, const float *matrices, int matrixCount,
+                              ImU32 color, float radius);
+IMGUI_API void DrawCircle(const float *view, const float *projection, const float *matrices, int matrixCount,
+                          ImU32 color, float radius);
+IMGUI_API void DrawRectangle(const float *view, const float *projection, const float *matrices, int matrixCount,
+                             ImU32 color, float width, float height);
+
+IMGUI_API void DrawPointLightGizmos(const float *view, const float *projection, const float *matrices, int matrixCount,
+                                    ImU32 color, float radius);
+IMGUI_API void DrawSpotLightGizmos(const float *view, const float *projection, const float *matrices, int matrixCount,
+                                   ImU32 color, float radius, float angle);
+IMGUI_API void DrawDirectionalLightGizmos(const float *view, const float *projection, const float *matrices,
+                                          int matrixCount, ImU32 color, float radius, float height);
+IMGUI_API void DrawAreaLightGizmos(const float *view, const float *projection, const float *matrices, int matrixCount,
+                                   ImU32 color, float width, float height);
 // call it when you want a gizmo
 // Needs view and projection matrices.
-// matrix parameter is the source matrix (where will be gizmo be drawn) and might be transformed by the function. Return
-// deltaMatrix is optional translation is applied in world space
+// matrix parameter is the source matrix (where will be gizmo be drawn) and might be transformed by the function.
+// Return deltaMatrix is optional translation is applied in world space
 enum OPERATION
 {
     TRANSLATE,

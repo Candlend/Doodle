@@ -115,6 +115,35 @@ void HierarchyPanel::OnPanelLayout()
 
             ImGui::EndMenu();
         }
+
+        if (ImGui::BeginMenu("Create Lights"))
+        {
+            if (ImGui::MenuItem("Directional Light"))
+            {
+                auto entity = scene->CreateEntity("Directional Light");
+                entity.AddComponent<DirectionalLightComponent>().Intensity = 1.0f;
+            }
+
+            if (ImGui::MenuItem("Point Light"))
+            {
+                auto entity = scene->CreateEntity("Point Light");
+                entity.AddComponent<PointLightComponent>().Intensity = 1.0f;
+            }
+
+            if (ImGui::MenuItem("Spot Light"))
+            {
+                auto entity = scene->CreateEntity("Spot Light");
+                entity.AddComponent<SpotLightComponent>().Intensity = 1.0f;
+            }
+
+            if (ImGui::MenuItem("Area Light"))
+            {
+                auto entity = scene->CreateEntity("Area Light");
+                entity.AddComponent<AreaLightComponent>().Intensity = 1.0f;
+            }
+
+            ImGui::EndMenu();
+        }
         ImGui::EndPopup();
     }
 }

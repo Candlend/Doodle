@@ -43,6 +43,10 @@ struct DOO_API BaseComponent
         ImGui::TextDisabled("No inspector available");
     }
 
+    virtual void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection)
+    {
+    }
+
     template <typename T, typename... Args> T &AddComponent(Args &&...args)
     {
         DOO_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");

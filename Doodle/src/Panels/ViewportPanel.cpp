@@ -1,3 +1,4 @@
+#include "BaseComponent.h"
 #include "EditorCamera.h"
 #include "KeyCode.h"
 #include "UUID.h"
@@ -111,6 +112,12 @@ void ViewportPanel::OnPanelLayout()
             transform.SetLocalPosition(translation);
             transform.SetLocalRotation(rotation);
             transform.SetLocalScale(scale);
+        }
+
+        auto components = scene->GetComponents(entity.GetUUID());
+        for (auto &component : components)
+        {
+            component->OnDrawGizmos(model, view, projection);
         }
 
         if (Input::IsKeyPressed(KeyCode::F))

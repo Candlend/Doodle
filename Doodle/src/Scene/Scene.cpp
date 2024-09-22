@@ -353,9 +353,7 @@ void Scene::UpdateSceneData()
                 auto [transformComponent, lightComponent] = pointLights.get<TransformComponent, PointLightComponent>(e);
                 m_sceneData.LightData.PointLights[pointLightIndex++] = {
                     transformComponent.GetPosition(), lightComponent.Radiance, lightComponent.Intensity,
-                    lightComponent.MinRadius,         lightComponent.Radius,   lightComponent.Falloff,
-                    lightComponent.SourceSize,
-                };
+                    lightComponent.MinRange, lightComponent.Range};
             }
         }
         // Spot Lights
@@ -371,14 +369,10 @@ void Scene::UpdateSceneData()
                     glm::normalize(glm::rotate(transformComponent.GetQuaternion(), glm::vec3(1.0f, 0.0f, 0.0f)));
 
                 m_sceneData.LightData.SpotLights[spotLightIndex++] = {
-                    transformComponent.GetPosition(),
-                    direction,
-                    lightComponent.Radiance,
-                    lightComponent.Intensity,
-                    lightComponent.AngleAttenuation,
-                    lightComponent.Range,
-                    lightComponent.Angle,
-                    lightComponent.Falloff,
+                    transformComponent.GetPosition(), direction,
+                    lightComponent.Radiance,          lightComponent.Intensity,
+                    lightComponent.MinRange,          lightComponent.Range,
+                    lightComponent.MinAngle,          lightComponent.Angle,
                 };
             }
         }
@@ -394,10 +388,10 @@ void Scene::UpdateSceneData()
                 glm::mat4 model = transformComponent.GetTransformMatrix();
                 glm::vec2 size = lightComponent.Size;
                 glm::vec3 points[4] = {
-                    glm::vec3(-size.x, -size.y, 0.0f),
-                    glm::vec3(-size.x, size.y, 0.0f),
-                    glm::vec3(size.x, size.y, 0.0f),
-                    glm::vec3(size.x, -size.y, 0.0f),
+                    glm::vec3(-size.x / 2, -size.y / 2, 0.0f),
+                    glm::vec3(-size.x / 2, size.y / 2, 0.0f),
+                    glm::vec3(size.x / 2, size.y / 2, 0.0f),
+                    glm::vec3(size.x / 2, -size.y / 2, 0.0f),
                 };
                 for (auto &point : points)
                 {

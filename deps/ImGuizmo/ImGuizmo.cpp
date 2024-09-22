@@ -2535,6 +2535,489 @@ void DrawCubes(const float *view, const float *projection, const float *matrices
     }
 }
 
+void DrawWireCubes(const float *view, const float *projection, const float *matrices, int matrixCount, ImU32 color)
+{
+    vec_t frustum[6];
+    matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;
+    ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+    for (int cube = 0; cube < matrixCount; cube++)
+    {
+        const float *matrix = &matrices[cube * 16];
+        matrix_t modelMatrix = *(matrix_t *)matrix;
+
+        // Define the 8 vertices of the cube in local space
+        vec_t cubeVertices[8] = {
+            makeVect(-0.5f, -0.5f, -0.5f), makeVect(0.5f, -0.5f, -0.5f), makeVect(0.5f, 0.5f, -0.5f),
+            makeVect(-0.5f, 0.5f, -0.5f),  makeVect(-0.5f, -0.5f, 0.5f), makeVect(0.5f, -0.5f, 0.5f),
+            makeVect(0.5f, 0.5f, 0.5f),    makeVect(-0.5f, 0.5f, 0.5f),
+        };
+
+        const int edgeVertices[12][2] = {
+            {0, 1}, {1, 2}, {2, 3}, {3, 0}, // Back face
+            {4, 5}, {5, 6}, {6, 7}, {7, 4}, // Front face
+            {0, 4}, {1, 5}, {2, 6}, {3, 7}  // Connecting edges
+        };
+
+        // Transform vertices to world space and check visibility
+        vec_t transformedVertices[8];
+        for (int i = 0; i < 8; i++)
+        {
+            transformedVertices[i].TransformPoint(cubeVertices[i], modelMatrix);
+        }
+
+        for (int edge = 0; edge < 12; edge++)
+        {
+            int v1 = edgeVertices[edge][0];
+            int v2 = edgeVertices[edge][1];
+
+            bool inFrustum = true;
+            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            {
+                float dist1 = DistanceToPlane(transformedVertices[v1], frustum[iFrustum]);
+                float dist2 = DistanceToPlane(transformedVertices[v2], frustum[iFrustum]);
+                if (dist1 < 0.f && dist2 < 0.f)
+                {
+                    inFrustum = false;
+                    break;
+                }
+            }
+
+            if (!inFrustum)
+            {
+                continue;
+            }
+
+            gContext.mDrawList->AddLine(worldToPos(transformedVertices[v1], viewProjection),
+                                        worldToPos(transformedVertices[v2], viewProjection), color, 1.0f);
+        }
+    }
+}
+
+void DrawWireSphere(const float *view, const float *projection, const float *matrices, int matrixCount, ImU32 color,
+                    float radius)
+{
+    vec_t frustum[6];
+    matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;
+    ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+    for (int i = 0; i < matrixCount; i++)
+    {
+        const float *matrix = &matrices[i * 16];
+        matrix_t modelMatrix = *(matrix_t *)matrix;
+
+        // Define the position of the point light
+        vec_t position = makeVect(0.0f, 0.0f, 0.0f);
+
+        // Create a wireframe sphere to represent the point light
+        const int segments = 32; // Number of segments for the sphere
+        const float PI = 3.14159265359f;
+        vec_t sphereVertices[(segments + 1) * (segments + 1)];
+
+        for (int j = 0; j <= segments; j++)
+        {
+            float theta = j * PI / segments;
+            for (int k = 0; k <= segments; k++)
+            {
+                float phi = k * 2 * PI / segments;
+                sphereVertices[j * (segments + 1) + k] =
+                    makeVect(radius * sin(theta) * cos(phi), radius * cos(theta), radius * sin(theta) * sin(phi));
+                sphereVertices[j * (segments + 1) + k].TransformPoint(sphereVertices[j * (segments + 1) + k],
+                                                                      modelMatrix);
+            }
+        }
+
+        // Draw the wireframe sphere
+        for (int j = 0; j < segments; j++)
+        {
+            for (int k = 0; k < segments; k++)
+            {
+                bool inFrustum = true;
+
+                for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+                {
+                    float dist1 = DistanceToPlane(sphereVertices[j * (segments + 1) + k], frustum[iFrustum]);
+                    float dist2 = DistanceToPlane(sphereVertices[j * (segments + 1) + (k + 1)], frustum[iFrustum]);
+                    float dist3 = DistanceToPlane(sphereVertices[(j + 1) * (segments + 1) + k], frustum[iFrustum]);
+                    if (dist1 < 0.f && dist2 < 0.f && dist3 < 0.f)
+                    {
+                        inFrustum = false;
+                        break;
+                    }
+                }
+
+                if (!inFrustum)
+                {
+                    continue;
+                }
+
+                gContext.mDrawList->AddLine(
+                    worldToPos(position + sphereVertices[j * (segments + 1) + k], viewProjection),
+                    worldToPos(position + sphereVertices[j * (segments + 1) + (k + 1)], viewProjection), color, 1.0f);
+                gContext.mDrawList->AddLine(
+                    worldToPos(position + sphereVertices[j * (segments + 1) + k], viewProjection),
+                    worldToPos(position + sphereVertices[(j + 1) * (segments + 1) + k], viewProjection), color, 1.0f);
+            }
+        }
+    }
+}
+
+void DrawCircle(const float *view, const float *projection, const float *matrices, int matrixCount, ImU32 color,
+                float radius)
+{
+    vec_t frustum[6];
+    matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;
+    ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+    for (int i = 0; i < matrixCount; i++)
+    {
+        const float *matrix = &matrices[i * 16];
+        matrix_t modelMatrix = *(matrix_t *)matrix;
+
+        // Define the position of the circle's center
+        vec_t position = makeVect(0.0f, 0.0f, 0.0f);
+
+        // Create a circle to represent the light
+        const int segments = 32; // Number of segments for the circle
+        const float PI = 3.14159265359f;
+        vec_t circleVertices[segments + 1];
+
+        for (int j = 0; j < segments; j++)
+        {
+            float theta = j * 2 * PI / segments;
+            circleVertices[j] = makeVect(radius * cos(theta), radius * sin(theta), 0.0f);
+            circleVertices[j].TransformPoint(circleVertices[j], modelMatrix);
+        }
+        // Close the circle
+        circleVertices[segments] = circleVertices[0];
+
+        // Draw the wireframe circle
+        for (int j = 0; j < segments; j++)
+        {
+            bool inFrustum = true;
+
+            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            {
+                float dist1 = DistanceToPlane(position, frustum[iFrustum]);
+                float dist2 = DistanceToPlane(position + circleVertices[j], frustum[iFrustum]);
+                float dist3 = DistanceToPlane(position + circleVertices[j + 1], frustum[iFrustum]);
+                if (dist1 < 0.f && dist2 < 0.f && dist3 < 0.f)
+                {
+                    inFrustum = false;
+                    break;
+                }
+            }
+
+            if (!inFrustum)
+            {
+                continue;
+            }
+
+            gContext.mDrawList->AddLine(worldToPos(position + circleVertices[j], viewProjection),
+                                        worldToPos(position + circleVertices[j + 1], viewProjection), color, 1.0f);
+        }
+    }
+}
+
+void DrawRectangle(const float *view, const float *projection, const float *matrices, int matrixCount, ImU32 color,
+                   float width, float height)
+{
+    vec_t frustum[6];
+    matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;
+    ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+    for (int i = 0; i < matrixCount; i++)
+    {
+        const float *matrix = &matrices[i * 16];
+        matrix_t modelMatrix = *(matrix_t *)matrix;
+
+        // 定义矩形的四个顶点
+        vec_t position = makeVect(0.0f, 0.0f, 0.0f);
+        vec_t rectangleVertices[4];
+
+        rectangleVertices[0] = makeVect(-width / 2, -height / 2, 0.0f); // 左下角
+        rectangleVertices[1] = makeVect(width / 2, -height / 2, 0.0f);  // 右下角
+        rectangleVertices[2] = makeVect(width / 2, height / 2, 0.0f);   // 右上角
+        rectangleVertices[3] = makeVect(-width / 2, height / 2, 0.0f);  // 左上角
+
+        // 变换矩形的顶点
+        for (int j = 0; j < 4; j++)
+        {
+            rectangleVertices[j].TransformPoint(rectangleVertices[j], modelMatrix);
+        }
+
+        // 绘制矩形的边
+        for (int j = 0; j < 4; j++)
+        {
+            bool inFrustum = true;
+
+            // 检查矩形的每个顶点是否在视锥体内
+            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            {
+                float dist1 = DistanceToPlane(position, frustum[iFrustum]);
+                float dist2 = DistanceToPlane(position + rectangleVertices[j], frustum[iFrustum]);
+                float dist3 = DistanceToPlane(position + rectangleVertices[(j + 1) % 4], frustum[iFrustum]);
+                if (dist1 < 0.f && dist2 < 0.f && dist3 < 0.f)
+                {
+                    inFrustum = false;
+                    break;
+                }
+            }
+
+            if (!inFrustum)
+            {
+                continue;
+            }
+
+            // 连接当前点与下一个点
+            gContext.mDrawList->AddLine(worldToPos(position + rectangleVertices[j], viewProjection),
+                                        worldToPos(position + rectangleVertices[(j + 1) % 4], viewProjection), color,
+                                        1.0f);
+        }
+    }
+}
+
+void DrawPointLightGizmos(const float *view, const float *projection, const float *matrices, int matrixCount,
+                          ImU32 color, float radius)
+{
+    vec_t frustum[6];
+    matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;
+    ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+    const int segments = 32; // 圆的细分数
+    const float PI = 3.14159265359f;
+
+    for (int i = 0; i < matrixCount; i++)
+    {
+        const float *matrix = &matrices[i * 16];
+        matrix_t modelMatrix = *(matrix_t *)matrix;
+
+        // 定义光源位置
+        vec_t position = makeVect(0.0f, 0.0f, 0.0f);
+
+        // 绘制三个互相垂直的圆
+        for (int axis = 0; axis < 3; axis++)
+        {                        // x, y, z 轴
+            vec_t previousPoint; // 用于存储前一个点的位置
+            vec_t firstPoint;    // 用于存储第一个点的位置
+
+            for (int j = 0; j <= segments; j++)
+            {
+                float theta = j * 2 * PI / segments;
+
+                // 计算圆上每个点的位置
+                vec_t circlePoint;
+                if (axis == 0)
+                { // x 轴
+                    circlePoint = makeVect(0.0f, radius * cos(theta), radius * sin(theta));
+                }
+                else if (axis == 1)
+                { // y 轴
+                    circlePoint = makeVect(radius * cos(theta), 0.0f, radius * sin(theta));
+                }
+                else
+                { // z 轴
+                    circlePoint = makeVect(radius * cos(theta), radius * sin(theta), 0.0f);
+                }
+
+                // 应用变换
+                circlePoint.TransformPoint(circlePoint, modelMatrix);
+
+                // 绘制圆的线条
+                if (j > 0)
+                {
+                    bool inFrustum = true;
+
+                    for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+                    {
+                        float dist1 = DistanceToPlane(position + previousPoint, frustum[iFrustum]);
+                        float dist2 = DistanceToPlane(position + circlePoint, frustum[iFrustum]);
+                        if (dist1 < 0.f && dist2 < 0.f)
+                        {
+                            inFrustum = false;
+                            break;
+                        }
+                    }
+
+                    if (!inFrustum)
+                    {
+                        previousPoint = circlePoint;
+                        continue;
+                    }
+
+                    // 连接当前点和前一个点
+                    gContext.mDrawList->AddLine(worldToPos(position + previousPoint, viewProjection),
+                                                worldToPos(position + circlePoint, viewProjection), color, 1.0f);
+                }
+                else
+                {
+                    // 保存第一个点的位置
+                    firstPoint = circlePoint;
+                }
+
+                // 更新前一个点
+                previousPoint = circlePoint;
+            }
+
+            bool inFrustum = true;
+
+            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            {
+                float dist1 = DistanceToPlane(position + previousPoint, frustum[iFrustum]);
+                float dist2 = DistanceToPlane(position + firstPoint, frustum[iFrustum]);
+                if (dist1 < 0.f && dist2 < 0.f)
+                {
+                    inFrustum = false;
+                    break;
+                }
+            }
+
+            if (!inFrustum)
+            {
+                continue;
+            }
+
+            // 连接最后一个点和第一个点
+            gContext.mDrawList->AddLine(worldToPos(position + previousPoint, viewProjection),
+                                        worldToPos(position + firstPoint, viewProjection), color, 1.0f);
+        }
+    }
+}
+
+void DrawSpotLightGizmos(const float *view, const float *projection, const float *matrices, int matrixCount,
+                         ImU32 color, float radius, float angle)
+{
+    vec_t frustum[6];
+    matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;
+    ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+    const int circleSegments = 32; // 底面圆的细分数
+    const float PI = 3.14159265359f;
+
+    for (int i = 0; i < matrixCount; i++)
+    {
+        const float *matrix = &matrices[i * 16];
+        matrix_t modelMatrix = *(matrix_t *)matrix;
+
+        // 定义锥体的顶点位置
+        vec_t apex = makeVect(0.0f, 0.0f, 0.0f);          // 锥体顶点在中心
+        float height = radius / tan(angle * PI / 180.0f); // 计算锥体的高度
+        vec_t worldApex;
+        worldApex.TransformPoint(apex, modelMatrix);
+
+        // 绘制底面的圆
+        for (int j = 0; j < circleSegments; j++)
+        {
+            float theta1 = j * 2 * PI / circleSegments;
+            float theta2 = (j + 1) * 2 * PI / circleSegments;
+
+            // 计算底面圆的两个点
+            vec_t basePoint1 = makeVect(radius * cos(theta1), radius * sin(theta1), -height);
+            vec_t basePoint2 = makeVect(radius * cos(theta2), radius * sin(theta2), -height);
+
+            basePoint1.TransformPoint(basePoint1, modelMatrix);
+            basePoint2.TransformPoint(basePoint2, modelMatrix);
+
+            bool inFrustum = true;
+
+            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            {
+                float dist1 = DistanceToPlane(apex + basePoint1, frustum[iFrustum]);
+                float dist2 = DistanceToPlane(apex + basePoint2, frustum[iFrustum]);
+                if (dist1 < 0.f && dist2 < 0.f)
+                {
+                    inFrustum = false;
+                    break;
+                }
+            }
+
+            if (!inFrustum)
+            {
+                continue;
+            }
+
+            gContext.mDrawList->AddLine(worldToPos(apex + basePoint1, viewProjection),
+                                        worldToPos(apex + basePoint2, viewProjection), color, 1.0f);
+
+            // 每四个段绘制一次
+            if (j % 8 == 0)
+            {
+                gContext.mDrawList->AddLine(worldToPos(worldApex, viewProjection),
+                                            worldToPos(apex + basePoint1, viewProjection), color, 1.0f);
+            }
+        }
+    }
+}
+
+void DrawDirectionalLightGizmos(const float *view, const float *projection, const float *matrices, int matrixCount,
+                                ImU32 color, float radius, float height)
+{
+    vec_t frustum[6];
+    matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;
+    ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+    int sideSegments = 32; // 侧面的细分数
+
+    for (int i = 0; i < matrixCount; i++)
+    {
+        const float *matrix = &matrices[i * 16];
+        matrix_t modelMatrix = *(matrix_t *)matrix;
+
+        // 定义光源位置
+        vec_t position = makeVect(0.0f, 0.0f, 0.0f);
+        position.TransformPoint(position, modelMatrix);
+
+        // 绘制圆柱的侧面
+        for (int j = 0; j < sideSegments; j++)
+        {
+            const float PI = 3.14159265359f;
+            float theta1 = j * 2 * PI / sideSegments;
+            float theta2 = (j + 1) * 2 * PI / sideSegments;
+
+            // 计算侧面圆柱的顶点
+            vec_t topPoint1 = makeVect(radius * cos(theta1), radius * sin(theta1), 0);
+            vec_t topPoint2 = makeVect(radius * cos(theta2), radius * sin(theta2), 0);
+            vec_t basePoint1 = makeVect(radius * cos(theta1), radius * sin(theta1), -height);
+            vec_t basePoint2 = makeVect(radius * cos(theta2), radius * sin(theta2), -height);
+
+            topPoint1.TransformPoint(topPoint1, modelMatrix);
+            topPoint2.TransformPoint(topPoint2, modelMatrix);
+            basePoint1.TransformPoint(basePoint1, modelMatrix);
+            basePoint2.TransformPoint(basePoint2, modelMatrix);
+
+            bool inFrustum = true;
+
+            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            {
+                float dist1 = DistanceToPlane(position + topPoint1, frustum[iFrustum]);
+                float dist2 = DistanceToPlane(position + topPoint2, frustum[iFrustum]);
+                float dist3 = DistanceToPlane(position + basePoint1, frustum[iFrustum]);
+                float dist4 = DistanceToPlane(position + basePoint2, frustum[iFrustum]);
+                if (dist1 < 0.f && dist2 < 0.f && dist3 < 0.f && dist4 < 0.f)
+                {
+                    inFrustum = false;
+                    break;
+                }
+            }
+
+            if (j % 4 == 0)
+            {
+                // 绘制侧面
+                gContext.mDrawList->AddLine(worldToPos(position + basePoint1, viewProjection),
+                                            worldToPos(position + topPoint1, viewProjection), color, 1.0f);
+            }
+            gContext.mDrawList->AddLine(worldToPos(position + topPoint1, viewProjection),
+                                        worldToPos(position + topPoint2, viewProjection), color, 1.0f);
+        }
+    }
+}
+
+void DrawAreaLightGizmos(const float *view, const float *projection, const float *matrices, int matrixCount,
+                         ImU32 color, float width, float height)
+{
+    DrawRectangle(view, projection, matrices, matrixCount, color, width, height);
+}
+
 void DrawGrid(const float *view, const float *projection, const float *matrix, const float gridSize)
 {
     matrix_t viewProjection = *(matrix_t *)view * *(matrix_t *)projection;

@@ -45,6 +45,11 @@ inline ImColor GetColor(ImU32 hex)
     return IM_COL32(r, g, b, a);
 }
 
+inline ImU32 GetHexColor(const ImColor &color)
+{
+    return IM_COL32(color.Value.x * 255, color.Value.y * 255, color.Value.z * 255, color.Value.w * 255);
+}
+
 inline bool InputText(const char *label, std::string &str, ImGuiInputTextFlags flags = 0)
 {
     // TODO 好像无法编辑

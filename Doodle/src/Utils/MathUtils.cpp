@@ -82,4 +82,26 @@ bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &translation, glm:
     return true;
 }
 
+glm::mat4 RemoveScaling(const glm::mat4 &modelMatrix)
+{
+    // 提取缩放部分
+    glm::vec3 scale;
+    scale.x = glm::length(glm::vec3(modelMatrix[0][0], modelMatrix[0][1], modelMatrix[0][2]));
+    scale.y = glm::length(glm::vec3(modelMatrix[1][0], modelMatrix[1][1], modelMatrix[1][2]));
+    scale.z = glm::length(glm::vec3(modelMatrix[2][0], modelMatrix[2][1], modelMatrix[2][2]));
+
+    // 创建一个单位矩阵
+    glm::mat4 noScaleMatrix = glm::mat4(1.0f);
+
+    // 将旋转部分提取出来
+    noScaleMatrix[0] = modelMatrix[0] / scale.x;
+    noScaleMatrix[1] = modelMatrix[1] / scale.y;
+    noScaleMatrix[2] = modelMatrix[2] / scale.z;
+
+    // 将位移部分保留
+    noScaleMatrix[3] = modelMatrix[3];
+
+    return noScaleMatrix;
+}
+
 } // namespace Doodle
