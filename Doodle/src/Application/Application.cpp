@@ -108,10 +108,6 @@ bool Application::OnEvent(WindowCloseEvent & /*e*/)
 bool Application::OnEvent(WindowRefreshEvent & /*e*/)
 {
     Time::Freeze();
-    auto window = ApplicationRunner::GetWindow();
-    EventManager::Get()->Dispatch<AppRenderEvent>();
-    EventManager::Get()->Dispatch<AppLayoutEvent>();
-    window->SwapBuffers();
     return false;
 }
 

@@ -3000,6 +3000,11 @@ void DrawDirectionalLightGizmos(const float *view, const float *projection, cons
                 }
             }
 
+            if (!inFrustum)
+            {
+                continue;
+            }
+
             if (j % 4 == 0)
             {
                 // 绘制侧面

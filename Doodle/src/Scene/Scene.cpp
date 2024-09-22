@@ -366,7 +366,7 @@ void Scene::UpdateSceneData()
                 Entity entity(this, e);
                 auto [transformComponent, lightComponent] = spotLights.get<TransformComponent, SpotLightComponent>(e);
                 glm::vec3 direction =
-                    glm::normalize(glm::rotate(transformComponent.GetQuaternion(), glm::vec3(1.0f, 0.0f, 0.0f)));
+                    glm::normalize(glm::rotate(transformComponent.GetQuaternion(), glm::vec3(0.0f, 0.0f, -1.0f)));
 
                 m_sceneData.LightData.SpotLights[spotLightIndex++] = {
                     transformComponent.GetPosition(), direction,

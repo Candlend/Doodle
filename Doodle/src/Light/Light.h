@@ -28,7 +28,7 @@ struct PointLight
     glm::vec3 Radiance{1.0f};
     float Intensity = 1.0f;
     float MinRange = 0.001f;
-    float Range = 10.f;
+    float Range = 1.f;
     float Padding2[2];
 
     PointLight() = default;
@@ -48,7 +48,7 @@ struct SpotLight
     glm::vec3 Radiance{1.0f};
     float Intensity = 1.0f;
     float MinRange = 0.001f;
-    float Range = 10.f;
+    float Range = 1.f;
     float MinAngle = 0.01f;
     float Angle = 30.f;
 
