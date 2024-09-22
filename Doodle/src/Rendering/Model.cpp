@@ -15,6 +15,7 @@
 #include "Model.h"
 #include "Texture.h"
 #include "TextureParams.h"
+#include "Utils.h"
 #include "assimp/material.h"
 #include "assimp/mesh.h"
 #include "assimp/types.h"
@@ -198,8 +199,8 @@ Model::Model(const std::string &filepath)
         return;
     }
     // retrieve the directory path of the filepath
-    m_filepath = filepath;
-    m_directory = filepath.substr(0, filepath.find_last_of('/'));
+    m_filepath = NormalizePath(filepath);
+    m_directory = GetDirectory(m_filepath);
 
     // process ASSIMP's root node recursively
     m_root = ProcessNode(scene->mRootNode, scene);

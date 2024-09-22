@@ -49,3 +49,15 @@ DOO_API void PrintBinary(const void *ptr, size_t size)
     }
     DOO_CORE_DEBUG("Binary: {0}", oss.str());
 }
+
+DOO_API std::string RemoveExtension(const std::string &filename)
+{
+    size_t lastindex = filename.find_last_of('.');
+    return filename.substr(0, lastindex);
+}
+
+DOO_API std::string GetDirectory(const std::string &path)
+{
+    size_t lastindex = path.find_last_of("/\\");
+    return path.substr(0, lastindex);
+}

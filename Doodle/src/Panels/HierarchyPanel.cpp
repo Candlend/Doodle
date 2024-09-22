@@ -1,13 +1,16 @@
-#include "HierarchyPanel.h"
+#include <imgui.h>
+#include <imgui_internal.h>
+
 #include "Component.h"
 #include "EditorCamera.h"
 #include "Entity.h"
+#include "FileSystem.h"
+#include "HierarchyPanel.h"
 #include "Input.h"
+#include "Model.h"
 #include "PanelManager.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
-#include "imgui.h"
-#include "imgui_internal.h"
 
 namespace Doodle
 {
@@ -144,6 +147,18 @@ void HierarchyPanel::OnPanelLayout()
 
             ImGui::EndMenu();
         }
+
+        if (ImGui::MenuItem("Load Model..."))
+        {
+            std::filesystem::path filepath = FileSystem::OpenFileDialog(
+                {{"Wavefront OBJ", "obj"}, {"Autodesk FBX", "fbx"}, {"GL Transmission", "gltf,glb"}});
+            if (filepath != "")
+            {
+                auto model = Model::Create(filepath.string());
+                auto entity = scene->CreateEntityFromModel(model);
+            }
+        }
+
         ImGui::EndPopup();
     }
 }
