@@ -25,7 +25,7 @@ RenderPipeline::RenderPipeline()
         {1920,
          1080,
          {FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::RGBA16F, FramebufferTextureFormat::Depth}});
-    m_frameBuffers["ShadowMap"] = FrameBuffer::Create({4096, 4096, {FramebufferTextureFormat::Depth}});
+    m_frameBuffers["ShadowMap"] = FrameBuffer::Create({8192, 8192, {FramebufferTextureFormat::Depth}});
 
     m_frameBuffers["OcclusionMap"] = FrameBuffer::Create({1920, 1080, {FramebufferTextureFormat::RGBA8}});
 }

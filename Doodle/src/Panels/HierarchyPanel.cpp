@@ -70,6 +70,11 @@ void HierarchyPanel::OnPanelLayout()
     }
     DrawEntityTree(rootEntities);
 
+    if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsWindowHovered() && !m_hoveredEntity)
+    {
+        SelectionManager::DeselectAll(SelectionContext::Global);
+    }
+
     // 右键菜单
     if (ImGui::BeginPopupContextWindow())
     {

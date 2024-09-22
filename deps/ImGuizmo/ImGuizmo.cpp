@@ -2965,7 +2965,6 @@ void DrawDirectionalLightGizmos(const float *view, const float *projection, cons
 
         // 定义光源位置
         vec_t position = makeVect(0.0f, 0.0f, 0.0f);
-        position.TransformPoint(position, modelMatrix);
 
         // 绘制圆柱的侧面
         for (int j = 0; j < sideSegments; j++)

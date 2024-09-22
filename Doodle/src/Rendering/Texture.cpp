@@ -223,10 +223,8 @@ public:
 
     ~OpenGLTexture2D()
     {
-        Renderer::Submit([this]() {
-            glMakeTextureHandleNonResidentARB(m_textureHandle);
-            glDeleteTextures(1, &m_rendererId);
-        });
+        glMakeTextureHandleNonResidentARB(m_textureHandle);
+        glDeleteTextures(1, &m_rendererId);
     }
 
     void Bind(uint32_t slot) override
@@ -500,10 +498,8 @@ public:
 
     ~OpenGLTextureCube()
     {
-        Renderer::Submit([this]() {
-            glMakeTextureHandleNonResidentARB(m_textureHandle);
-            glDeleteTextures(1, &m_rendererId);
-        });
+        glMakeTextureHandleNonResidentARB(m_textureHandle);
+        glDeleteTextures(1, &m_rendererId);
     }
 
     void Bind(uint32_t slot) override
