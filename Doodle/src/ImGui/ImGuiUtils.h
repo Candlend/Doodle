@@ -86,5 +86,21 @@ inline void ReadOnlyInputText(const char *label, fmt::format_string<Args...> for
     ImGui::EndDisabled();
 }
 
+inline void ReadOnlyInputFloat(const char *label, float value)
+{
+    ImGuiUtils::StyleColorScope sc{ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]};
+    ImGui::BeginDisabled();
+    ImGui::DragFloat(label, &value);
+    ImGui::EndDisabled();
+}
+
+inline void ReadOnlyInputInt(const char *label, int value)
+{
+    ImGuiUtils::StyleColorScope sc{ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]};
+    ImGui::BeginDisabled();
+    ImGui::DragInt(label, &value);
+    ImGui::EndDisabled();
+}
+
 } // namespace ImGuiUtils
 } // namespace Doodle

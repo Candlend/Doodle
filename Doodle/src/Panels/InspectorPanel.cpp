@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "SelectionManager.h"
 #include "imgui.h"
+#include <string>
 
 namespace Doodle
 {
@@ -29,16 +30,32 @@ void InspectorPanel::OnPanelLayout()
         ImGui::TextDisabled("Multiple entities selected");
         return;
     }
+    bool enabled = true;
+    // TODO 添加enabled开关
+    // ImGui::Checkbox("##Enabled", &enabled);
+    // ImGui::SameLine();
     auto uuid = uuids[0];
+    auto entity = SceneManager::Get()->GetActiveScene()->GetEntity(uuid);
+    // 获取窗口的宽度
+    float windowWidth = ImGui::GetContentRegionAvail().x;
+
+    // 设置下一个 InputText 的宽度为窗口的可用宽度
+    ImGui::SetNextItemWidth(windowWidth);
+    ImGuiUtils::InputText("##Tag", entity.GetComponent<TagComponent>().Tag);
     auto components = SceneManager::Get()->GetActiveScene()->GetComponents(uuid);
+
     for (auto &component : components)
     {
-        if (ImGui::CollapsingHeader(component->GetName()))
+        std::string name = component->GetName();
+        if (name == "ID" || name == "Tag")
+        {
+            continue;
+        }
+        if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
         {
             component->OnInspectorLayout();
         }
     }
-    auto entity = SceneManager::Get()->GetActiveScene()->GetEntity(uuid);
 
     ImGui::Separator();
     ImGui::Spacing();

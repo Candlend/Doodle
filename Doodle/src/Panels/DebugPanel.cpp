@@ -7,8 +7,10 @@ namespace Doodle
 
 void DebugPanel::OnPanelLayout()
 {
-    ImGuiUtils::ReadOnlyInputText("Time", "{}", Application::Time::GetTime());
-    ImGuiUtils::ReadOnlyInputText("FPS", "{}", Application::Time::GetFPS());
+    ImGui::BeginDisabled();
+    ImGuiUtils::ReadOnlyInputFloat("Time", Application::Time::GetTime());
+    ImGuiUtils::ReadOnlyInputInt("FPS", Application::Time::GetFPS());
+    ImGui::EndDisabled();
     ImGui::Checkbox("Wireframe Mode", &m_useWireframe);
     auto width = ImGui::GetContentRegionAvail().x;
 

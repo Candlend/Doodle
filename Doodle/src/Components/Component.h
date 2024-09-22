@@ -11,6 +11,7 @@
 #include "UUID.h"
 #include "glm/detail/type_quat.hpp"
 #include "glm/fwd.hpp"
+#include "imgui.h"
 #include <vector>
 
 namespace Doodle
@@ -187,7 +188,8 @@ struct TransformComponent : public BaseComponent
         {
             Dirty = true;
         }
-        if (ImGuiUtils::SizedButton("Reset"))
+        ImGui::Spacing();
+        if (ImGui::Button("Reset"))
         {
             Reset();
         }

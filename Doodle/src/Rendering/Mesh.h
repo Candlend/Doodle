@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <unordered_map>
 #include <vector>
@@ -48,6 +49,14 @@ public:
     std::unordered_map<std::string, std::shared_ptr<Texture2D>> &GetTextures()
     {
         return m_textures;
+    }
+    uint32_t GetVertexCount() const
+    {
+        return m_vertices.size();
+    }
+    uint32_t GetFaceCount() const
+    {
+        return m_indices.size() / 3;
     }
 
 private:

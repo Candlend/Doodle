@@ -28,7 +28,7 @@ struct VAOComponent : public IRenderable
 
     void OnInspectorLayout() override
     {
-        ImGuiUtils::ReadOnlyInputText("Renderer ID", "{}", VAO->GetRendererID());
+        ImGuiUtils::ReadOnlyInputInt("Renderer ID", VAO->GetRendererID());
     }
 
     VAOComponent(std::shared_ptr<VertexArray> vao) : VAO(vao)
@@ -57,7 +57,8 @@ struct MeshComponent : public IRenderable
 
     void OnInspectorLayout() override
     {
-        ImGuiUtils::ReadOnlyInputText("Mesh Path", "{}", Mesh->GetPath().c_str());
+        ImGuiUtils::ReadOnlyInputInt("Vertices", Mesh->GetVertexCount());
+        ImGuiUtils::ReadOnlyInputInt("Faces", Mesh->GetFaceCount());
     }
 };
 
