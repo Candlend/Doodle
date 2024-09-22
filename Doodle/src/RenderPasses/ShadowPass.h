@@ -55,7 +55,7 @@ public:
             const auto &vao = vaoView.get<VAOComponent>(entity);
 
             glm::mat4 model = transform.GetTransformMatrix();
-            m_shader->SetUniformMatrix4f("u_Model", glm::mat4(0.123f) + model);
+            m_shader->SetUniformMatrix4f("u_Model", model);
             m_shader->Bind();
             vao.Render();
         }

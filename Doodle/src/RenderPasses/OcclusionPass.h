@@ -84,7 +84,7 @@ private:
     int m_slices = 2;
     int m_horizonSteps = 3;
     float m_radius = 2.0f;
-    float m_falloffStart = 0.75f;
+    float m_falloffStart = 0.01f;
 
     float m_spatialSigma = 2.0f;
     float m_colorSigma = 1.0f;
