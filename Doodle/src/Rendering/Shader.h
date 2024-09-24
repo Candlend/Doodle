@@ -36,11 +36,11 @@ struct ShaderProperty
     ShaderPropertyType Type;
 };
 
-class DOO_API Shader : public IReloadable
+class DOO_API Shader : public IAutoReloadable
 {
 public:
     static std::shared_ptr<Shader> Create(const std::string &filepath);
-    Shader(const std::string &filepath = "") : IReloadable(filepath) {};
+    Shader(const std::string &filepath = "") : IAutoReloadable(filepath) {};
     virtual std::string GetPath() const = 0;
     virtual void Bind() = 0;
     virtual void Unbind() = 0;

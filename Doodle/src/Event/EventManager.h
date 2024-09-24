@@ -76,6 +76,8 @@ public:
                                     executionOrder}; // 设置优先级
 
         listeners.push_back(eventCallback);
+        std::sort(listeners.begin(), listeners.end(),
+                  [](const EventCallback &a, const EventCallback &b) { return a.ExecutionOrder < b.ExecutionOrder; });
     }
 
     template <typename T> void AddListener(std::function<void()> &callback, int executionOrder = 0)
@@ -90,6 +92,8 @@ public:
                                     executionOrder = 0}; // 设置优先级
 
         listeners.push_back(eventCallback);
+        std::sort(listeners.begin(), listeners.end(),
+                  [](const EventCallback &a, const EventCallback &b) { return a.ExecutionOrder < b.ExecutionOrder; });
     }
 
     template <typename T, typename C> void AddListener(C *obj, bool (C::*func)(T &), int executionOrder = 0)
@@ -100,6 +104,8 @@ public:
         EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback,
                                     executionOrder}; // 设置优先级
         listeners.emplace_back(eventCallback);
+        std::sort(listeners.begin(), listeners.end(),
+                  [](const EventCallback &a, const EventCallback &b) { return a.ExecutionOrder < b.ExecutionOrder; });
     }
 
     template <typename T, typename C> void AddListener(C *obj, void (C::*func)(), int executionOrder = 0)
@@ -113,6 +119,8 @@ public:
         EventCallback eventCallback{reinterpret_cast<void *>(obj), void_cast(func), callback,
                                     executionOrder}; // 设置优先级
         listeners.emplace_back(eventCallback);
+        std::sort(listeners.begin(), listeners.end(),
+                  [](const EventCallback &a, const EventCallback &b) { return a.ExecutionOrder < b.ExecutionOrder; });
     }
 
     template <typename T> void RemoveListener(EventCallbackFn<T> &callback)
@@ -126,6 +134,7 @@ public:
             return listener.Obj == nullptr && listener.Func == reinterpret_cast<void *>(&callback);
         });
 
+        DOO_CORE_ASSERT(it != listeners.end(), "Listener not found");
         listeners.erase(it, listeners.end());
     }
 
@@ -140,6 +149,7 @@ public:
             return listener.Obj == nullptr && listener.Func == reinterpret_cast<void *>(&callback);
         });
 
+        DOO_CORE_ASSERT(it != listeners.end(), "Listener not found");
         listeners.erase(it, listeners.end());
     }
 
@@ -153,6 +163,7 @@ public:
             return listener.Obj == static_cast<void *>(obj) && listener.Func == void_cast(func);
         });
 
+        DOO_CORE_ASSERT(it != listeners.end(), "Listener not found");
         listeners.erase(it, listeners.end());
     }
 
@@ -166,6 +177,7 @@ public:
             return listener.Obj == static_cast<void *>(obj) && listener.Func == void_cast(func);
         });
 
+        DOO_CORE_ASSERT(it != listeners.end(), "Listener not found");
         listeners.erase(it, listeners.end());
     }
 

@@ -7,7 +7,7 @@
 namespace Doodle
 {
 
-template <typename T> class Singleton
+template <typename T> class DOO_API Singleton
 {
 public:
     // 获取单例实例

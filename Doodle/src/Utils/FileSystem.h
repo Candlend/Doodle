@@ -30,7 +30,7 @@ enum class FileStatus
     OtherError
 };
 
-class FileSystem
+class DOO_API FileSystem
 {
 public:
     static std::filesystem::path GetWorkingDirectory();
