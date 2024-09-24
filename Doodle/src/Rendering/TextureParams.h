@@ -41,9 +41,6 @@ enum class TextureFilter
     MipmapNearest = 3,
     MipmapLinear = 4,
 };
-DOO_API std::string TextureFormatToString(TextureFormat format);
-DOO_API std::string TextureWrapToString(TextureWrap wrap);
-DOO_API std::string TextureFilterToString(TextureFilter filter);
 
 struct TextureParams
 {
@@ -54,13 +51,7 @@ struct TextureParams
     uint32_t Height = 1;
     bool InvertColor = false; // only works for LDR textures
 
-    std::string ToString() const
-    {
-        std::ostringstream oss;
-        oss << "Format=" << TextureFormatToString(Format) << ", Wrap=" << TextureWrapToString(Wrap)
-            << ", Filter=" << TextureFilterToString(Filter) << ", Width=" << Width << ", Height=" << Height;
-        return oss.str();
-    }
+    std::string ToString() const;
 };
 
 } // namespace Doodle

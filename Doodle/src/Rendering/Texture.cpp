@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <magic_enum.hpp>
 #include <stb_image.h>
 #include <vector>
 
@@ -70,7 +71,7 @@ static GLenum GetInternalFormat(TextureFormat format)
     case TextureFormat::DEPTH24STENCIL8:
         return GL_DEPTH24_STENCIL8;
     default:
-        DOO_CORE_ERROR("Unsupported texture format: {0}", TextureFormatToString(format));
+        DOO_CORE_ERROR("Unsupported texture format: {0}", magic_enum::enum_name(format));
         return GL_NONE;
     }
 }

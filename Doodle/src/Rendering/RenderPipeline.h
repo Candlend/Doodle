@@ -27,7 +27,7 @@ public:
 
     void AddRenderPass(const std::string &name, std::shared_ptr<RenderPass> renderPass);
 
-    template <typename T> void CreateRenderPass(const std::string &name, const RenderPassSpecification &specification);
+    template <typename T> void CreateRenderPass(const RenderPassSpecification &specification);
 
     void RemoveRenderPass(const std::string &name);
 

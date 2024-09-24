@@ -32,13 +32,13 @@ RenderPipeline::RenderPipeline()
 
 void RenderPipeline::RegisterRenderPasses()
 {
-    CreateRenderPass<SkyboxPass>("SkyboxPass", {m_targetFrameBuffer});
-    CreateRenderPass<PreDepthPass>("PreDepthPass", {m_targetFrameBuffer});
-    CreateRenderPass<GeometryPass>("GeometryPass", {m_frameBuffers["GBuffer"]});
-    CreateRenderPass<OcclusionPass>("OcclusionPass", {m_frameBuffers["OcclusionMap"]});
-    CreateRenderPass<ShadowPass>("ShadowPass", {m_frameBuffers["ShadowMap"]});
-    CreateRenderPass<ShadingPass>("ShadingPass", {m_targetFrameBuffer});
-    CreateRenderPass<BloomPass>("BloomPass", {m_targetFrameBuffer});
+    CreateRenderPass<SkyboxPass>({"SkyboxPass", m_targetFrameBuffer});
+    CreateRenderPass<PreDepthPass>({"PreDepthPass", m_targetFrameBuffer});
+    CreateRenderPass<GeometryPass>({"GeometryPass", m_frameBuffers["GBuffer"]});
+    CreateRenderPass<OcclusionPass>({"OcclusionPass", m_frameBuffers["OcclusionMap"]});
+    CreateRenderPass<ShadowPass>({"ShadowPass", m_frameBuffers["ShadowMap"]});
+    CreateRenderPass<ShadingPass>({"ShadingPass", m_targetFrameBuffer});
+    CreateRenderPass<BloomPass>({"BloomPass", m_targetFrameBuffer});
 }
 
 std::unordered_map<std::string, std::shared_ptr<RenderPass>> RenderPipeline::GetRenderPasses()
@@ -56,10 +56,9 @@ void RenderPipeline::AddRenderPass(const std::string &name, std::shared_ptr<Rend
     m_renderPasses[name] = renderPass;
 }
 
-template <typename T>
-void RenderPipeline::CreateRenderPass(const std::string &name, const RenderPassSpecification &specification)
+template <typename T> void RenderPipeline::CreateRenderPass(const RenderPassSpecification &specification)
 {
-    m_renderPasses[name] = std::make_shared<T>(specification);
+    m_renderPasses[specification.DebugName] = std::make_shared<T>(specification);
 }
 void RenderPipeline::RemoveRenderPass(const std::string &name)
 {

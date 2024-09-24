@@ -1,7 +1,7 @@
 set_project("Doodle")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
-add_requires("fmt", "assimp", "boost", "stb", "spdlog", "nlohmann_json", "glfw", "glm", "entt", "nativefiledialog-extended")
+add_requires("fmt", "assimp", "boost", "stb", "spdlog", "nlohmann_json", "glfw", "glm", "entt", "nativefiledialog-extended", "magic_enum")
 add_requires("glad", {configs = {extensions = "GL_ARB_bindless_texture"}})
 add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
 add_requires("imnodes")
@@ -46,7 +46,7 @@ function build_doodle()
     set_pcxxheader("Doodle/src/pch.h")
 
     -- 添加依赖库
-    add_packages("fmt", "assimp", "boost", "stb", "spdlog", "imgui", "imnodes", "nlohmann_json", "glfw", "glad", "glm", "entt", "nativefiledialog-extended")
+    add_packages("fmt", "assimp", "boost", "stb", "spdlog", "imgui", "imnodes", "nlohmann_json", "glfw", "glad", "glm", "entt", "nativefiledialog-extended", "magic_enum")
     add_packages("pybind11")
 
     if is_mode("debug") then
