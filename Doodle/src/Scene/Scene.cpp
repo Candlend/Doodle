@@ -299,7 +299,7 @@ void Scene::UpdateSceneData()
 {
     if (SceneManager::Get()->GetState() == SceneState::Editor)
     {
-        auto *editorCamera = EditorCamera::Get();
+        auto editorCamera = EditorCamera::Get();
         m_sceneData.CameraData.Position = editorCamera->GetPosition();
         m_sceneData.CameraData.View = editorCamera->GetViewMatrix();
         m_sceneData.CameraData.Projection = editorCamera->GetProjectionMatrix();

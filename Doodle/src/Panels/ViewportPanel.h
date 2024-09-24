@@ -28,7 +28,7 @@ public:
     void OnLayout() override;
 
 private:
-    SceneRenderer *m_sceneRenderer;
+    std::shared_ptr<SceneRenderer> m_sceneRenderer;
 };
 
 } // namespace Doodle

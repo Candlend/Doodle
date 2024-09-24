@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "Shader.h"
-#include "ShaderReloader.h"
 
 namespace Doodle
 {
@@ -50,7 +49,7 @@ class OpenGLShader : public Shader
 {
 
 public:
-    OpenGLShader(const std::string &filepath) : m_reloader(filepath, *this), m_filepath(filepath)
+    OpenGLShader(const std::string &filepath) : Shader(filepath), m_filepath(filepath)
     {
         ReadShaderFromFile(filepath);
         Renderer::Submit([this, filepath]() {
@@ -516,7 +515,6 @@ private:
     std::unordered_map<std::string, uint32_t> m_uniformBlocksCache;
     uint32_t m_rendererID;
     std::string m_shaderSource;
-    ShaderReloader m_reloader;
 };
 
 std::shared_ptr<Shader> Shader::Create(const std::string &filepath)

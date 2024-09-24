@@ -51,7 +51,7 @@ void ViewportPanel::OnPanelLayout()
 
     auto scene = SceneManager::Get()->GetActiveScene();
 
-    auto *editorCamera = EditorCamera::Get();
+    auto editorCamera = EditorCamera::Get();
 
     ImGuizmo::SetOrthographic(editorCamera->GetProjectionType() == ProjectionType::Orthographic);
     ImGuizmo::SetDrawlist(ImGui::GetCurrentWindow()->DrawList);
