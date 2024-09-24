@@ -81,12 +81,29 @@ public:
 
     void BuildScene()
     {
-        auto nanosuitModel = Model::Create("assets/models/nanosuit/nanosuit.obj");
-        auto nanosuit = m_scene->CreateEntityFromModel(nanosuitModel);
-        nanosuit.GetComponent<TransformComponent>().SetLocalScale(0.1);
+        // auto nanosuitModel = Model::Create("assets/models/nanosuit/nanosuit.obj");
+        // auto nanosuit = m_scene->CreateEntityFromModel(nanosuitModel);
+        // nanosuit.GetComponent<TransformComponent>().SetLocalScale(0.1);
 
-        auto sponzaModel = Model::Create("assets/models/sponza/sponza.obj");
-        auto sponza = m_scene->CreateEntityFromModel(sponzaModel);
+        // auto sponzaModel = Model::Create("assets/models/sponza_2/sponza.obj");
+        // auto sponza = m_scene->CreateEntityFromModel(sponzaModel);
+        // sponza.GetComponent<TransformComponent>().SetLocalScale(0.01);
+
+        // auto suzanne = m_scene->CreateEntity("Suzanne");
+        // suzanne.AddComponent<MeshComponent>(Mesh::Create("assets/models/suzanne.obj"));
+        // suzanne.AddComponent<MaterialComponent>(StandardMaterial::Create());
+
+        auto cutFish = m_scene->CreateEntity("CutFish");
+        cutFish.AddComponent<MeshComponent>(Mesh::Create("assets/models/cut_fish.obj"));
+        auto material = StandardMaterial::Create();
+        TextureParams params;
+        params.Format = TextureFormat::SRGB8ALPHA8;
+        material->SetAlbedoTexture(Texture2D::Create("assets/textures/cut_fish/base_color.tga", params));
+        material->SetNormalTexture(Texture2D::Create("assets/textures/cut_fish/normal.tga"));
+        material->SetMetallicTexture(Texture2D::Create("assets/textures/cut_fish/metallic.tga"));
+        material->SetRoughnessTexture(Texture2D::Create("assets/textures/cut_fish/roughness.tga"));
+
+        cutFish.AddComponent<MaterialComponent>(material);
     }
 
     void BeforeUpdate() override

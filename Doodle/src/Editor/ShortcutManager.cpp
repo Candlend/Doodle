@@ -1,6 +1,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <magic_enum.hpp>
+#include <rfl.hpp>
 
+#include "KeyCode.h"
 #include "ShortcutManager.h"
 
 namespace Doodle
@@ -61,7 +64,7 @@ bool ShortcutManager::IsShortcutPressed(const std::string &shortcut)
     bool ctrlRequired = false;
     bool altRequired = false;
 
-    KeyCode mainKey = GetKeyCode(keys.back());
+    KeyCode mainKey = magic_enum::enum_cast<KeyCode>(keys.back()).value();
 
     bool mainKeyPressed = Input::IsKeyPressed(mainKey);
 
