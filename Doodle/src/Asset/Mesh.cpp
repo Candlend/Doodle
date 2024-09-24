@@ -37,7 +37,7 @@ struct LogStream : public Assimp::LogStream
 
     void write(const char *message) override
     {
-        DOO_CORE_ERROR("Assimp error: {0}", message);
+        // DOO_CORE_ERROR("Assimp error: {0}", message);
     }
 };
 
