@@ -1,5 +1,6 @@
 #include "EditorPanel.h"
-#include "Log.h"
+#include "ApplicationEvent.h"
+#include "EventManager.h"
 
 namespace Doodle
 {

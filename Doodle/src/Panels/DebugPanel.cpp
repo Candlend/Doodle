@@ -1,6 +1,9 @@
+#include <imgui.h>
+
+#include "Application.h"
 #include "DebugPanel.h"
+#include "ImGuiUtils.h"
 #include "RenderPipeline.h"
-#include "imgui.h"
 
 namespace Doodle
 {

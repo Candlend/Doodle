@@ -7,9 +7,6 @@
 #include "Core.h"
 #include "EventManager.h"
 #include "IEventHandler.h"
-#include "ImGuiBuilder.h"
-#include "Singleton.h"
-#include "Window.h"
 
 namespace Doodle
 {

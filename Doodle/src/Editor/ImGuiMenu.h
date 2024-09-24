@@ -1,10 +1,8 @@
-#include "EventManager.h"
-#include "ImGuiUtils.Widget.h"
-#include "ImGuiUtils.h"
-#include "ShortcutManager.h"
+#pragma once
+
 #include "pch.h"
-#include <memory>
-#include <vector>
+
+#include "ShortcutManager.h"
 
 namespace Doodle
 {

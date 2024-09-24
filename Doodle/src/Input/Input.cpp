@@ -1,5 +1,3 @@
-#include "Log.h"
-#include "pch.h"
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_internal.h>

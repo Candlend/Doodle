@@ -1,7 +1,8 @@
-#include "SplashScreen.h"
 #include <glfw/glfw3.h>
 #include <glad/glad.h>
 #include <stb_image.h>
+
+#include "SplashScreen.h"
 
 namespace Doodle
 {

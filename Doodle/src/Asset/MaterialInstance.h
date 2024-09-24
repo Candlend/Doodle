@@ -1,13 +1,10 @@
 #pragma once
 
+#include "pch.h"
+#include <glm/glm.hpp>
+
 #include "Material.h"
 #include "Shader.h"
-#include "UUID.h"
-#include <cstdint>
-#include <glm/glm.hpp>
-#include <map>
-#include <memory>
-#include <string>
 
 namespace Doodle
 {
@@ -95,44 +92,44 @@ public:
         SetUniformTexture("u_RoughnessTexture", roughnessTexture);
     }
 
-    void LoadAlbedoTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    void LoadAlbedoTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
     {
-        SetAlbedoTexture(Texture2D::Create(filepath, params));
+        SetAlbedoTexture(Texture2D::Create(filepath, spec));
     }
 
-    void LoadNormalTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    void LoadNormalTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
     {
-        SetNormalTexture(Texture2D::Create(filepath, params));
+        SetNormalTexture(Texture2D::Create(filepath, spec));
     }
 
-    void LoadMetallicTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    void LoadMetallicTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
     {
-        SetMetallicTexture(Texture2D::Create(filepath, params));
+        SetMetallicTexture(Texture2D::Create(filepath, spec));
     }
 
-    void LoadRoughnessTexture(const std::string &filepath, const TextureParams &params = TextureParams())
+    void LoadRoughnessTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
     {
-        SetRoughnessTexture(Texture2D::Create(filepath, params));
+        SetRoughnessTexture(Texture2D::Create(filepath, spec));
     }
 
-    void LoadAlbedoTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    void LoadAlbedoTexture(Buffer buffer, const TextureSpecification &spec = TextureSpecification())
     {
-        SetAlbedoTexture(Texture2D::Create(buffer, params));
+        SetAlbedoTexture(Texture2D::Create(buffer, spec));
     }
 
-    void LoadNormalTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    void LoadNormalTexture(Buffer buffer, const TextureSpecification &spec = TextureSpecification())
     {
-        SetNormalTexture(Texture2D::Create(buffer, params));
+        SetNormalTexture(Texture2D::Create(buffer, spec));
     }
 
-    void LoadMetallicTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    void LoadMetallicTexture(Buffer buffer, const TextureSpecification &spec = TextureSpecification())
     {
-        SetMetallicTexture(Texture2D::Create(buffer, params));
+        SetMetallicTexture(Texture2D::Create(buffer, spec));
     }
 
-    void LoadRoughnessTexture(Buffer buffer, const TextureParams &params = TextureParams())
+    void LoadRoughnessTexture(Buffer buffer, const TextureSpecification &spec = TextureSpecification())
     {
-        SetRoughnessTexture(Texture2D::Create(buffer, params));
+        SetRoughnessTexture(Texture2D::Create(buffer, spec));
     }
 
     std::shared_ptr<Material> GetMaterial() const

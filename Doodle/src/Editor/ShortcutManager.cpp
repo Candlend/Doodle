@@ -3,6 +3,9 @@
 #include <magic_enum.hpp>
 #include <rfl.hpp>
 
+#include "ApplicationEvent.h"
+#include "EventManager.h"
+#include "Input.h"
 #include "KeyCode.h"
 #include "ShortcutManager.h"
 

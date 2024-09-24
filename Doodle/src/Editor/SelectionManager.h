@@ -2,7 +2,6 @@
 
 #include "Entity.h"
 #include "UUID.h"
-#include <unordered_map>
 
 namespace Doodle
 {

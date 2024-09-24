@@ -5,7 +5,6 @@
 #include <ImGuizmo.h>
 #include <imnodes.h>
 
-#include "ApplicationEvent.h"
 #include "Singleton.h"
 
 namespace Doodle

@@ -1,24 +1,17 @@
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/LogStream.hpp>
+#include <assimp/material.h>
+#include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <assimp/types.h>
 #include <filesystem>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
 
-#include "Entity.h"
-#include "Log.h"
 #include "Mesh.h"
 #include "Model.h"
 #include "Texture.h"
-#include "TextureParams.h"
 #include "Utils.h"
-#include "assimp/material.h"
-#include "assimp/mesh.h"
-#include "assimp/types.h"
 
 struct LogStream : public Assimp::LogStream
 {
@@ -41,7 +34,7 @@ namespace Doodle
 {
 
 void Model::LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures, aiMaterial *material,
-                        std::string name, aiTextureType type, int index, TextureParams params)
+                        std::string name, aiTextureType type, int index, TextureSpecification spec)
 {
     if (textures.contains(name))
         return;
@@ -56,7 +49,7 @@ void Model::LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2
         textures[name] = m_loadedTextures[texturePath.string()];
         return;
     }
-    textures[name] = Texture2D::Create(texturePath.string(), params);
+    textures[name] = Texture2D::Create(texturePath.string(), spec);
     m_loadedTextures[texturePath.string()] = textures[name];
 }
 
@@ -105,14 +98,14 @@ std::shared_ptr<Mesh> Model::LoadMesh(const aiMesh *mesh, const aiScene *scene)
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
     std::unordered_map<std::string, std::shared_ptr<Texture2D>> textures;
-    TextureParams srgbParams;
+    TextureSpecification srgbParams;
     srgbParams.Format = TextureFormat::SRGB8ALPHA8;
     LoadTexture(textures, material, "u_AlbedoTexture", AI_MATKEY_BASE_COLOR_TEXTURE, srgbParams);
     LoadTexture(textures, material, "u_AlbedoTexture", aiTextureType_DIFFUSE, 0, srgbParams);
     LoadTexture(textures, material, "u_NormalTexture", aiTextureType_NORMALS);
     LoadTexture(textures, material, "u_MetalnessTexture", AI_MATKEY_METALLIC_TEXTURE);
     LoadTexture(textures, material, "u_RoughnessTexture", AI_MATKEY_ROUGHNESS_TEXTURE);
-    TextureParams invertParams;
+    TextureSpecification invertParams;
     invertParams.InvertColor = true;
     LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SPECULAR, 0, invertParams);
     LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SHININESS, 0, invertParams);

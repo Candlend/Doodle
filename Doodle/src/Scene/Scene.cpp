@@ -206,19 +206,19 @@ void Scene::LoadEnvironment(const std::string &filepath)
     const uint32_t CUBEMAP_SIZE = 2048;
     const uint32_t IRRADIANCE_MAP_SIZE = 32;
 
-    TextureParams params;
-    params.Width = CUBEMAP_SIZE;
-    params.Height = CUBEMAP_SIZE;
-    params.Format = TextureFormat::RGBA16F;
-    params.Wrap = TextureWrap::ClampToEdge;
-    params.Filter = TextureFilter::MipmapLinear;
+    TextureSpecification spec;
+    spec.Width = CUBEMAP_SIZE;
+    spec.Height = CUBEMAP_SIZE;
+    spec.Format = TextureFormat::RGBA16F;
+    spec.Wrap = TextureWrap::ClampToEdge;
+    spec.Filter = TextureFilter::MipmapLinear;
 
-    std::shared_ptr<TextureCube> envUnfiltered = TextureCube::Create(params);
+    std::shared_ptr<TextureCube> envUnfiltered = TextureCube::Create(spec);
     static std::shared_ptr<Shader> s_EquirectangularConversionShader, s_EnvFilteringShader, s_EnvIrradianceShader;
     if (!s_EquirectangularConversionShader)
         s_EquirectangularConversionShader = Shader::Create("assets/shaders/equirectangularToCubeMap.glsl");
 
-    TextureParams equirectParams;
+    TextureSpecification equirectParams;
     equirectParams.Format = TextureFormat::RGBA16F;
     std::shared_ptr<Texture2D> envEquirect = Texture2D::Create(filepath, equirectParams);
     DOO_CORE_ASSERT(envEquirect->GetFormat() == TextureFormat::RGBA16F, "Texture is not HDR!");
@@ -234,7 +234,7 @@ void Scene::LoadEnvironment(const std::string &filepath)
     if (!s_EnvFilteringShader)
         s_EnvFilteringShader = Shader::Create("assets/shaders/environmentMipFilter.glsl");
 
-    std::shared_ptr<TextureCube> envFiltered = TextureCube::Create(params);
+    std::shared_ptr<TextureCube> envFiltered = TextureCube::Create(spec);
 
     Renderer::Submit([envUnfiltered, envFiltered]() {
         glCopyImageSubData(envUnfiltered->GetRendererID(), GL_TEXTURE_CUBE_MAP, 0, 0, 0, 0,
@@ -260,11 +260,11 @@ void Scene::LoadEnvironment(const std::string &filepath)
     if (!s_EnvIrradianceShader)
         s_EnvIrradianceShader = Shader::Create("assets/shaders/environmentIrradiance.glsl");
 
-    params.Width = IRRADIANCE_MAP_SIZE;
-    params.Height = IRRADIANCE_MAP_SIZE;
-    params.Filter = TextureFilter::Linear;
+    spec.Width = IRRADIANCE_MAP_SIZE;
+    spec.Height = IRRADIANCE_MAP_SIZE;
+    spec.Filter = TextureFilter::Linear;
 
-    std::shared_ptr<TextureCube> irradianceMap = TextureCube::Create(params);
+    std::shared_ptr<TextureCube> irradianceMap = TextureCube::Create(spec);
     s_EnvIrradianceShader->Bind();
     envFiltered->Bind();
     Renderer::Submit([irradianceMap]() {

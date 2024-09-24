@@ -1,9 +1,7 @@
-#include "pch.h"
-#include <functional>
+#pragma once
 
-#include "ApplicationEvent.h"
-#include "EventManager.h"
-#include "Input.h"
+#include "pch.h"
+
 #include "Singleton.h"
 
 namespace Doodle

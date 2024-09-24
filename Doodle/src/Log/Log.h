@@ -1,15 +1,12 @@
 #pragma once
 
 #include "Core.h"
-#include "spdlog/common.h"
-#include <chrono>
-#include <cstddef>
 #include <queue>
-#include <spdlog/spdlog.h>
-#include <unordered_map>
-
+#include <spdlog/common.h>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/base_sink.h>
+#include <spdlog/spdlog.h>
+
 
 namespace Doodle
 {

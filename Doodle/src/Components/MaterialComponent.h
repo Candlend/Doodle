@@ -1,16 +1,15 @@
 #pragma once
 
-#include "Log.h"
-#include "Material.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "imgui.h"
 #include "pch.h"
+#include <imgui.h>
 
 #include "BaseComponent.h"
 #include "ImGuiUtils.h"
+#include "Material.h"
 #include "MaterialInstance.h"
-#include <vector>
+#include "Shader.h"
+#include "Texture.h"
+
 
 namespace Doodle
 {

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
 #include "pch.h"
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 
+#include "Application.h"
 #include "ApplicationEvent.h"
 #include "Component.h"
-#include "EditorPanel.h"
 #include "Event.h"
 #include "EventManager.h"
 #include "IEventHandler.h"
@@ -16,7 +16,6 @@
 #include "SceneCamera.h"
 #include "SceneEvent.h"
 #include "Singleton.h"
-#include "Texture.h"
 #include "ViewportPanel.h"
 
 namespace Doodle

@@ -5,13 +5,10 @@
 #include <glm/glm.hpp>
 #include <magic_enum.hpp>
 #include <stb_image.h>
-#include <vector>
 
 #include "Buffer.h"
-#include "Log.h"
 #include "Renderer.h"
 #include "Texture.h"
-#include "Utils.h"
 
 namespace Doodle
 {
@@ -115,8 +112,8 @@ static int CalculateMipMapCount(int width, int height)
 class OpenGLTexture2D : public Texture2D
 {
 public:
-    OpenGLTexture2D(const std::string &filepath, const TextureParams &params)
-        : m_filepath(filepath), m_data(nullptr), m_params(params)
+    OpenGLTexture2D(const std::string &filepath, const TextureSpecification &spec)
+        : m_filepath(filepath), m_data(nullptr), m_params(spec)
     {
         stbi_set_flip_vertically_on_load(true);
         m_hdr = stbi_is_hdr(m_filepath.c_str());
@@ -206,7 +203,7 @@ public:
         Renderer::Submit([this]() { stbi_image_free(m_data); }); // Free the image data
     }
 
-    OpenGLTexture2D(Buffer buffer, const TextureParams &params) : m_params(params)
+    OpenGLTexture2D(Buffer buffer, const TextureSpecification &spec) : m_params(spec)
     {
         auto size = GetMemorySize(m_params.Format, m_params.Width, m_params.Height);
         if (buffer)
@@ -341,7 +338,7 @@ private:
             glMakeTextureHandleResidentARB(m_textureHandle);
         });
     }
-    TextureParams m_params;
+    TextureSpecification m_params;
     uint32_t m_rendererId;
     uint64_t m_textureHandle;
     std::string m_filepath;
@@ -350,14 +347,14 @@ private:
     uint32_t m_binding;
 };
 
-std::shared_ptr<Texture2D> Texture2D::Create(const std::string &filepath, const TextureParams &params)
+std::shared_ptr<Texture2D> Texture2D::Create(const std::string &filepath, const TextureSpecification &spec)
 {
-    return std::make_shared<OpenGLTexture2D>(filepath, params);
+    return std::make_shared<OpenGLTexture2D>(filepath, spec);
 }
 
-std::shared_ptr<Texture2D> Texture2D::Create(Buffer buffer, const TextureParams &params)
+std::shared_ptr<Texture2D> Texture2D::Create(Buffer buffer, const TextureSpecification &spec)
 {
-    return std::make_shared<OpenGLTexture2D>(buffer, params);
+    return std::make_shared<OpenGLTexture2D>(buffer, spec);
 }
 
 std::shared_ptr<Texture2D> Texture2D::GetWhiteTexture()
@@ -367,7 +364,7 @@ std::shared_ptr<Texture2D> Texture2D::GetWhiteTexture()
     {
         uint32_t data = 0xffffffff;
         Buffer buffer = Buffer::Copy(&data, sizeof(data));
-        s_WhiteTexture = Texture2D::Create(buffer, TextureParams());
+        s_WhiteTexture = Texture2D::Create(buffer, TextureSpecification());
     }
     return s_WhiteTexture;
 }
@@ -379,7 +376,7 @@ std::shared_ptr<Texture2D> Texture2D::GetBlackTexture()
     {
         uint32_t data = 0xff000000;
         Buffer buffer = Buffer::Copy(&data, sizeof(data));
-        s_BlackTexture = Texture2D::Create(buffer, TextureParams());
+        s_BlackTexture = Texture2D::Create(buffer, TextureSpecification());
     }
     return s_BlackTexture;
 }
@@ -391,7 +388,7 @@ std::shared_ptr<Texture2D> Texture2D::GetDefaultNormalTexture()
     {
         uint32_t data = 0xffff8080;
         Buffer buffer = Buffer::Copy(&data, sizeof(data));
-        s_DefaultNormalTexture = Texture2D::Create(buffer, TextureParams());
+        s_DefaultNormalTexture = Texture2D::Create(buffer, TextureSpecification());
     }
     return s_DefaultNormalTexture;
 }
@@ -405,12 +402,12 @@ std::shared_ptr<Texture2D> Texture2D::GetCheckerboardTexture()
                                        {0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF},
                                        {0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000},
                                        {0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF}};
-        TextureParams params;
-        params.Width = 4;
-        params.Height = 4;
-        params.Filter = TextureFilter::Nearest;
+        TextureSpecification spec;
+        spec.Width = 4;
+        spec.Height = 4;
+        spec.Filter = TextureFilter::Nearest;
         Buffer buffer = Buffer::Copy(&checkerboard, sizeof(checkerboard));
-        s_CheckerboardTexture = Texture2D::Create(buffer, params);
+        s_CheckerboardTexture = Texture2D::Create(buffer, spec);
     }
     return s_CheckerboardTexture;
 }
@@ -418,8 +415,8 @@ std::shared_ptr<Texture2D> Texture2D::GetCheckerboardTexture()
 class OpenGLTextureCube : public TextureCube
 {
 public:
-    OpenGLTextureCube(const std::array<std::string, 6> &facePaths, const TextureParams &params)
-        : m_facePaths(facePaths), m_params(params)
+    OpenGLTextureCube(const std::array<std::string, 6> &facePaths, const TextureSpecification &spec)
+        : m_facePaths(facePaths), m_params(spec)
     {
         stbi_set_flip_vertically_on_load(false);
         m_hdr = stbi_is_hdr(m_facePaths[0].c_str());
@@ -479,7 +476,7 @@ public:
         });
     }
 
-    OpenGLTextureCube(const std::array<Buffer, 6> &faceBuffers, const TextureParams &params) : m_params(params)
+    OpenGLTextureCube(const std::array<Buffer, 6> &faceBuffers, const TextureSpecification &spec) : m_params(spec)
     {
         auto size = GetMemorySize(m_params.Format, m_params.Width, m_params.Height);
         for (size_t i = 0; i < 6; ++i)
@@ -492,7 +489,7 @@ public:
         LoadTexture();
     }
 
-    OpenGLTextureCube(const TextureParams &params) : m_params(params)
+    OpenGLTextureCube(const TextureSpecification &spec) : m_params(spec)
     {
         LoadTexture();
     }
@@ -633,7 +630,7 @@ private:
         });
     }
 
-    TextureParams m_params;
+    TextureSpecification m_params;
     uint32_t m_rendererId;
     uint64_t m_textureHandle;
     std::array<std::string, 6> m_facePaths;
@@ -643,19 +640,20 @@ private:
 };
 
 std::shared_ptr<TextureCube> TextureCube::Create(const std::array<std::string, 6> &facePaths,
-                                                 const TextureParams &params)
+                                                 const TextureSpecification &spec)
 {
-    return std::make_shared<OpenGLTextureCube>(facePaths, params);
+    return std::make_shared<OpenGLTextureCube>(facePaths, spec);
 }
 
-std::shared_ptr<TextureCube> TextureCube::Create(const std::array<Buffer, 6> &faceBuffers, const TextureParams &params)
+std::shared_ptr<TextureCube> TextureCube::Create(const std::array<Buffer, 6> &faceBuffers,
+                                                 const TextureSpecification &spec)
 {
-    return std::make_shared<OpenGLTextureCube>(faceBuffers, params);
+    return std::make_shared<OpenGLTextureCube>(faceBuffers, spec);
 }
 
-std::shared_ptr<TextureCube> TextureCube::Create(const TextureParams &params)
+std::shared_ptr<TextureCube> TextureCube::Create(const TextureSpecification &spec)
 {
-    return std::make_shared<OpenGLTextureCube>(params);
+    return std::make_shared<OpenGLTextureCube>(spec);
 }
 
 std::shared_ptr<TextureCube> TextureCube::GetWhiteTexture()
@@ -668,7 +666,7 @@ std::shared_ptr<TextureCube> TextureCube::GetWhiteTexture()
         Buffer buffer(&data, sizeof(data));
         std::array<Buffer, 6> faceBuffers;
         faceBuffers[0] = faceBuffers[1] = faceBuffers[2] = faceBuffers[3] = faceBuffers[4] = faceBuffers[5] = buffer;
-        s_WhiteTexture = TextureCube::Create(faceBuffers, TextureParams());
+        s_WhiteTexture = TextureCube::Create(faceBuffers, TextureSpecification());
     }
     return s_WhiteTexture;
 }
@@ -683,7 +681,7 @@ std::shared_ptr<TextureCube> TextureCube::GetBlackTexture()
         Buffer buffer(&data, sizeof(data));
         std::array<Buffer, 6> faceBuffers;
         faceBuffers[0] = faceBuffers[1] = faceBuffers[2] = faceBuffers[3] = faceBuffers[4] = faceBuffers[5] = buffer;
-        s_BlackTexture = TextureCube::Create(faceBuffers, TextureParams());
+        s_BlackTexture = TextureCube::Create(faceBuffers, TextureSpecification());
     }
     return s_BlackTexture;
 }

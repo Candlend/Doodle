@@ -1,18 +1,12 @@
-#include "pch.h"
 #include <boost/stacktrace.hpp>
-#include <chrono>
-#include <cstddef>
 #include <nlohmann/json.hpp>
-#include <queue>
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/logger.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <string>
-#include <unordered_map>
 
 #include "Log.h"
 #include "Utils.h"
-#include "spdlog/fmt/bundled/format.h"
-#include "spdlog/logger.h"
 
 using json = nlohmann::json;
 

@@ -1,6 +1,5 @@
 
 #include "SelectionManager.h"
-#include "Application.h"
 #include "Core.h"
 #include "EventManager.h"
 #include "SceneEvent.h"

@@ -24,9 +24,9 @@ public:
             "assets/textures/skybox/right.jpg",  "assets/textures/skybox/left.jpg",  "assets/textures/skybox/top.jpg",
             "assets/textures/skybox/bottom.jpg", "assets/textures/skybox/front.jpg", "assets/textures/skybox/back.jpg",
         };
-        TextureParams params;
-        params.Format = TextureFormat::SRGB8;
-        m_defaultTextureCube = TextureCube::Create(faces, params);
+        TextureSpecification spec;
+        spec.Format = TextureFormat::SRGB8;
+        m_defaultTextureCube = TextureCube::Create(faces, spec);
     }
 
     void BeginScene() override

@@ -1,16 +1,8 @@
 #pragma once
 
-#include "KeyCode.h"
-#include "Log.h"
-#include "glm/fwd.hpp"
 #include "pch.h"
-#include <glm/glm.hpp>
-#include <imgui.h>
 
 #include "Singleton.h"
-#include <cstdint>
-#include <memory>
-#include <unordered_map>
 
 namespace Doodle
 {

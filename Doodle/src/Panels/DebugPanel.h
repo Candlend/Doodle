@@ -5,9 +5,7 @@
 
 #include <ImGuizmo.h>
 
-#include "Application.h"
 #include "EditorPanel.h"
-#include "Renderer.h"
 
 namespace Doodle
 {

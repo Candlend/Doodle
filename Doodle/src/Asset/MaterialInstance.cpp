@@ -1,6 +1,4 @@
 #include "MaterialInstance.h"
-#include "Log.h"
-#include <cstdint>
 
 namespace Doodle
 {

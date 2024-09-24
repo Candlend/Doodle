@@ -1,13 +1,11 @@
-#include "assimp/material.h"
-#include "glm/fwd.hpp"
-#include "pch.h"
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/LogStream.hpp>
+#include <assimp/material.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <filesystem>
 #include <glad/glad.h>
+#include <glm/fwd.hpp>
 
 #include "Mesh.h"
 #include "Texture.h"

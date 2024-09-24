@@ -5,10 +5,6 @@
 #include "KeyCode.h"
 #include "MouseButton.h"
 #include "Singleton.h"
-#include <cstdint>
-#include <mutex>
-#include <unordered_map>
-#include <utility>
 
 namespace Doodle
 {

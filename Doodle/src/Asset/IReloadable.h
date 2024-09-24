@@ -2,7 +2,6 @@
 
 #include "pch.h"
 #include <filesystem>
-#include <memory>
 
 namespace Doodle
 {

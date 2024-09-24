@@ -1,15 +1,9 @@
 #pragma once
 
-#include "SceneRenderer.h"
 #include "pch.h"
-#include <imgui.h>
 
-#include <ImGuizmo.h>
-#include <memory>
-
-#include "Application.h"
 #include "EditorPanel.h"
-#include "Renderer.h"
+#include "SceneRenderer.h"
 
 namespace Doodle
 {

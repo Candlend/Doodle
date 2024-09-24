@@ -1,15 +1,12 @@
 #pragma once
 
-#include "Entity.h"
 #include "pch.h"
-#include <cstdint>
 #include <imgui.h>
 
 #include <ImGuizmo.h>
 
-#include "Application.h"
 #include "EditorPanel.h"
-#include "Renderer.h"
+#include "Entity.h"
 
 namespace Doodle
 {

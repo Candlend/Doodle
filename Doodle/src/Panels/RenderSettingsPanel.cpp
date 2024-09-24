@@ -1,10 +1,8 @@
-#include "Component.h"
+#include <imgui.h>
+
 #include "RenderPass.h"
 #include "RenderSettingsPanel.h"
 #include "SceneManager.h"
-#include "SelectionManager.h"
-#include "imgui.h"
-
 
 namespace Doodle
 {

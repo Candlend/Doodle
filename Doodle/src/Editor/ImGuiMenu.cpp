@@ -1,4 +1,7 @@
+#include <imgui.h>
+
 #include "ImGuiMenu.h"
+#include "ImGuiUtils.h"
 
 namespace Doodle
 {

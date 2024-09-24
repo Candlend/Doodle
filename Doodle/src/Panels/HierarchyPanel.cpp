@@ -6,9 +6,7 @@
 #include "Entity.h"
 #include "FileSystem.h"
 #include "HierarchyPanel.h"
-#include "Input.h"
 #include "Model.h"
-#include "PanelManager.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
 

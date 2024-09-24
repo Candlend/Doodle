@@ -4,7 +4,6 @@
 
 #include "Core.h"
 #include "Event.h"
-#include "Singleton.h"
 
 namespace Doodle
 {

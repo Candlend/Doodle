@@ -1,20 +1,17 @@
-#include "BaseComponent.h"
-#include "EditorCamera.h"
-#include "KeyCode.h"
-#include "UUID.h"
-#include "pch.h"
 #include <glm/ext/vector_float3.hpp>
 #include <imgui.h>
 #include <imgui_internal.h>
 
 #include <ImGuizmo.h>
 
-#include "CameraComponent.h"
+#include "BaseComponent.h"
 #include "Component.h"
+#include "EditorCamera.h"
 #include "EditorPanel.h"
 #include "EventManager.h"
 #include "ImGuiUtils.Feature.h"
 #include "Input.h"
+#include "KeyCode.h"
 #include "MathUtils.h"
 #include "SceneEvent.h"
 #include "SceneManager.h"

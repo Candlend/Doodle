@@ -1,27 +1,24 @@
 
-#include "EventManager.h"
 #include "pch.h"
 #include <GLFW/glfw3.h>
-#include <imgui.h>
-
-#include <ImGuizmo.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <filesystem>
 #include <glad/glad.h>
+#include <imgui.h>
+
+#include <ImGuizmo.h>
 
 #include "Application.h"
 #include "ApplicationEvent.h"
 #include "ApplicationRunner.h"
 #include "Event.h"
+#include "EventManager.h"
 #include "IconsFontAwesome6Pro.h"
 #include "IconsFontAwesome6ProBrands.h"
 #include "ImGuiBuilder.h"
 #include "ImGuiCustomStyle.h"
-#include "Input.h"
-#include "KeyCode.h"
-#include "KeyEvent.h"
-#include "MouseEvent.h"
+
 namespace Doodle
 {
 

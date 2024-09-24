@@ -7,7 +7,6 @@
 #include "LogPanel.h"
 #include "Utils.h"
 
-
 namespace Doodle
 {
 

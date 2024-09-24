@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Log.h"
 #include "pch.h"
 #include <imgui.h>
 

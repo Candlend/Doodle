@@ -5,13 +5,9 @@
 #include <backends/imgui_impl_glfw.h>
 #include <glad/glad.h>
 
-#include "Application.h"
 #include "ApplicationEvent.h"
 #include "EventManager.h"
 #include "GraphicsContext.h" // Add this line to include the header file for GraphicsContext
-#include "KeyCode.h"
-#include "KeyEvent.h"
-#include "MouseEvent.h"
 #include "Window.h"
 
 namespace Doodle

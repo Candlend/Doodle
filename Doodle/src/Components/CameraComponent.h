@@ -4,7 +4,6 @@
 
 #include "BaseComponent.h"
 #include "SceneCamera.h"
-#include <string>
 
 namespace Doodle
 {

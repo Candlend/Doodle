@@ -1,9 +1,8 @@
 
 #pragma once
 
-#include "Log.h"
-#include "glm/fwd.hpp"
 #include "pch.h"
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 
 struct DirectionalLight

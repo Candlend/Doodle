@@ -8,7 +8,6 @@
 
 #include "BaseComponent.h"
 #include "CameraComponent.h"
-#include "Core.h"
 #include "ImGuiUtils.h"
 #include "LightComponent.h"
 #include "MaterialComponent.h"

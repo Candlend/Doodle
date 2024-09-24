@@ -1,13 +1,10 @@
 #pragma once
 
-#include "TextureParams.h"
 #include "pch.h"
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
 
-#include "Material.h"
 #include "Mesh.h"
+#include "Texture.h"
+
 
 class aiMesh;
 class aiNode;
@@ -45,7 +42,8 @@ private:
     ModelNode ProcessNode(aiNode *node, const aiScene *scene);
 
     void LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures, aiMaterial *material,
-                     std::string name, aiTextureType type, int index = 0, TextureParams params = TextureParams());
+                     std::string name, aiTextureType type, int index = 0,
+                     TextureSpecification spec = TextureSpecification());
 
     std::shared_ptr<Mesh> LoadMesh(const aiMesh *mesh, const aiScene *scene);
 };

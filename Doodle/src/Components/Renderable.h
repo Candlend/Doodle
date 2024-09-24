@@ -1,11 +1,11 @@
 #pragma once
 
+#include "pch.h"
+
 #include "BaseComponent.h"
 #include "ImGuiUtils.h"
 #include "Mesh.h"
-#include "SceneCamera.h"
 #include "VertexArray.h"
-#include "imgui.h"
 
 namespace Doodle
 {

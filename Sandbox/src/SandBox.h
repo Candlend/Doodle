@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Component.h"
+#include <imgui.h>
+
 #include "DebugPanel.h"
+#include "Doodle.h"
 #include "HierarchyPanel.h"
+#include "ImGuiBuilder.h"
 #include "ImGuiMenu.h"
-#include "ImGuiUtils.Feature.h"
 #include "InspectorPanel.h"
-#include "Log.h"
 #include "LogPanel.h"
 #include "Model.h"
 #include "PanelManager.h"
@@ -14,13 +15,6 @@
 #include "Renderable.h"
 #include "Texture.h"
 #include "ViewportPanel.h"
-#include "imgui.h"
-#include <Doodle.h>
-#include <array>
-#include <cstdint>
-#include <memory>
-#include <string>
-
 
 using namespace Doodle;
 
@@ -96,9 +90,9 @@ public:
         auto cutFish = m_scene->CreateEntity("CutFish");
         cutFish.AddComponent<MeshComponent>(Mesh::Create("assets/models/cut_fish.obj"));
         auto material = StandardMaterial::Create();
-        TextureParams params;
-        params.Format = TextureFormat::SRGB8ALPHA8;
-        material->SetAlbedoTexture(Texture2D::Create("assets/textures/cut_fish/base_color.tga", params));
+        TextureSpecification spec;
+        spec.Format = TextureFormat::SRGB8ALPHA8;
+        material->SetAlbedoTexture(Texture2D::Create("assets/textures/cut_fish/base_color.tga", spec));
         material->SetNormalTexture(Texture2D::Create("assets/textures/cut_fish/normal.tga"));
         material->SetMetallicTexture(Texture2D::Create("assets/textures/cut_fish/metallic.tga"));
         material->SetRoughnessTexture(Texture2D::Create("assets/textures/cut_fish/roughness.tga"));

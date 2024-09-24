@@ -1,13 +1,10 @@
 #pragma once
 
-#include "imgui.h"
 #include "pch.h"
+#include <glm/glm.hpp>
+#include <imgui.h>
 
-#include "ApplicationEvent.h"
-#include "EventManager.h"
-#include "ImGuiUtils.h"
 #include "PanelManager.h"
-#include <cstdint>
 
 namespace Doodle
 {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Log.h"
-#include "Scene.h"
-#include "UUID.h"
 #include "pch.h"
 #include <entt/entt.hpp>
+
+#include "Scene.h"
+#include "UUID.h"
 
 namespace Doodle
 {

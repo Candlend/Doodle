@@ -30,16 +30,16 @@ class DOO_API ShadingPass : public RenderPass
 public:
     ShadingPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
-        TextureParams params;
-        params.Wrap = TextureWrap::ClampToEdge;
-        m_brdfLUT = Texture2D::Create("assets/textures/brdfLUT.png", params);
+        TextureSpecification spec;
+        spec.Wrap = TextureWrap::ClampToEdge;
+        m_brdfLUT = Texture2D::Create("assets/textures/brdfLUT.png", spec);
 
-        params.Wrap = TextureWrap::ClampToEdge;
-        params.Filter = TextureFilter::Linear;
+        spec.Wrap = TextureWrap::ClampToEdge;
+        spec.Filter = TextureFilter::Linear;
         Buffer ltc1Buffer = Buffer::Copy(LTC1, sizeof(LTC1));
-        m_ltc1 = Texture2D::Create(ltc1Buffer, params);
+        m_ltc1 = Texture2D::Create(ltc1Buffer, spec);
         Buffer ltc2Buffer = Buffer::Copy(LTC2, sizeof(LTC2));
-        m_ltc2 = Texture2D::Create(ltc2Buffer, params);
+        m_ltc2 = Texture2D::Create(ltc2Buffer, spec);
     }
 
     void BeginScene() override

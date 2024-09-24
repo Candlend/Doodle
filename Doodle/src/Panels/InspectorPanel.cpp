@@ -1,12 +1,10 @@
-#include "InspectorPanel.h"
+#include <imgui.h>
+
 #include "Component.h"
 #include "Entity.h"
-#include "MaterialComponent.h"
-#include "Renderable.h"
+#include "InspectorPanel.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
-#include "imgui.h"
-#include <string>
 
 namespace Doodle
 {
