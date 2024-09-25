@@ -3,6 +3,7 @@
 #include "AssetManager.h"
 #include "Component.h"
 #include "Entity.h"
+#include "LightComponent.h"
 #include "Scene.h"
 #include "SceneAsset.h"
 #include "SceneManager.h"
@@ -41,7 +42,14 @@ Entity SceneManager::DeserializeEntity(const EntityInfo &entityInfo)
     for (const auto &[componentName, componentData] : entityInfo.Components)
     {
         auto object = componentData.to_object().value();
-        TryLoadComponent<TransformComponent>(componentName, object, entity);
+        TryLoadComponent<TransformComponent>(componentName, object, entity) ||
+            TryLoadComponent<CameraComponent>(componentName, object, entity) ||
+            TryLoadComponent<MeshComponent>(componentName, object, entity) ||
+            TryLoadComponent<MaterialComponent>(componentName, object, entity) ||
+            TryLoadComponent<DirectionalLightComponent>(componentName, object, entity) ||
+            TryLoadComponent<PointLightComponent>(componentName, object, entity) ||
+            TryLoadComponent<SpotLightComponent>(componentName, object, entity) ||
+            TryLoadComponent<AreaLightComponent>(componentName, object, entity);
     }
     for (const auto &child : entityInfo.Children)
     {

@@ -63,9 +63,7 @@ public:
 
     void OnFileCreated(const std::filesystem::path &filepath)
     {
-        bool result = false;
-        if (!result)
-            result = TryLoadAsset<SceneAsset>(filepath);
+        TryLoadAsset<SceneAsset>(filepath);
     }
 
     bool OnEvent(ProjectOpenEvent &event) override
