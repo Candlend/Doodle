@@ -16,7 +16,7 @@ template <typename T> class DOO_API ISerializable
 public:
     std::string Serialize()
     {
-        return rfl::json::write(m_data);
+        return rfl::json::write(m_data, YYJSON_WRITE_PRETTY);
     }
 
     void SerializeToFile(const std::string &path)

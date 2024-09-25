@@ -20,31 +20,31 @@
 namespace Doodle
 {
 
-struct IDComponent : public BaseComponent
+struct UUIDComponent : public BaseComponent
 {
     COMPONENT_CLASS_TYPE(ID)
 
-    UUID ID;
+    UUID UUID;
 
-    IDComponent() = default;
-    IDComponent(const IDComponent &) = default;
-    IDComponent(const UUID &id) : ID(id)
+    UUIDComponent() = default;
+    UUIDComponent(const UUIDComponent &) = default;
+    UUIDComponent(const Doodle::UUID &uuid) : UUID(uuid)
     {
     }
 
-    operator UUID &()
+    operator Doodle::UUID &()
     {
-        return ID;
+        return UUID;
     }
 
-    operator const UUID &() const
+    operator const Doodle::UUID &() const
     {
-        return ID;
+        return UUID;
     }
 
     void OnInspectorLayout() override
     {
-        ImGuiUtils::ReadOnlyInputText("ID", ID);
+        ImGuiUtils::ReadOnlyInputText("UUID", UUID);
     }
 };
 
@@ -392,21 +392,21 @@ using namespace Doodle;
 namespace rfl
 {
 
-template <> struct Reflector<IDComponent>
+template <> struct Reflector<UUIDComponent>
 {
     struct ReflType
     {
-        UUID ID;
+        UUID UUID;
     };
 
-    static IDComponent to(const ReflType &v) noexcept // NOLINT
+    static UUIDComponent to(const ReflType &v) noexcept // NOLINT
     {
-        return {v.ID};
+        return {v.UUID};
     }
 
-    static ReflType from(const IDComponent &v) noexcept // NOLINT
+    static ReflType from(const UUIDComponent &v) noexcept // NOLINT
     {
-        return {v.ID};
+        return {v.UUID};
     }
 };
 

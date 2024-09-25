@@ -3,6 +3,7 @@
 #include <rfl/Variant.hpp>
 
 #include "Asset.h"
+#include "Component.h"
 #include "ISerializable.h"
 #include "Scene.h"
 #include "UUID.h"
@@ -10,8 +11,13 @@
 namespace Doodle
 {
 
+using ComponentTypes = rfl::Variant<rfl::Field<"TransformComponent", TransformComponent>>;
+
 struct EntityInfo
 {
+    UUID UUID;
+    std::string Name;
+    std::vector<ComponentTypes> Components;
     std::vector<EntityInfo> Children;
 };
 

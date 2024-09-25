@@ -45,10 +45,6 @@ void InspectorPanel::OnPanelLayout()
     for (auto &component : components)
     {
         std::string name = component->GetName();
-        if (name == "ID" || name == "Name")
-        {
-            continue;
-        }
         if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
         {
             component->OnInspectorLayout();

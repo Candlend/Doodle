@@ -29,7 +29,7 @@ entt::entity Entity::GetEntityHandle() const
 
 UUID Entity::GetUUID() const
 {
-    return GetComponent<IDComponent>();
+    return GetComponent<UUIDComponent>();
 }
 
 Scene *Entity::GetScene() const
@@ -39,7 +39,12 @@ Scene *Entity::GetScene() const
 
 bool Entity::IsValid() const
 {
-    return (m_entityHandle != entt::null) && m_scene && GetRegistry().valid(m_entityHandle);
+    bool valid = (m_entityHandle != entt::null) && m_scene && GetRegistry().valid(m_entityHandle);
+    if (!valid)
+    {
+        DOO_CORE_WARN("Entity is not valid: {0}", (int)m_entityHandle);
+    }
+    return valid;
 }
 
 Entity::operator bool() const

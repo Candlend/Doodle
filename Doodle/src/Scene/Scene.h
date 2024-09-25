@@ -71,6 +71,7 @@ class TransformComponent;
 class Model;
 class ModelNode;
 class SceneManager;
+class EntityInfo;
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
@@ -82,7 +83,7 @@ public:
     ~Scene();
     Entity GetMainCameraEntity();
 
-    Entity CreateEntity(const std::string &name);
+    Entity CreateEntity(const std::string &name = "Empty Entity", const UUID &uuid = UUID());
     Entity FindEntity(const std::string &name) const;
     Entity GetEntity(const UUID &id) const;
     std::vector<Entity> GetEntities() const;

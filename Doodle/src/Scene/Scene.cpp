@@ -79,14 +79,14 @@ Entity Scene::GetMainCameraEntity()
     return {};
 }
 
-Entity Scene::CreateEntity(const std::string &name)
+Entity Scene::CreateEntity(const std::string &name, const UUID &uuid)
 {
     auto entity = Entity::Create(this);
-    entity.AddComponent<IDComponent>();
-    m_entityMap[entity.GetComponent<IDComponent>()] = entity;
-    m_entityComponents[entity.GetComponent<IDComponent>()] = {&entity.GetComponent<IDComponent>()};
+    entity.AddComponent<UUIDComponent>(uuid);
+    m_entityMap[entity.GetComponent<UUIDComponent>()] = entity;
     entity.AddComponent<NameComponent>(name);
     entity.AddComponent<TransformComponent>();
+    m_entityComponents[entity.GetComponent<UUIDComponent>()] = {&entity.GetComponent<TransformComponent>()};
 
     return entity;
 }
@@ -150,7 +150,7 @@ Entity Scene::GetEntity(const UUID &id) const
 std::vector<Entity> Scene::GetEntities() const
 {
     std::vector<Entity> entities;
-    auto view = m_registry.view<IDComponent>();
+    auto view = m_registry.view<UUIDComponent>();
     for (auto entity : view)
     {
         entities.push_back(Entity(this, entity));
@@ -165,7 +165,7 @@ std::vector<BaseComponent *> Scene::GetComponents(const UUID &id) const
 
 void Scene::AddEntity(const Entity &entity)
 {
-    m_entityMap[entity.GetComponent<IDComponent>()] = entity;
+    m_entityMap[entity.GetComponent<UUIDComponent>()] = entity;
 }
 
 void Scene::RemoveEntity(const UUID &id)
@@ -192,7 +192,7 @@ void Scene::RemoveEntity(const UUID &id)
 
 void Scene::DestroyEntity(const Entity &entity)
 {
-    UUID id = entity.GetComponent<IDComponent>();
+    UUID id = entity.GetComponent<UUIDComponent>();
     RemoveEntity(id);
 }
 
