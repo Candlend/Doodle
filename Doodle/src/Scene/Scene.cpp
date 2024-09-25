@@ -22,13 +22,6 @@
 namespace Doodle
 {
 
-std::shared_ptr<Scene> Scene::Load(const SceneInfo &sceneInfo)
-{
-    auto scene = std::make_shared<Scene>();
-    scene->m_sceneInfo = sceneInfo;
-    return scene;
-}
-
 Scene::Scene(const std::string &name)
 {
     m_name = name;
@@ -43,20 +36,6 @@ void Scene::OnUpdate()
 {
     UpdateGlobalTransforms();
     UpdateSceneData();
-}
-
-EntityInfo Scene::SerializeEntity(const Entity &entity)
-{
-    EntityInfo entityInfo;
-    for (auto *component : GetComponents(entity.GetUUID()))
-    {
-    }
-    for (const auto &child : entity.GetChildren())
-    {
-        EntityInfo childInfo = SerializeEntity(child);
-        entityInfo.Children.push_back(childInfo);
-    }
-    return entityInfo;
 }
 
 void Scene::UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty)
@@ -217,7 +196,7 @@ void Scene::DestroyEntity(const Entity &entity)
     RemoveEntity(id);
 }
 
-void Scene::LoadEnvironment(const std::string &filepath)
+void Scene::LoadEnvironment(const std::filesystem::path &filepath)
 {
     const uint32_t CUBEMAP_SIZE = 2048;
     const uint32_t IRRADIANCE_MAP_SIZE = 32;
@@ -309,17 +288,6 @@ void Scene::EndScene()
     DOO_CORE_TRACE("Scene <{0}> Deactivated", m_name);
     EventManager::Get()->Dispatch<SceneDeactivateEvent>(this);
     EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &Scene::OnUpdate);
-}
-
-SceneInfo Scene::GetInfo()
-{
-    m_sceneInfo.Entities.clear();
-    for (auto &entity : GetEntities())
-    {
-        EntityInfo entityInfo = SerializeEntity(entity);
-        m_sceneInfo.Entities.push_back(entityInfo);
-    }
-    return m_sceneInfo;
 }
 
 void Scene::UpdateSceneData()

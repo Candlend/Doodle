@@ -1,6 +1,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <magic_enum.hpp>
@@ -112,11 +113,11 @@ static int CalculateMipMapCount(int width, int height)
 class OpenGLTexture2D : public Texture2D
 {
 public:
-    OpenGLTexture2D(const std::string &filepath, const TextureSpecification &spec)
+    OpenGLTexture2D(const std::filesystem::path &filepath, const TextureSpecification &spec)
         : m_filepath(filepath), m_data(nullptr), m_params(spec)
     {
         stbi_set_flip_vertically_on_load(true);
-        m_hdr = stbi_is_hdr(m_filepath.c_str());
+        m_hdr = stbi_is_hdr(m_filepath.string().c_str());
 
         int width, height, channels, desiredChannels = 0;
         switch (m_params.Format)
@@ -144,12 +145,12 @@ public:
         if (m_hdr)
         {
             m_data = reinterpret_cast<std::byte *>(
-                stbi_loadf(m_filepath.c_str(), &width, &height, &channels, desiredChannels));
+                stbi_loadf(m_filepath.string().c_str(), &width, &height, &channels, desiredChannels));
         }
         else
         {
             m_data = reinterpret_cast<std::byte *>(
-                stbi_load(m_filepath.c_str(), &width, &height, &channels, desiredChannels));
+                stbi_load(m_filepath.string().c_str(), &width, &height, &channels, desiredChannels));
         }
 
         if (m_params.InvertColor)
@@ -193,7 +194,7 @@ public:
 
         if (!m_data)
         {
-            DOO_CORE_ERROR("Failed to load texture: {0}", m_filepath);
+            DOO_CORE_ERROR("Failed to load texture: {0}", m_filepath.string());
             return;
         }
 
@@ -236,7 +237,7 @@ public:
         Renderer::Submit([this]() { glBindTextureUnit(m_binding, 0); });
     }
 
-    std::string GetPath() const
+    std::filesystem::path GetPath() const
     {
         return m_filepath;
     }
@@ -341,13 +342,13 @@ private:
     TextureSpecification m_params;
     uint32_t m_rendererId;
     uint64_t m_textureHandle;
-    std::string m_filepath;
+    std::filesystem::path m_filepath;
     std::byte *m_data = nullptr;
     bool m_hdr;
     uint32_t m_binding;
 };
 
-std::shared_ptr<Texture2D> Texture2D::Create(const std::string &filepath, const TextureSpecification &spec)
+std::shared_ptr<Texture2D> Texture2D::Create(const std::filesystem::path &filepath, const TextureSpecification &spec)
 {
     return std::make_shared<OpenGLTexture2D>(filepath, spec);
 }

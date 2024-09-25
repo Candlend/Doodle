@@ -1,18 +1,17 @@
 #pragma once
-#include "ProjectManager.h"
-#include "UUID.h"
 #include "pch.h"
 #include <filesystem>
 #include <magic_enum.hpp>
-#include <string>
 
 #include "Asset.h"
 #include "EventManager.h"
 #include "FileWatcher.h"
 #include "IEventHandler.h"
 #include "ProjectEvent.h"
+#include "ProjectManager.h"
 #include "SceneAsset.h"
 #include "Singleton.h"
+#include "UUID.h"
 
 namespace Doodle
 {
@@ -91,7 +90,7 @@ public:
             return false;
         }
         auto asset = std::make_shared<T>();
-        if (asset->DeserializeFromFile(filepath))
+        if (asset->Load(filepath.string()))
         {
             AddAsset(filepath, asset);
             return true;
@@ -144,8 +143,8 @@ public:
             DOO_CORE_ERROR("Invalid file extension: {0}", extension);
             return nullptr;
         }
-        auto asset = std::make_shared<T>();
-        asset->SerializeToFile(filepath);
+        auto asset = std::make_shared<T>(filepath);
+        asset->Save();
         AddAsset(filepath, std::dynamic_pointer_cast<BaseAsset>(asset));
         return asset;
     }

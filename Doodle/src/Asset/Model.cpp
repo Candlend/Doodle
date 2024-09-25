@@ -173,18 +173,18 @@ ModelNode Model::ProcessNode(aiNode *node, const aiScene *scene)
     return modelNode;
 }
 
-std::shared_ptr<Model> Model::Create(const std::string &filepath)
+std::shared_ptr<Model> Model::Create(const std::filesystem::path &filepath)
 {
     return std::make_shared<Model>(filepath);
 }
 
-Model::Model(const std::string &filepath)
+Model::Model(const std::filesystem::path &filepath)
 {
     LogStream::Initialize();
-    DOO_CORE_INFO("Loading model: {0}", filepath.c_str());
+    DOO_CORE_INFO("Loading model: {0}", filepath.string());
     Assimp::Importer importer;
-    const aiScene *scene =
-        importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+    const aiScene *scene = importer.ReadFile(filepath.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                                                    aiProcess_CalcTangentSpace);
     // check for errors
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
@@ -192,7 +192,7 @@ Model::Model(const std::string &filepath)
         return;
     }
     // retrieve the directory path of the filepath
-    m_filepath = NormalizePath(filepath);
+    m_filepath = NormalizePath(filepath.string());
     m_directory = GetDirectory(m_filepath);
 
     // process ASSIMP's root node recursively

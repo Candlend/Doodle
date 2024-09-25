@@ -16,9 +16,35 @@ std::shared_ptr<Scene> SceneManager::LoadScene(const SceneInfo &sceneInfo)
     {
         m_activeScene->EndScene();
     }
-    m_activeScene = Scene::Load(sceneInfo);
+    m_activeScene = std::make_shared<Scene>();
+    m_activeSceneInfo = sceneInfo;
+
+    auto entities = sceneInfo.Entities;
+    // TODO Load scene from sceneInfo
+    auto entity = m_activeScene->CreateEntity("Test");
+    DOO_CORE_DEBUG(rfl::json::write(entity.GetComponent<IDComponent>()));
+
     m_activeScene->BeginScene();
     return m_activeScene;
+}
+
+EntityInfo SceneManager::SerializeEntity(const Entity &entity)
+{
+    EntityInfo entityInfo;
+    for (auto *component : m_activeScene->GetComponents(entity.GetUUID()))
+    {
+        // auto *comp = dynamic_cast<ComponentTypes *>(component);
+        // if (comp)
+        // {
+        //     entityInfo.Components.push_back(*comp);
+        // }
+    }
+    for (const auto &child : entity.GetChildren())
+    {
+        EntityInfo childInfo = SerializeEntity(child);
+        entityInfo.Children.push_back(childInfo);
+    }
+    return entityInfo;
 }
 
 SceneInfo SceneManager::GetSceneInfo()
@@ -28,17 +54,16 @@ SceneInfo SceneManager::GetSceneInfo()
         DOO_CORE_WARN("No active scene found");
         return SceneInfo();
     }
-
-    return m_activeScene->GetInfo();
+    for (const auto &entity : m_activeScene->GetEntities())
+    {
+        EntityInfo entityInfo = SerializeEntity(entity);
+        m_activeSceneInfo.Entities.push_back(entityInfo);
+    }
+    return m_activeSceneInfo;
 }
 
-void SceneManager::SaveScene(const std::string &filepath)
+void SceneManager::SaveScene(const std::filesystem::path &filepath)
 {
-    if (!m_activeScene)
-    {
-        DOO_CORE_WARN("No active scene found");
-        return;
-    }
     auto sceneInfo = GetSceneInfo();
     auto uuid = sceneInfo.UUID;
     auto sceneAsset = AssetManager::Get()->GetAsset<SceneAsset>(uuid);
@@ -47,7 +72,10 @@ void SceneManager::SaveScene(const std::string &filepath)
     {
         sceneAsset->Save();
     }
-    sceneAsset->SaveAs(filepath);
+    else
+    {
+        sceneAsset->SaveAs(filepath);
+    }
 }
 
 } // namespace Doodle

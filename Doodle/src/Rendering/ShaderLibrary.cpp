@@ -32,7 +32,7 @@ void ShaderLibrary::AddShader(const std::string &name, std::shared_ptr<Shader> s
     m_shaders[name] = shader;
 }
 
-std::shared_ptr<Shader> ShaderLibrary::LoadShader(const std::string &name, const std::string &filepath)
+std::shared_ptr<Shader> ShaderLibrary::LoadShader(const std::string &name, const std::filesystem::path &filepath)
 {
     auto shader = Shader::Create(filepath);
     AddShader(name, shader);

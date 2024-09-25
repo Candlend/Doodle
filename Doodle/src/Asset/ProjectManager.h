@@ -15,9 +15,9 @@ public:
 
     static std::shared_ptr<Project> LoadProject();
 
-    static std::shared_ptr<Project> CreateProject(const std::string &filepath);
+    static std::shared_ptr<Project> CreateProject(const std::filesystem::path &filepath);
 
-    static std::shared_ptr<Project> LoadProject(const std::string &filepath);
+    static std::shared_ptr<Project> LoadProject(const std::filesystem::path &filepath);
 
     static std::shared_ptr<Project> GetActiveProject()
     {

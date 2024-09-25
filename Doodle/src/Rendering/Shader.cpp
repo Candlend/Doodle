@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <boost/algorithm/string.hpp>
 #include <cstdint>
+#include <filesystem>
 #include <glad/glad.h>
 #include <string>
 #include <vector>
@@ -49,7 +50,7 @@ class OpenGLShader : public Shader
 {
 
 public:
-    OpenGLShader(const std::string &filepath) : Shader(filepath), m_filepath(filepath)
+    OpenGLShader(const std::filesystem::path &filepath) : Shader(filepath), m_filepath(filepath)
     {
         ReadShaderFromFile(filepath);
         Renderer::Submit([this, filepath]() {
@@ -64,7 +65,7 @@ public:
         Renderer::Submit([this]() { glDeleteProgram(m_rendererID); });
     }
 
-    std::string GetPath() const override
+    std::filesystem::path GetPath() const override
     {
         return m_filepath;
     }
@@ -98,7 +99,7 @@ public:
     }
 
 private:
-    void ReadShaderFromFile(const std::string &filepath)
+    void ReadShaderFromFile(const std::filesystem::path &filepath)
     {
         std::ifstream in(filepath, std::ios::in | std::ios::binary);
         if (in)
@@ -107,7 +108,7 @@ private:
         }
         else
         {
-            DOO_CORE_WARN("Could not read shader file {0}", filepath);
+            DOO_CORE_WARN("Could not read shader file {0}", filepath.string());
         }
     }
 
@@ -509,7 +510,7 @@ private:
         SetUniform(name, glUniformHandleui64ARB, textureHandle);
     }
 
-    std::string m_filepath;
+    std::filesystem::path m_filepath;
     std::vector<ShaderProperty> m_properties;
     std::unordered_map<std::string, uint32_t> m_uniformsCache;
     std::unordered_map<std::string, uint32_t> m_uniformBlocksCache;
@@ -517,7 +518,7 @@ private:
     std::string m_shaderSource;
 };
 
-std::shared_ptr<Shader> Shader::Create(const std::string &filepath)
+std::shared_ptr<Shader> Shader::Create(const std::filesystem::path &filepath)
 {
     return std::make_shared<OpenGLShader>(filepath);
 }

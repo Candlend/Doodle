@@ -38,9 +38,9 @@ struct ShaderProperty
 class DOO_API Shader
 {
 public:
-    static std::shared_ptr<Shader> Create(const std::string &filepath);
-    Shader(const std::string &filepath = "") {};
-    virtual std::string GetPath() const = 0;
+    static std::shared_ptr<Shader> Create(const std::filesystem::path &filepath);
+    Shader(const std::filesystem::path &filepath = "") {};
+    virtual std::filesystem::path GetPath() const = 0;
     virtual void Bind() = 0;
     virtual void Unbind() = 0;
     virtual uint32_t GetUniformLocation(const std::string &name) = 0;

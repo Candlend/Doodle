@@ -12,17 +12,6 @@
 namespace Doodle
 {
 
-struct EntityInfo
-{
-    std::vector<EntityInfo> Children;
-};
-
-struct SceneInfo
-{
-    UUID UUID;
-    std::vector<EntityInfo> Entities;
-};
-
 struct LightData
 {
     static constexpr size_t MAX_DIRECTIONAL_LIGHTS = 4;
@@ -81,13 +70,14 @@ class SceneRenderer;
 class TransformComponent;
 class Model;
 class ModelNode;
+class SceneManager;
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
     friend class Entity;
+    friend class SceneManager;
 
 public:
-    static std::shared_ptr<Scene> Load(const SceneInfo &sceneInfo);
     Scene(const std::string &name = "untitledScene");
     ~Scene();
     Entity GetMainCameraEntity();
@@ -100,7 +90,7 @@ public:
     void AddEntity(const Entity &entity);
     void RemoveEntity(const UUID &id);
     void DestroyEntity(const Entity &entity);
-    void LoadEnvironment(const std::string &filepath);
+    void LoadEnvironment(const std::filesystem::path &filepath);
 
     inline std::string GetName() const
     {
@@ -130,8 +120,6 @@ public:
         return m_sceneData;
     }
 
-    SceneInfo GetInfo();
-
     entt::registry &GetRegistry()
     {
         return m_registry;
@@ -150,15 +138,12 @@ private:
     entt::registry m_registry;
 
     SceneData m_sceneData;
-    SceneInfo m_sceneInfo;
 
     void OnUpdate();
     void UpdateSceneData();
     void UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty);
 
     Entity ProcessModelNode(ModelNode node);
-
-    EntityInfo SerializeEntity(const Entity &entity);
 };
 
 } // namespace Doodle

@@ -3,6 +3,8 @@
 #include "pch.h"
 
 #include "Scene.h"
+#include "SceneAsset.h"
+#include "Singleton.h"
 #include <memory>
 
 namespace Doodle
@@ -14,8 +16,6 @@ enum class SceneState
     Runtime,
 };
 
-class SceneInfo;
-class EntityInfo;
 class DOO_API SceneManager : public Singleton<SceneManager>
 {
     friend class Scene;
@@ -32,10 +32,12 @@ public:
     std::shared_ptr<Scene> LoadScene(const SceneInfo &sceneInfo);
     SceneInfo GetSceneInfo();
 
-    void SaveScene(const std::string &filepath = "");
+    void SaveScene(const std::filesystem::path &filepath = "");
 
 private:
+    EntityInfo SerializeEntity(const Entity &entity);
     std::shared_ptr<Scene> m_activeScene;
+    SceneInfo m_activeSceneInfo;
     SceneState m_state = SceneState::Editor;
 };
 

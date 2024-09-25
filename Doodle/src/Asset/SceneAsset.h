@@ -5,44 +5,42 @@
 #include "Asset.h"
 #include "ISerializable.h"
 #include "Scene.h"
-#include "SceneManager.h"
 #include "UUID.h"
 
 namespace Doodle
 {
+
+struct EntityInfo
+{
+    std::vector<EntityInfo> Children;
+};
+
+struct SceneInfo
+{
+    UUID UUID;
+    std::vector<EntityInfo> Entities;
+};
 
 class SceneAsset : public Asset<Scene>, public ISerializable<SceneInfo>
 {
 public:
     ASSET_TYPE(Scene, dscene)
 
-    std::shared_ptr<Scene> CreateInstance() override
-    {
-        auto scene = SceneManager::Get()->LoadScene(m_data);
-        return scene;
-    };
-
-    void Reload() override
-    {
-        DeserializeFromFile(m_filepath);
-    }
-
-    UUID GetUUID() const override
-    {
-        return m_data.UUID;
-    }
-
-    void Save()
-    {
-        SerializeToFile(m_filepath);
-    }
-
-    void SaveAs(const std::string &filepath)
+    SceneAsset(const std::filesystem::path &filepath = "")
     {
         m_filepath = filepath;
-        m_data.UUID = UUID();
-        Save();
     }
+    std::shared_ptr<Scene> CreateInstance() override;
+
+    void Reload() override;
+
+    UUID GetUUID() const override;
+
+    void Save() override;
+
+    void SaveAs(const std::filesystem::path &filepath) override;
+
+    bool Load(const std::filesystem::path &filepath) override;
 };
 
 } // namespace Doodle

@@ -81,7 +81,7 @@ public:
 class DOO_API Texture2D : public Texture
 {
 public:
-    static std::shared_ptr<Texture2D> Create(const std::string &filepath,
+    static std::shared_ptr<Texture2D> Create(const std::filesystem::path &filepath,
                                              const TextureSpecification &spec = TextureSpecification());
 
     static std::shared_ptr<Texture2D> Create(Buffer buffer, const TextureSpecification &spec = TextureSpecification());
@@ -94,7 +94,7 @@ public:
 
     static std::shared_ptr<Texture2D> GetCheckerboardTexture();
 
-    std::string GetPath() const;
+    std::filesystem::path GetPath() const;
 };
 
 class DOO_API TextureCube : public Texture

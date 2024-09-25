@@ -23,16 +23,16 @@ std::shared_ptr<Project> ProjectManager::LoadProject()
     return LoadProject(filepath.string());
 }
 
-std::shared_ptr<Project> ProjectManager::CreateProject(const std::string &filepath)
+std::shared_ptr<Project> ProjectManager::CreateProject(const std::filesystem::path &filepath)
 {
-    DOO_CORE_INFO("Creating project: {0}", filepath);
+    DOO_CORE_INFO("Creating project: {0}", filepath.string());
     s_ActiveProject = Project::Create(filepath);
     return s_ActiveProject;
 }
 
-std::shared_ptr<Project> ProjectManager::LoadProject(const std::string &filepath)
+std::shared_ptr<Project> ProjectManager::LoadProject(const std::filesystem::path &filepath)
 {
-    DOO_CORE_INFO("Loading project: {0}", filepath);
+    DOO_CORE_INFO("Loading project: {0}", filepath.string());
     s_ActiveProject = Project::Load(filepath);
     return s_ActiveProject;
 }

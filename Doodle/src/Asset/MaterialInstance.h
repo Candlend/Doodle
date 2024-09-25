@@ -92,22 +92,26 @@ public:
         SetUniformTexture("u_RoughnessTexture", roughnessTexture);
     }
 
-    void LoadAlbedoTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
+    void LoadAlbedoTexture(const std::filesystem::path &filepath,
+                           const TextureSpecification &spec = TextureSpecification())
     {
         SetAlbedoTexture(Texture2D::Create(filepath, spec));
     }
 
-    void LoadNormalTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
+    void LoadNormalTexture(const std::filesystem::path &filepath,
+                           const TextureSpecification &spec = TextureSpecification())
     {
         SetNormalTexture(Texture2D::Create(filepath, spec));
     }
 
-    void LoadMetallicTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
+    void LoadMetallicTexture(const std::filesystem::path &filepath,
+                             const TextureSpecification &spec = TextureSpecification())
     {
         SetMetallicTexture(Texture2D::Create(filepath, spec));
     }
 
-    void LoadRoughnessTexture(const std::string &filepath, const TextureSpecification &spec = TextureSpecification())
+    void LoadRoughnessTexture(const std::filesystem::path &filepath,
+                              const TextureSpecification &spec = TextureSpecification())
     {
         SetRoughnessTexture(Texture2D::Create(filepath, spec));
     }

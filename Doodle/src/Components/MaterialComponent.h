@@ -42,7 +42,7 @@ struct MaterialComponent : public BaseComponent
 
     void OnInspectorLayout() override
     {
-        ImGuiUtils::ReadOnlyInputText("Shader Path", MaterialInstance->GetShader()->GetPath());
+        ImGuiUtils::ReadOnlyInputText("Shader Path", MaterialInstance->GetShader()->GetPath().string());
         std::shared_ptr<Material> material = MaterialInstance->GetMaterial();
         auto standardMaterial = dynamic_pointer_cast<StandardMaterial>(material);
         if (!standardMaterial)

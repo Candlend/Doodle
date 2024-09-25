@@ -13,6 +13,9 @@ public:
     virtual std::string GetAssetExtension() = 0;
     virtual void Reload() = 0;
     virtual UUID GetUUID() const = 0;
+    virtual void Save() = 0;
+    virtual void SaveAs(const std::filesystem::path &filepath) = 0;
+    virtual bool Load(const std::filesystem::path &filepath) = 0;
 
     std::filesystem::path GetFilepath() const
     {

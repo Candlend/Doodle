@@ -26,8 +26,8 @@ struct ModelNode
 class DOO_API Model
 {
 public:
-    static std::shared_ptr<Model> Create(const std::string &filepath);
-    Model(const std::string &filepath);
+    static std::shared_ptr<Model> Create(const std::filesystem::path &filepath);
+    Model(const std::filesystem::path &filepath);
     ModelNode GetRootNode() const
     {
         return m_root;
