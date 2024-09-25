@@ -11,6 +11,26 @@
 namespace Doodle
 {
 
+template <typename T>
+bool TryLoadComponent(std::string componentName, rfl::Generic::Object &componentData, Entity &entity)
+{
+    if (componentName != T::GetStaticName())
+    {
+        return false;
+    }
+    if (entity.HasComponent<T>())
+    {
+        auto &component = entity.GetComponent<T>();
+        component.DeserializeFromObject(componentData);
+    }
+    else
+    {
+        auto &component = entity.AddComponent<T>();
+        component.DeserializeFromObject(componentData);
+    }
+    return true;
+}
+
 Entity SceneManager::DeserializeEntity(const EntityInfo &entityInfo)
 {
     UUID uuid = entityInfo.UUID;
@@ -18,12 +38,10 @@ Entity SceneManager::DeserializeEntity(const EntityInfo &entityInfo)
     auto entity = m_activeScene->CreateEntity(name, uuid);
     DOO_CORE_DEBUG("Entity {0} ({1}) deserialized", name, uuid.ToString());
 
-    for (const auto &component : entityInfo.Components)
+    for (const auto &[componentName, componentData] : entityInfo.Components)
     {
-        if (const auto *comp = rfl::get_if<rfl::Field<"TransformComponent", TransformComponent>>(component))
-        {
-            entity.GetComponent<TransformComponent>().LocalTransform = comp->value().LocalTransform;
-        }
+        auto object = componentData.to_object().value();
+        TryLoadComponent<TransformComponent>(componentName, object, entity);
     }
     for (const auto &child : entityInfo.Children)
     {
@@ -55,20 +73,12 @@ std::shared_ptr<Scene> SceneManager::LoadScene(const SceneInfo &sceneInfo)
 EntityInfo SceneManager::SerializeEntity(const Entity &entity)
 {
     EntityInfo entityInfo;
+    entityInfo.UUID = entity.GetUUID();
+    entityInfo.Name = entity.GetName();
+
     for (auto *component : m_activeScene->GetComponents(entity.GetUUID()))
     {
-        if (auto *uuidComponent = dynamic_cast<UUIDComponent *>(component))
-        {
-            entityInfo.UUID = uuidComponent->UUID;
-        }
-        else if (auto *nameComponent = dynamic_cast<NameComponent *>(component))
-        {
-            entityInfo.Name = nameComponent->Name;
-        }
-        else if (auto *transformComponent = dynamic_cast<TransformComponent *>(component))
-        {
-            entityInfo.Components.push_back(rfl::make_field<"TransformComponent">(*transformComponent));
-        }
+        entityInfo.Components[component->GetName()] = component->SerializeToObject();
     }
     for (const auto &child : entity.GetChildren())
     {

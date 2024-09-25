@@ -1,5 +1,6 @@
 
 #include "ApplicationEvent.h"
+#include "Log.h"
 #include "MaterialComponent.h"
 #include "Renderable.h"
 #include "SelectionManager.h"
@@ -88,6 +89,7 @@ Entity Scene::CreateEntity(const std::string &name, const UUID &uuid)
     entity.AddComponent<TransformComponent>();
     m_entityComponents[entity.GetComponent<UUIDComponent>()] = {&entity.GetComponent<TransformComponent>()};
 
+    DOO_CORE_DEBUG("Entity {0} ({1}) created", entity.GetName(), entity.GetUUID().ToString());
     return entity;
 }
 

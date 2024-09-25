@@ -166,29 +166,18 @@ struct MaterialComponent : public BaseComponent
             }
         }
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        // TODO: Serialize MaterialInstance
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        // TODO: Deserialize MaterialInstance
+    }
 };
 
 } // namespace Doodle
-
-using namespace Doodle;
-namespace rfl
-{
-
-template <> struct Reflector<MaterialComponent> // TODO: Add this to the reflection system
-{
-    struct ReflType
-    {
-    };
-
-    static MaterialComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {};
-    }
-
-    static ReflType from(const MaterialComponent &v) noexcept // NOLINT
-    {
-        return {};
-    }
-};
-
-} // namespace rfl

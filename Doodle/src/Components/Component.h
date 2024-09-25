@@ -3,6 +3,7 @@
 #include <glm/detail/type_quat.hpp>
 #include <glm/fwd.hpp>
 #include <imgui.h>
+#include <rfl/Generic.hpp>
 
 #include <imGuizmo.h>
 
@@ -15,7 +16,6 @@
 #include "Renderable.h"
 #include "Scriptable.h"
 #include "UUID.h"
-#include "rfl/Flatten.hpp"
 
 namespace Doodle
 {
@@ -46,6 +46,18 @@ struct UUIDComponent : public BaseComponent
     {
         ImGuiUtils::ReadOnlyInputText("UUID", UUID);
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        object["UUID"] = UUID;
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        UUID = Doodle::UUID(object.get("UUID").and_then(rfl::to_string).value());
+    }
 };
 
 struct NameComponent : public BaseComponent
@@ -73,6 +85,18 @@ struct NameComponent : public BaseComponent
     void OnInspectorLayout() override
     {
         ImGuiUtils::InputText("Name##NameComponent", Name);
+    }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        object["Name"] = Name;
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        Name = object.get("Name").and_then(rfl::to_string).value();
     }
 };
 
@@ -203,6 +227,46 @@ struct TransformComponent : public BaseComponent
         {
             Reset();
         }
+    }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        rfl::Generic::Object position;
+        position["x"] = LocalTransform.Position.x;
+        position["y"] = LocalTransform.Position.y;
+        position["z"] = LocalTransform.Position.z;
+        object["Position"] = position;
+        rfl::Generic::Object rotation;
+        rotation["x"] = LocalTransform.Rotation.x;
+        rotation["y"] = LocalTransform.Rotation.y;
+        rotation["z"] = LocalTransform.Rotation.z;
+        object["Rotation"] = rotation;
+        rfl::Generic::Object scale;
+        scale["x"] = LocalTransform.Scale.x;
+        scale["y"] = LocalTransform.Scale.y;
+        scale["z"] = LocalTransform.Scale.z;
+        object["Scale"] = scale;
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        auto position = object.get("Position").and_then(rfl::to_object).value();
+        LocalTransform.Position.x = position.get("x").and_then(rfl::to_double).value();
+        LocalTransform.Position.y = position.get("y").and_then(rfl::to_double).value();
+        LocalTransform.Position.z = position.get("z").and_then(rfl::to_double).value();
+
+        auto rotation = object.get("Rotation").and_then(rfl::to_object).value();
+        LocalTransform.Rotation.x = rotation.get("x").and_then(rfl::to_double).value();
+        LocalTransform.Rotation.y = rotation.get("y").and_then(rfl::to_double).value();
+        LocalTransform.Rotation.z = rotation.get("z").and_then(rfl::to_double).value();
+
+        auto scale = object.get("Scale").and_then(rfl::to_object).value();
+        LocalTransform.Scale.x = scale.get("x").and_then(rfl::to_double).value();
+        LocalTransform.Scale.y = scale.get("y").and_then(rfl::to_double).value();
+        LocalTransform.Scale.z = scale.get("z").and_then(rfl::to_double).value();
+        Dirty = true;
     }
 
     void SetLocalPosition(const glm::vec3 &position)
@@ -387,110 +451,3 @@ private:
 };
 
 } // namespace Doodle
-
-using namespace Doodle;
-namespace rfl
-{
-
-template <> struct Reflector<UUIDComponent>
-{
-    struct ReflType
-    {
-        UUID UUID;
-    };
-
-    static UUIDComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.UUID};
-    }
-
-    static ReflType from(const UUIDComponent &v) noexcept // NOLINT
-    {
-        return {v.UUID};
-    }
-};
-
-template <> struct Reflector<NameComponent>
-{
-    struct ReflType
-    {
-        std::string Name;
-    };
-
-    static NameComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.Name};
-    }
-
-    static ReflType from(const NameComponent &v) noexcept // NOLINT
-    {
-        return {v.Name};
-    }
-};
-
-template <> struct Reflector<glm::vec3>
-{
-    struct ReflType
-    {
-        float x;
-        float y;
-        float z;
-    };
-
-    static glm::vec3 to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.x, v.y, v.z};
-    }
-
-    static ReflType from(const glm::vec3 &v) noexcept // NOLINT
-    {
-        return {v.x, v.y, v.z};
-    }
-};
-
-template <> struct Reflector<Transform>
-{
-    struct ReflType
-    {
-        glm::vec3 Position;
-        glm::vec3 Rotation;
-        glm::vec3 Scale;
-    };
-
-    static Transform to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.Position, v.Rotation, v.Scale};
-    }
-
-    static ReflType from(const Transform &v) noexcept // NOLINT
-    {
-        return {v.Position, v.Rotation, v.Scale};
-    }
-};
-
-template <> struct Reflector<TransformComponent>
-{
-    struct ReflType
-    {
-        glm::vec3 Position;
-        glm::vec3 Rotation;
-        glm::vec3 Scale;
-    };
-
-    static TransformComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        TransformComponent tc;
-        tc.SetLocalPosition(v.Position);
-        tc.SetLocalRotation(v.Rotation);
-        tc.SetLocalScale(v.Scale);
-        tc.Dirty = true;
-        return tc;
-    }
-
-    static ReflType from(const TransformComponent &v) noexcept // NOLINT
-    {
-        return {v.GetLocalPosition(), v.GetLocalRotation(), v.GetLocalScale()};
-    }
-};
-
-} // namespace rfl

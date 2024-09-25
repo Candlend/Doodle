@@ -28,6 +28,7 @@ public:
 
     entt::entity GetEntityHandle() const;
     UUID GetUUID() const;
+    std::string GetName() const;
     Scene *GetScene() const;
 
     template <typename T> void OnComponentAdded()

@@ -32,6 +32,11 @@ UUID Entity::GetUUID() const
     return GetComponent<UUIDComponent>();
 }
 
+std::string Entity::GetName() const
+{
+    return GetComponent<NameComponent>();
+}
+
 Scene *Entity::GetScene() const
 {
     return m_scene;

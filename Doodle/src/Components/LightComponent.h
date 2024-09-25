@@ -40,6 +40,27 @@ struct DirectionalLightComponent : public BaseComponent
         ImGuizmo::DrawDirectionalLightGizmos(glm::value_ptr(view), glm::value_ptr(projection),
                                              glm::value_ptr(modelNoScale), 1, color, 0.3f, 1.0f);
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        auto radiance = rfl::Generic::Object();
+        radiance["x"] = Radiance.x;
+        radiance["y"] = Radiance.y;
+        radiance["z"] = Radiance.z;
+        object["Radiance"] = radiance;
+        object["Intensity"] = Intensity;
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
+        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
+        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
+        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
+        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
+    }
 };
 
 struct PointLightComponent : public BaseComponent
@@ -70,6 +91,31 @@ struct PointLightComponent : public BaseComponent
         glm::mat4 modelNoScale = RemoveScaling(model);
         ImGuizmo::DrawPointLightGizmos(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(modelNoScale),
                                        1, color, Range);
+    }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        auto radiance = rfl::Generic::Object();
+        radiance["x"] = Radiance.x;
+        radiance["y"] = Radiance.y;
+        radiance["z"] = Radiance.z;
+        object["Radiance"] = radiance;
+        object["Intensity"] = Intensity;
+        object["MinRange"] = MinRange;
+        object["Range"] = Range;
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
+        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
+        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
+        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
+        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
+        MinRange = object.get("MinRange").and_then(rfl::to_double).value();
+        Range = object.get("Range").and_then(rfl::to_double).value();
     }
 };
 
@@ -106,6 +152,35 @@ struct SpotLightComponent : public BaseComponent
         ImGuizmo::DrawSpotLightGizmos(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(model), 1, color,
                                       Range, Angle);
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        auto radiance = rfl::Generic::Object();
+        radiance["x"] = Radiance.x;
+        radiance["y"] = Radiance.y;
+        radiance["z"] = Radiance.z;
+        object["Radiance"] = radiance;
+        object["Intensity"] = Intensity;
+        object["MinRange"] = MinRange;
+        object["Range"] = Range;
+        object["MinAngle"] = MinAngle;
+        object["Angle"] = Angle;
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
+        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
+        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
+        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
+        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
+        MinRange = object.get("MinRange").and_then(rfl::to_double).value();
+        Range = object.get("Range").and_then(rfl::to_double).value();
+        MinAngle = object.get("MinAngle").and_then(rfl::to_double).value();
+        Angle = object.get("Angle").and_then(rfl::to_double).value();
+    }
 };
 
 struct AreaLightComponent : public BaseComponent
@@ -137,96 +212,36 @@ struct AreaLightComponent : public BaseComponent
         ImGuizmo::DrawAreaLightGizmos(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(model), 1, color,
                                       Size.x, Size.y);
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        auto radiance = rfl::Generic::Object();
+        radiance["x"] = Radiance.x;
+        radiance["y"] = Radiance.y;
+        radiance["z"] = Radiance.z;
+        object["Radiance"] = radiance;
+        object["Intensity"] = Intensity;
+        auto size = rfl::Generic::Object();
+        size["x"] = Size.x;
+        size["y"] = Size.y;
+        object["Size"] = size;
+        object["TwoSided"] = TwoSided;
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
+        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
+        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
+        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
+        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
+        auto size = object.get("Size").and_then(rfl::to_object).value();
+        Size.x = size.get("x").and_then(rfl::to_double).value();
+        Size.y = size.get("y").and_then(rfl::to_double).value();
+        TwoSided = object.get("TwoSided").and_then(rfl::to_bool).value();
+    }
 };
 
 } // namespace Doodle
-
-using namespace Doodle;
-namespace rfl
-{
-
-template <> struct Reflector<DirectionalLightComponent>
-{
-    struct ReflType
-    {
-        glm::vec3 Radiance;
-        float Intensity;
-    };
-
-    static DirectionalLightComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity};
-    }
-
-    static ReflType from(const DirectionalLightComponent &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity};
-    }
-};
-
-template <> struct Reflector<PointLightComponent>
-{
-    struct ReflType
-    {
-        glm::vec3 Radiance;
-        float Intensity;
-        float MinRange;
-        float Range;
-    };
-
-    static PointLightComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity, v.MinRange, v.Range};
-    }
-
-    static ReflType from(const PointLightComponent &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity, v.MinRange, v.Range};
-    }
-};
-
-template <> struct Reflector<SpotLightComponent>
-{
-    struct ReflType
-    {
-        glm::vec3 Radiance;
-        float Intensity;
-        float MinRange;
-        float Range;
-        float MinAngle;
-        float Angle;
-    };
-
-    static SpotLightComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity, v.MinRange, v.Range, v.MinAngle, v.Angle};
-    }
-
-    static ReflType from(const SpotLightComponent &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity, v.MinRange, v.Range, v.MinAngle, v.Angle};
-    }
-};
-
-template <> struct Reflector<AreaLightComponent>
-{
-    struct ReflType
-    {
-        glm::vec3 Radiance;
-        float Intensity;
-        glm::vec2 Size;
-        bool TwoSided;
-    };
-
-    static AreaLightComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity, v.Size, v.TwoSided};
-    }
-
-    static ReflType from(const AreaLightComponent &v) noexcept // NOLINT
-    {
-        return {v.Radiance, v.Intensity, v.Size, v.TwoSided};
-    }
-};
-
-} // namespace rfl

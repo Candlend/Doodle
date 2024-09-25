@@ -4,6 +4,7 @@
 
 #include "BaseComponent.h"
 #include "SceneCamera.h"
+#include "rfl/enums.hpp"
 
 namespace Doodle
 {
@@ -83,67 +84,45 @@ struct CameraComponent : public BaseComponent
             }
         };
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        object["Primary"] = Primary;
+        object["Projection"] = rfl::enum_to_string(Camera->GetProjectionType());
+        if (Camera->GetProjectionType() == ProjectionType::Perspective)
+        {
+            object["Fov"] = Camera->GetDegPerspectiveVerticalFov();
+            object["NearClip"] = Camera->GetPerspectiveNearClip();
+            object["FarClip"] = Camera->GetPerspectiveFarClip();
+        }
+        else
+        {
+            object["Size"] = Camera->GetOrthographicSize();
+            object["OrthoNearClip"] = Camera->GetOrthographicNearClip();
+            object["OrthoFarClip"] = Camera->GetOrthographicFarClip();
+        }
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        Primary = object.get("Primary").and_then(rfl::to_bool).value();
+        Camera->SetProjectionType(
+            rfl::string_to_enum<ProjectionType>(object.get("Projection").and_then(rfl::to_string).value()).value());
+        if (Camera->GetProjectionType() == ProjectionType::Perspective)
+        {
+            Camera->SetDegPerspectiveVerticalFov(object.get("Fov").and_then(rfl::to_double).value());
+            Camera->SetPerspectiveNearClip(object.get("NearClip").and_then(rfl::to_double).value());
+            Camera->SetPerspectiveFarClip(object.get("FarClip").and_then(rfl::to_double).value());
+        }
+        else
+        {
+            Camera->SetOrthographicSize(object.get("Size").and_then(rfl::to_double).value());
+            Camera->SetOrthographicNearClip(object.get("OrthoNearClip").and_then(rfl::to_double).value());
+            Camera->SetOrthographicFarClip(object.get("OrthoFarClip").and_then(rfl::to_double).value());
+        }
+    }
 };
 
 } // namespace Doodle
-
-using namespace Doodle;
-
-namespace rfl
-{
-
-template <> struct Reflector<CameraComponent>
-{
-    struct ReflType
-    {
-        bool Primary;
-        ProjectionType Projection;
-        float Fov;
-        float NearClip;
-        float FarClip;
-        float Size;
-        float OrthoNearClip;
-        float OrthoFarClip;
-    };
-
-    static CameraComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        CameraComponent component(v.Projection);
-        component.Primary = v.Primary;
-        if (v.Projection == ProjectionType::Perspective)
-        {
-            component.Camera->SetDegPerspectiveVerticalFov(v.Fov);
-            component.Camera->SetPerspectiveNearClip(v.NearClip);
-            component.Camera->SetPerspectiveFarClip(v.FarClip);
-        }
-        else
-        {
-            component.Camera->SetOrthographicSize(v.Size);
-            component.Camera->SetOrthographicNearClip(v.OrthoNearClip);
-            component.Camera->SetOrthographicFarClip(v.OrthoFarClip);
-        }
-        return component;
-    }
-
-    static ReflType from(const CameraComponent &v) noexcept // NOLINT
-    {
-        ReflType component;
-        component.Primary = v.Primary;
-        component.Projection = v.Camera->GetProjectionType();
-        if (component.Projection == ProjectionType::Perspective)
-        {
-            component.Fov = v.Camera->GetDegPerspectiveVerticalFov();
-            component.NearClip = v.Camera->GetPerspectiveNearClip();
-            component.FarClip = v.Camera->GetPerspectiveFarClip();
-        }
-        else
-        {
-            component.Size = v.Camera->GetOrthographicSize();
-            component.OrthoNearClip = v.Camera->GetOrthographicNearClip();
-            component.OrthoFarClip = v.Camera->GetOrthographicFarClip();
-        }
-        return component;
-    }
-};
-
-} // namespace rfl

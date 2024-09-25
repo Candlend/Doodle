@@ -35,6 +35,18 @@ struct VAOComponent : public IRenderable
     VAOComponent(std::shared_ptr<VertexArray> vao) : VAO(vao)
     {
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        // TODO: Serialize
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        // TODO: Deserialize
+    }
 };
 
 struct MeshComponent : public IRenderable
@@ -62,46 +74,18 @@ struct MeshComponent : public IRenderable
         ImGuiUtils::ReadOnlyInputInt("Vertices", Mesh->GetVertexCount());
         ImGuiUtils::ReadOnlyInputInt("Faces", Mesh->GetFaceCount());
     }
+
+    rfl::Generic::Object SerializeToObject() const override
+    {
+        rfl::Generic::Object object;
+        // TODO: Serialize
+        return object;
+    }
+
+    void DeserializeFromObject(const rfl::Generic::Object &object) override
+    {
+        // TODO: Deserialize
+    }
 };
 
 } // namespace Doodle
-
-using namespace Doodle;
-namespace rfl
-{
-
-template <> struct Reflector<VAOComponent> // TODO: Add this to the reflection system
-{
-    struct ReflType
-    {
-    };
-
-    static VAOComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {};
-    }
-
-    static ReflType from(const VAOComponent &v) noexcept // NOLINT
-    {
-        return {};
-    }
-};
-
-template <> struct Reflector<MeshComponent> // TODO: Add this to the reflection system
-{
-    struct ReflType
-    {
-    };
-
-    static MeshComponent to(const ReflType &v) noexcept // NOLINT
-    {
-        return {};
-    }
-
-    static ReflType from(const MeshComponent &v) noexcept // NOLINT
-    {
-        return {};
-    }
-};
-
-} // namespace rfl

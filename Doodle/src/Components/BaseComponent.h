@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "rfl/Generic.hpp"
 #include <entt/entt.hpp>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
@@ -35,6 +36,13 @@ struct DOO_API BaseComponent
     UUID GetUUID() const;
     Scene *GetScene() const;
     virtual const char *GetName() const = 0;
+    virtual rfl::Generic::Object SerializeToObject() const
+    {
+        return {};
+    }
+    virtual void DeserializeFromObject(const rfl::Generic::Object &object)
+    {
+    }
 
     virtual void OnInspectorLayout()
     {
