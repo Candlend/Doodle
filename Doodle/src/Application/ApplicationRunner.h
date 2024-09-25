@@ -7,7 +7,6 @@
 #include "Application.h"
 #include "SplashScreen.h"
 
-
 namespace Doodle
 {
 
@@ -16,10 +15,6 @@ class Application;
 class DOO_API ApplicationRunner : public Singleton<ApplicationRunner>
 {
 public:
-    ~ApplicationRunner()
-    {
-    }
-
     template <typename T>
     void CreateApp(WindowProps props = WindowProps()) // 目前仅支持一个应用程序一个窗口
     {

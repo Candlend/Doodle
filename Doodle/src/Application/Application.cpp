@@ -8,6 +8,7 @@
 #include "ImGuiBuilder.h"
 #include "Input.h"
 #include "Log.h"
+#include "ProjectManager.h"
 #include "Renderer.h"
 #include "Window.h"
 
@@ -75,6 +76,7 @@ void Application::Initialize()
     Input::Get()->Initialize();
     Renderer::Get()->Initialize();
     ImGuiBuilder::Get()->Initialize();
+    ProjectManager::Get();
 }
 
 void Application::Deinitialize()

@@ -68,8 +68,8 @@ public:
     std::string ToString() const override
     {
         std::stringstream ss;
-        ss << "SelectionChangedEvent: Context(" << static_cast<int32_t>(m_context) << "), Selection(" << m_selectionId
-           << "), " << m_selected;
+        ss << "SelectionChangedEvent: Context(" << static_cast<int32_t>(m_context) << "), Selection("
+           << m_selectionId.ToString() << "), " << m_selected;
         return ss.str();
     }
 

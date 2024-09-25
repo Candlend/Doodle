@@ -4,6 +4,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <rfl.hpp>
 
 namespace Doodle
 {
@@ -108,4 +109,27 @@ template <> struct hash<Doodle::UUID>
         return std::hash<std::string>()(uuid.ToString());
     }
 };
+
 } // namespace std
+
+namespace rfl
+{
+
+template <> struct Reflector<Doodle::UUID>
+{
+    struct ReflType
+    {
+        std::string UUIDStr;
+    };
+
+    static Doodle::UUID to(const ReflType &v) noexcept
+    {
+        return Doodle::UUID(v.UUIDStr);
+    }
+
+    static ReflType from(const Doodle::UUID &v)
+    {
+        return {v.ToString()};
+    }
+};
+} // namespace rfl

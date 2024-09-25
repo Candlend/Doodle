@@ -9,7 +9,8 @@
 namespace Doodle
 {
 
-IReloadable::IReloadable(const std::string &filepath) : m_filepath(filepath)
+IReloadable::IReloadable(const std::string &filepath, ReloadStrategy strategy)
+    : m_filepath(filepath), m_strategy(strategy)
 {
     m_reloader = FileReloader::Get();
     m_filepath = std::filesystem::absolute(filepath).string();
@@ -33,28 +34,34 @@ void IReloadable::WatchFile(const std::string &filepath)
     m_reloader->AddReloadable(this);
 }
 
-void IAutoReloadable::TryReload()
+void IReloadable::TryReload()
 {
     auto currentWriteTime = std::filesystem::last_write_time(m_filepath);
     if (currentWriteTime != m_lastWriteTime)
     {
         m_lastWriteTime = currentWriteTime;
-        Reload();
+        if (m_strategy == ReloadStrategy::Auto)
+        {
+            HandleAutoReload();
+        }
+        else if (m_strategy == ReloadStrategy::Confirm)
+        {
+            HandleConfirmReload();
+        }
     }
 }
 
-IConfirmReloadable::IConfirmReloadable(const std::string &filepath) : IReloadable(filepath)
+void IReloadable::HandleAutoReload()
+{
+    Reload();
+}
+
+void IReloadable::HandleConfirmReload()
 {
     m_confirmPopupModal.Bind(
-        "Reload",
+        "Reload", [this]() { Reload(); },
         [this]() {
-            m_lastWriteTime = std::filesystem::last_write_time(m_filepath);
-            EventManager::Get()->RemoveListener<AppLayoutEvent>(this, &IConfirmReloadable::OnLayout);
-            Reload();
-        },
-        [this]() {
-            m_lastWriteTime = std::filesystem::last_write_time(m_filepath);
-            EventManager::Get()->RemoveListener<AppLayoutEvent>(this, &IConfirmReloadable::OnLayout);
+            // Handle cancel logic if needed
         },
         {
             [this]() {
@@ -63,19 +70,7 @@ IConfirmReloadable::IConfirmReloadable(const std::string &filepath) : IReloadabl
                 ImGui::TextUnformatted(text.c_str());
             },
         });
-}
 
-void IConfirmReloadable::TryReload()
-{
-    auto currentWriteTime = std::filesystem::last_write_time(m_filepath);
-    if (currentWriteTime != m_lastWriteTime)
-    {
-        EventManager::Get()->AddListener<AppLayoutEvent>(this, &IConfirmReloadable::OnLayout);
-    }
-}
-
-void IConfirmReloadable::OnLayout()
-{
     if (!m_confirmPopupModal.IsOpened())
     {
         m_confirmPopupModal.Open();
