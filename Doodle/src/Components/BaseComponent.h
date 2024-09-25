@@ -22,8 +22,6 @@ class Scene;
 class Scriptable;
 struct DOO_API BaseComponent
 {
-    BaseComponent() = default;
-
     virtual ~BaseComponent()
     {
     }

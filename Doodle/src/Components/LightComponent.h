@@ -22,6 +22,11 @@ struct DirectionalLightComponent : public BaseComponent
     glm::vec3 Radiance{1.0f};
     float Intensity = 0.0f;
 
+    DirectionalLightComponent() = default;
+    DirectionalLightComponent(const glm::vec3 &radiance, float intensity) : Radiance(radiance), Intensity(intensity)
+    {
+    }
+
     void OnInspectorLayout() override
     {
         ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
@@ -45,6 +50,12 @@ struct PointLightComponent : public BaseComponent
     float Intensity = 1.0f;
     float MinRange = 0.001f;
     float Range = 10.f;
+
+    PointLightComponent() = default;
+    PointLightComponent(const glm::vec3 &radiance, float intensity, float minRange, float range)
+        : Radiance(radiance), Intensity(intensity), MinRange(minRange), Range(range)
+    {
+    }
 
     void OnInspectorLayout() override
     {
@@ -73,6 +84,13 @@ struct SpotLightComponent : public BaseComponent
     float MinAngle = 0.01f;
     float Angle = 30.f;
 
+    SpotLightComponent() = default;
+    SpotLightComponent(const glm::vec3 &radiance, float intensity, float minRange, float range, float minAngle,
+                       float angle)
+        : Radiance(radiance), Intensity(intensity), MinRange(minRange), Range(range), MinAngle(minAngle), Angle(angle)
+    {
+    }
+
     void OnInspectorLayout() override
     {
         ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
@@ -99,6 +117,12 @@ struct AreaLightComponent : public BaseComponent
     glm::vec2 Size{1.0f};
     bool TwoSided = false;
 
+    AreaLightComponent() = default;
+    AreaLightComponent(const glm::vec3 &radiance, float intensity, const glm::vec2 &size, bool twoSided)
+        : Radiance(radiance), Intensity(intensity), Size(size), TwoSided(twoSided)
+    {
+    }
+
     void OnInspectorLayout() override
     {
         ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
@@ -116,3 +140,93 @@ struct AreaLightComponent : public BaseComponent
 };
 
 } // namespace Doodle
+
+using namespace Doodle;
+namespace rfl
+{
+
+template <> struct Reflector<DirectionalLightComponent>
+{
+    struct ReflType
+    {
+        glm::vec3 Radiance;
+        float Intensity;
+    };
+
+    static DirectionalLightComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity};
+    }
+
+    static ReflType from(const DirectionalLightComponent &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity};
+    }
+};
+
+template <> struct Reflector<PointLightComponent>
+{
+    struct ReflType
+    {
+        glm::vec3 Radiance;
+        float Intensity;
+        float MinRange;
+        float Range;
+    };
+
+    static PointLightComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity, v.MinRange, v.Range};
+    }
+
+    static ReflType from(const PointLightComponent &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity, v.MinRange, v.Range};
+    }
+};
+
+template <> struct Reflector<SpotLightComponent>
+{
+    struct ReflType
+    {
+        glm::vec3 Radiance;
+        float Intensity;
+        float MinRange;
+        float Range;
+        float MinAngle;
+        float Angle;
+    };
+
+    static SpotLightComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity, v.MinRange, v.Range, v.MinAngle, v.Angle};
+    }
+
+    static ReflType from(const SpotLightComponent &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity, v.MinRange, v.Range, v.MinAngle, v.Angle};
+    }
+};
+
+template <> struct Reflector<AreaLightComponent>
+{
+    struct ReflType
+    {
+        glm::vec3 Radiance;
+        float Intensity;
+        glm::vec2 Size;
+        bool TwoSided;
+    };
+
+    static AreaLightComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity, v.Size, v.TwoSided};
+    }
+
+    static ReflType from(const AreaLightComponent &v) noexcept // NOLINT
+    {
+        return {v.Radiance, v.Intensity, v.Size, v.TwoSided};
+    }
+};
+
+} // namespace rfl

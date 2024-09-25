@@ -1,4 +1,5 @@
 #include "Scriptable.h"
+#include "EventManager.h"
 #include "Log.h"
 #include "Scene.h"
 #include "SceneEvent.h"

@@ -22,9 +22,11 @@
 namespace Doodle
 {
 
-std::shared_ptr<Scene> Scene::Create(const std::string &name)
+std::shared_ptr<Scene> Scene::Load(const SceneInfo &sceneInfo)
 {
-    return std::make_shared<Scene>(name);
+    auto scene = std::make_shared<Scene>();
+    scene->m_sceneInfo = sceneInfo;
+    return scene;
 }
 
 Scene::Scene(const std::string &name)
@@ -41,6 +43,20 @@ void Scene::OnUpdate()
 {
     UpdateGlobalTransforms();
     UpdateSceneData();
+}
+
+EntityInfo Scene::SerializeEntity(const Entity &entity)
+{
+    EntityInfo entityInfo;
+    for (auto *component : GetComponents(entity.GetUUID()))
+    {
+    }
+    for (const auto &child : entity.GetChildren())
+    {
+        EntityInfo childInfo = SerializeEntity(child);
+        entityInfo.Children.push_back(childInfo);
+    }
+    return entityInfo;
 }
 
 void Scene::UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty)
@@ -90,7 +106,7 @@ Entity Scene::CreateEntity(const std::string &name)
     entity.AddComponent<IDComponent>();
     m_entityMap[entity.GetComponent<IDComponent>()] = entity;
     m_entityComponents[entity.GetComponent<IDComponent>()] = {&entity.GetComponent<IDComponent>()};
-    entity.AddComponent<TagComponent>(name);
+    entity.AddComponent<NameComponent>(name);
     entity.AddComponent<TransformComponent>();
 
     return entity;
@@ -135,10 +151,10 @@ Entity Scene::CreateEntityFromModel(std::shared_ptr<Model> model)
 
 Entity Scene::FindEntity(const std::string &name) const
 {
-    auto view = m_registry.view<TagComponent>();
+    auto view = m_registry.view<NameComponent>();
     for (auto entity : view)
     {
-        std::string tag = view.get<TagComponent>(entity);
+        std::string tag = view.get<NameComponent>(entity);
         if (tag == name)
         {
             return Entity(this, entity);
@@ -293,6 +309,17 @@ void Scene::EndScene()
     DOO_CORE_TRACE("Scene <{0}> Deactivated", m_name);
     EventManager::Get()->Dispatch<SceneDeactivateEvent>(this);
     EventManager::Get()->RemoveListener<AppUpdateEvent>(this, &Scene::OnUpdate);
+}
+
+SceneInfo Scene::GetInfo()
+{
+    m_sceneInfo.Entities.clear();
+    for (auto &entity : GetEntities())
+    {
+        EntityInfo entityInfo = SerializeEntity(entity);
+        m_sceneInfo.Entities.push_back(entityInfo);
+    }
+    return m_sceneInfo;
 }
 
 void Scene::UpdateSceneData()

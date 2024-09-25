@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "ApplicationEvent.h"
 #include "ApplicationRunner.h"
+#include "AssetManager.h"
 #include "EventManager.h"
 #include "ImGuiBuilder.h"
 #include "Input.h"
@@ -77,6 +78,7 @@ void Application::Initialize()
     Renderer::Get()->Initialize();
     ImGuiBuilder::Get()->Initialize();
     ProjectManager::Get();
+    AssetManager::Get();
 }
 
 void Application::Deinitialize()

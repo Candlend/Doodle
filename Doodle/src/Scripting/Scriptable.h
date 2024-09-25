@@ -1,11 +1,9 @@
 #pragma once
 
-#include "SceneEvent.h"
 #include "pch.h"
 
-#include "ApplicationEvent.h"
 #include "BaseComponent.h"
-#include "EventManager.h"
+#include "SceneEvent.h"
 
 namespace Doodle
 {

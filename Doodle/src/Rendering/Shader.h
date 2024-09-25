@@ -5,7 +5,6 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-#include "IReloadable.h"
 #include "Renderer.h"
 #include "Texture.h"
 
@@ -36,11 +35,11 @@ struct ShaderProperty
     ShaderPropertyType Type;
 };
 
-class DOO_API Shader : public IReloadable
+class DOO_API Shader
 {
 public:
     static std::shared_ptr<Shader> Create(const std::string &filepath);
-    Shader(const std::string &filepath = "") : IReloadable(filepath) {};
+    Shader(const std::string &filepath = "") {};
     virtual std::string GetPath() const = 0;
     virtual void Bind() = 0;
     virtual void Unbind() = 0;

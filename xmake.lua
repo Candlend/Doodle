@@ -1,7 +1,8 @@
 set_project("Doodle")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
-add_requires("fmt", "assimp", "boost", "stb", "spdlog", "nlohmann_json", "glfw", "glm", "entt", "nativefiledialog-extended", "magic_enum", "reflect-cpp")
+add_requires("fmt", "assimp", "boost", "stb", "spdlog", "nlohmann_json", "glfw", "glm", "entt", "magic_enum", "reflect-cpp", "yaml-cpp")
+add_requires("nativefiledialog-extended", {configs = {debug = true}})
 add_requires("glad", {configs = {extensions = "GL_ARB_bindless_texture"}})
 add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
 add_requires("imnodes")
@@ -46,7 +47,7 @@ function build_doodle()
     set_pcxxheader("Doodle/src/pch.h")
 
     -- 添加依赖库
-    add_packages("fmt", "assimp", "boost", "stb", "spdlog", "imgui", "imnodes", "nlohmann_json", "glfw", "glad", "glm", "entt", "nativefiledialog-extended", "magic_enum", "reflect-cpp")
+    add_packages("fmt", "assimp", "boost", "stb", "spdlog", "imgui", "imnodes", "nlohmann_json", "glfw", "glad", "glm", "entt", "nativefiledialog-extended", "magic_enum", "reflect-cpp", "yaml-cpp", "Watchdog")
     add_packages("pybind11")
 
     if is_mode("debug") then
@@ -99,7 +100,7 @@ target("Sandbox")
     add_headerfiles("deps/ImGuizmo/*.h")
     add_includedirs("deps/ImGuizmo")
     
-    add_packages("boost", "spdlog", "imgui", "imnodes", "imguizmo", "glm", "entt")
+    add_packages("boost", "spdlog", "imgui", "imnodes", "imguizmo", "glm", "entt", "reflect-cpp", "yaml-cpp")
 
     if is_mode("debug") then
         add_defines("DOO_ENABLE_ASSERTS")

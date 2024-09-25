@@ -1,20 +1,27 @@
 #pragma once
 
-#include "Texture.h"
-#include "entt/entity/fwd.hpp"
-#include "glm/fwd.hpp"
 #include "pch.h"
+#include <entt/entity/fwd.hpp>
 #include <entt/entt.hpp>
+#include <glm/fwd.hpp>
 
-#include "ApplicationEvent.h"
-#include "Camera.h"
-#include "EventManager.h"
 #include "Light.h"
+#include "Texture.h"
 #include "UUID.h"
-#include "UniformBuffer.h"
 
 namespace Doodle
 {
+
+struct EntityInfo
+{
+    std::vector<EntityInfo> Children;
+};
+
+struct SceneInfo
+{
+    UUID UUID;
+    std::vector<EntityInfo> Entities;
+};
 
 struct LightData
 {
@@ -80,8 +87,8 @@ class DOO_API Scene : public std::enable_shared_from_this<Scene>
     friend class Entity;
 
 public:
-    static std::shared_ptr<Scene> Create(const std::string &name);
-    Scene(const std::string &name);
+    static std::shared_ptr<Scene> Load(const SceneInfo &sceneInfo);
+    Scene(const std::string &name = "untitledScene");
     ~Scene();
     Entity GetMainCameraEntity();
 
@@ -123,6 +130,13 @@ public:
         return m_sceneData;
     }
 
+    SceneInfo GetInfo();
+
+    entt::registry &GetRegistry()
+    {
+        return m_registry;
+    }
+
     void UpdateGlobalTransforms();
 
     Entity CreateEntityFromModel(std::shared_ptr<Model> model);
@@ -136,12 +150,15 @@ private:
     entt::registry m_registry;
 
     SceneData m_sceneData;
+    SceneInfo m_sceneInfo;
 
     void OnUpdate();
     void UpdateSceneData();
     void UpdateGlobalTransformTree(const TransformComponent &parentTransform, bool parentDirty);
 
     Entity ProcessModelNode(ModelNode node);
+
+    EntityInfo SerializeEntity(const Entity &entity);
 };
 
 } // namespace Doodle

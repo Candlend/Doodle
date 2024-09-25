@@ -3,7 +3,9 @@
 #include "Application.h"
 #include "DebugPanel.h"
 #include "ImGuiUtils.h"
+#include "ProjectManager.h"
 #include "RenderPipeline.h"
+#include "SceneManager.h"
 
 namespace Doodle
 {
@@ -11,6 +13,15 @@ namespace Doodle
 void DebugPanel::OnPanelLayout()
 {
     ImGui::BeginDisabled();
+    if (auto project = ProjectManager::Get()->GetActiveProject())
+    {
+        ImGuiUtils::ReadOnlyInputText("Project Name", project->GetName());
+    }
+    if (auto scene = SceneManager::Get()->GetActiveScene())
+    {
+        ImGuiUtils::ReadOnlyInputText("Scene Name", scene->GetName());
+    }
+
     ImGuiUtils::ReadOnlyInputFloat("Time", Application::Time::GetTime());
     ImGuiUtils::ReadOnlyInputInt("FPS", Application::Time::GetFPS());
     ImGui::EndDisabled();

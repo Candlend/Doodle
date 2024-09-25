@@ -31,6 +31,7 @@ struct VAOComponent : public IRenderable
         ImGuiUtils::ReadOnlyInputInt("Renderer ID", VAO->GetRendererID());
     }
 
+    VAOComponent() = default;
     VAOComponent(std::shared_ptr<VertexArray> vao) : VAO(vao)
     {
     }
@@ -42,6 +43,7 @@ struct MeshComponent : public IRenderable
 
     std::shared_ptr<Mesh> Mesh;
 
+    MeshComponent() = default;
     MeshComponent(const std::string &filename) : Mesh(Mesh::Create(filename))
     {
     }
@@ -63,3 +65,43 @@ struct MeshComponent : public IRenderable
 };
 
 } // namespace Doodle
+
+using namespace Doodle;
+namespace rfl
+{
+
+template <> struct Reflector<VAOComponent> // TODO: Add this to the reflection system
+{
+    struct ReflType
+    {
+    };
+
+    static VAOComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {};
+    }
+
+    static ReflType from(const VAOComponent &v) noexcept // NOLINT
+    {
+        return {};
+    }
+};
+
+template <> struct Reflector<MeshComponent> // TODO: Add this to the reflection system
+{
+    struct ReflType
+    {
+    };
+
+    static MeshComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {};
+    }
+
+    static ReflType from(const MeshComponent &v) noexcept // NOLINT
+    {
+        return {};
+    }
+};
+
+} // namespace rfl

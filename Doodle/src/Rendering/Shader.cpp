@@ -69,7 +69,7 @@ public:
         return m_filepath;
     }
 
-    void Reload() override
+    void Reload()
     {
         ReadShaderFromFile(m_filepath);
         Renderer::Submit([this]() {

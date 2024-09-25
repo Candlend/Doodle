@@ -1,29 +1,53 @@
+#include <rfl/json/write.hpp>
 
+#include "AssetManager.h"
+#include "Component.h"
+#include "Entity.h"
+#include "Scene.h"
+#include "SceneAsset.h"
 #include "SceneManager.h"
-#include <memory>
 
 namespace Doodle
 {
 
-std::shared_ptr<Scene> SceneManager::CreateScene(const std::string &name)
+std::shared_ptr<Scene> SceneManager::LoadScene(const SceneInfo &sceneInfo)
 {
-    if (m_scenes.find(name) != m_scenes.end())
+    if (m_activeScene)
     {
-        DOO_CORE_WARN("Scene with name {0} already exists", name);
+        m_activeScene->EndScene();
     }
-    auto scene = Scene::Create(name);
-    m_scenes[name] = scene;
-    return scene;
+    m_activeScene = Scene::Load(sceneInfo);
+    m_activeScene->BeginScene();
+    return m_activeScene;
 }
 
-void SceneManager::AddScene(const std::string &name, std::shared_ptr<Scene> scene)
+SceneInfo SceneManager::GetSceneInfo()
 {
-    m_scenes[name] = scene;
+    if (!m_activeScene)
+    {
+        DOO_CORE_WARN("No active scene found");
+        return SceneInfo();
+    }
+
+    return m_activeScene->GetInfo();
 }
 
-void SceneManager::RemoveScene(const std::string &name)
+void SceneManager::SaveScene(const std::string &filepath)
 {
-    m_scenes.erase(name);
+    if (!m_activeScene)
+    {
+        DOO_CORE_WARN("No active scene found");
+        return;
+    }
+    auto sceneInfo = GetSceneInfo();
+    auto uuid = sceneInfo.UUID;
+    auto sceneAsset = AssetManager::Get()->GetAsset<SceneAsset>(uuid);
+    sceneAsset->SetData(sceneInfo);
+    if (filepath.empty())
+    {
+        sceneAsset->Save();
+    }
+    sceneAsset->SaveAs(filepath);
 }
 
 } // namespace Doodle

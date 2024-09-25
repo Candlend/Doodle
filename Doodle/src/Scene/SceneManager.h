@@ -14,15 +14,13 @@ enum class SceneState
     Runtime,
 };
 
+class SceneInfo;
+class EntityInfo;
 class DOO_API SceneManager : public Singleton<SceneManager>
 {
     friend class Scene;
 
 public:
-    std::shared_ptr<Scene> CreateScene(const std::string &name);
-    void AddScene(const std::string &name, std::shared_ptr<Scene> scene);
-    void RemoveScene(const std::string &name);
-    std::shared_ptr<Scene> GetScene(const std::string &name) const;
     std::shared_ptr<Scene> GetActiveScene() const
     {
         return m_activeScene;
@@ -31,9 +29,12 @@ public:
     {
         return m_state;
     }
+    std::shared_ptr<Scene> LoadScene(const SceneInfo &sceneInfo);
+    SceneInfo GetSceneInfo();
+
+    void SaveScene(const std::string &filepath = "");
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<Scene>> m_scenes;
     std::shared_ptr<Scene> m_activeScene;
     SceneState m_state = SceneState::Editor;
 };

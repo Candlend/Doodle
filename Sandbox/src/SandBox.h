@@ -2,18 +2,18 @@
 
 #include <imgui.h>
 
+#include "ApplicationRunner.h"
 #include "DebugPanel.h"
-#include "Doodle.h"
 #include "HierarchyPanel.h"
 #include "ImGuiBuilder.h"
 #include "ImGuiMenu.h"
 #include "InspectorPanel.h"
 #include "LogPanel.h"
-#include "Model.h"
 #include "PanelManager.h"
+#include "ProjectManager.h"
 #include "RenderSettingsPanel.h"
-#include "Renderable.h"
-#include "Texture.h"
+#include "SceneManager.h"
+#include "ShaderLibrary.h"
 #include "ViewportPanel.h"
 
 using namespace Doodle;
@@ -29,6 +29,12 @@ public:
     void InitializeLayout()
     {
         auto fileMenuItem = std::make_shared<ParentMenuItem>("File");
+        fileMenuItem->AddSubItem<ClickableMenuItem>(
+            "New Project", []() { ProjectManager::Get()->CreateProject(); }, "Ctrl+N");
+        fileMenuItem->AddSubItem<ClickableMenuItem>(
+            "Open Project", []() { ProjectManager::Get()->LoadProject(); }, "Ctrl+O");
+        fileMenuItem->AddSubItem<ClickableMenuItem>(
+            "Save Scene", []() { SceneManager::Get()->SaveScene(); }, "Ctrl+S");
         fileMenuItem->AddSubItem<ClickableMenuItem>(
             "Exit", []() { ApplicationRunner::Get()->GetApplication()->Shutdown(); }, "Ctrl+Q");
 
@@ -59,10 +65,6 @@ public:
         ActivateImGuiContext();
         ShaderLibrary::Get()->LoadShadersFromDirectory("assets/shaders");
         InitializeLayout();
-        m_scene = SceneManager::Get()->CreateScene("Main");
-        m_scene->LoadEnvironment("assets/envs/pink_sunrise_4k.hdr");
-        BuildScene();
-        m_scene->BeginScene();
     }
 
     void BeforeLayout() override
@@ -73,40 +75,12 @@ public:
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
     }
 
-    void BuildScene()
-    {
-        // auto nanosuitModel = Model::Create("assets/models/nanosuit/nanosuit.obj");
-        // auto nanosuit = m_scene->CreateEntityFromModel(nanosuitModel);
-        // nanosuit.GetComponent<TransformComponent>().SetLocalScale(0.1);
-
-        // auto sponzaModel = Model::Create("assets/models/sponza_2/sponza.obj");
-        // auto sponza = m_scene->CreateEntityFromModel(sponzaModel);
-        // sponza.GetComponent<TransformComponent>().SetLocalScale(0.01);
-
-        // auto suzanne = m_scene->CreateEntity("Suzanne");
-        // suzanne.AddComponent<MeshComponent>(Mesh::Create("assets/models/suzanne.obj"));
-        // suzanne.AddComponent<MaterialComponent>(StandardMaterial::Create());
-
-        auto cutFish = m_scene->CreateEntity("CutFish");
-        cutFish.AddComponent<MeshComponent>(Mesh::Create("assets/models/cut_fish.obj"));
-        auto material = StandardMaterial::Create();
-        TextureSpecification spec;
-        spec.Format = TextureFormat::SRGB8ALPHA8;
-        material->SetAlbedoTexture(Texture2D::Create("assets/textures/cut_fish/base_color.tga", spec));
-        material->SetNormalTexture(Texture2D::Create("assets/textures/cut_fish/normal.tga"));
-        material->SetMetallicTexture(Texture2D::Create("assets/textures/cut_fish/metallic.tga"));
-        material->SetRoughnessTexture(Texture2D::Create("assets/textures/cut_fish/roughness.tga"));
-
-        cutFish.AddComponent<MaterialComponent>(material);
-    }
-
     void BeforeUpdate() override
     {
     }
 
     void Deinitialize() override
     {
-        m_scene->EndScene();
         Application::Deinitialize();
     }
 

@@ -15,6 +15,7 @@
 #include "Renderable.h"
 #include "Scriptable.h"
 #include "UUID.h"
+#include "rfl/Flatten.hpp"
 
 namespace Doodle
 {
@@ -47,31 +48,31 @@ struct IDComponent : public BaseComponent
     }
 };
 
-struct TagComponent : public BaseComponent
+struct NameComponent : public BaseComponent
 {
-    COMPONENT_CLASS_TYPE(Tag)
+    COMPONENT_CLASS_TYPE(Name)
 
-    std::string Tag;
+    std::string Name;
 
-    TagComponent() = default;
-    TagComponent(const TagComponent &) = default;
-    TagComponent(const std::string &tag) : Tag(tag)
+    NameComponent() = default;
+    NameComponent(const NameComponent &) = default;
+    NameComponent(const std::string &name) : Name(name)
     {
     }
 
     operator std::string &()
     {
-        return Tag;
+        return Name;
     }
 
     operator const std::string &() const
     {
-        return Tag;
+        return Name;
     }
 
     void OnInspectorLayout() override
     {
-        ImGuiUtils::InputText("Tag##TagComponent", Tag);
+        ImGuiUtils::InputText("Name##NameComponent", Name);
     }
 };
 
@@ -82,6 +83,11 @@ struct Transform
     glm::vec3 Scale;
 
     Transform() : Position(0.0f), Rotation(0.0f), Scale(1.0f)
+    {
+    }
+
+    Transform(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale)
+        : Position(position), Rotation(rotation), Scale(scale)
     {
     }
 
@@ -172,6 +178,8 @@ struct TransformComponent : public BaseComponent
     Transform GlobalTransform;
 
     bool Dirty = true;
+
+    TransformComponent() = default;
 
     void OnInspectorLayout() override
     {
@@ -379,3 +387,110 @@ private:
 };
 
 } // namespace Doodle
+
+using namespace Doodle;
+namespace rfl
+{
+
+template <> struct Reflector<IDComponent>
+{
+    struct ReflType
+    {
+        UUID ID;
+    };
+
+    static IDComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.ID};
+    }
+
+    static ReflType from(const IDComponent &v) noexcept // NOLINT
+    {
+        return {v.ID};
+    }
+};
+
+template <> struct Reflector<NameComponent>
+{
+    struct ReflType
+    {
+        std::string Name;
+    };
+
+    static NameComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.Name};
+    }
+
+    static ReflType from(const NameComponent &v) noexcept // NOLINT
+    {
+        return {v.Name};
+    }
+};
+
+template <> struct Reflector<glm::vec3>
+{
+    struct ReflType
+    {
+        float x;
+        float y;
+        float z;
+    };
+
+    static glm::vec3 to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.x, v.y, v.z};
+    }
+
+    static ReflType from(const glm::vec3 &v) noexcept // NOLINT
+    {
+        return {v.x, v.y, v.z};
+    }
+};
+
+template <> struct Reflector<Transform>
+{
+    struct ReflType
+    {
+        glm::vec3 Position;
+        glm::vec3 Rotation;
+        glm::vec3 Scale;
+    };
+
+    static Transform to(const ReflType &v) noexcept // NOLINT
+    {
+        return {v.Position, v.Rotation, v.Scale};
+    }
+
+    static ReflType from(const Transform &v) noexcept // NOLINT
+    {
+        return {v.Position, v.Rotation, v.Scale};
+    }
+};
+
+template <> struct Reflector<TransformComponent>
+{
+    struct ReflType
+    {
+        glm::vec3 Position;
+        glm::vec3 Rotation;
+        glm::vec3 Scale;
+    };
+
+    static TransformComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        TransformComponent tc;
+        tc.SetLocalPosition(v.Position);
+        tc.SetLocalRotation(v.Rotation);
+        tc.SetLocalScale(v.Scale);
+        tc.Dirty = true;
+        return tc;
+    }
+
+    static ReflType from(const TransformComponent &v) noexcept // NOLINT
+    {
+        return {v.GetLocalPosition(), v.GetLocalRotation(), v.GetLocalScale()};
+    }
+};
+
+} // namespace rfl

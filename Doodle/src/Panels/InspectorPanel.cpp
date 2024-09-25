@@ -39,13 +39,13 @@ void InspectorPanel::OnPanelLayout()
 
     // 设置下一个 InputText 的宽度为窗口的可用宽度
     ImGui::SetNextItemWidth(windowWidth);
-    ImGuiUtils::InputText("##Tag", entity.GetComponent<TagComponent>().Tag);
+    ImGuiUtils::InputText("##Name", entity.GetComponent<NameComponent>().Name);
     auto components = SceneManager::Get()->GetActiveScene()->GetComponents(uuid);
 
     for (auto &component : components)
     {
         std::string name = component->GetName();
-        if (name == "ID" || name == "Tag")
+        if (name == "ID" || name == "Name")
         {
             continue;
         }

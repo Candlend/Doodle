@@ -17,8 +17,8 @@ void HierarchyPanel::DrawEntityTree(std::vector<Entity> &entities)
 {
     for (const auto &entity : entities)
     {
-        // Get the tag for the current entity
-        const auto &tag = entity.GetComponent<TagComponent>().Tag;
+        // Get the name for the current entity
+        const auto &name = entity.GetComponent<NameComponent>().Name;
         // Create a tree node for the entity
         bool isSelected = SelectionManager::IsSelected(SelectionContext::Global, entity.GetUUID());
         auto children = entity.GetChildren();
@@ -26,7 +26,7 @@ void HierarchyPanel::DrawEntityTree(std::vector<Entity> &entities)
         auto flags = ImGuiTreeNodeFlags_OpenOnArrow | (isSelected ? ImGuiTreeNodeFlags_Selected : 0) |
                      (children.empty() ? ImGuiTreeNodeFlags_Leaf : 0);
 
-        bool opened = ImGui::TreeNodeEx(tag.c_str(), flags);
+        bool opened = ImGui::TreeNodeEx(name.c_str(), flags);
         if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1))
         {
             m_hoveredEntity = entity;
@@ -57,6 +57,11 @@ void HierarchyPanel::OnPanelLayout()
         m_hoveredEntity = Entity();
     }
     auto scene = SceneManager::Get()->GetActiveScene();
+    if (!scene)
+    {
+        ImGui::TextDisabled("No active scene");
+        return;
+    }
     auto entities = scene->GetEntities();
     std::vector<Entity> rootEntities;
     for (const auto &entity : entities)

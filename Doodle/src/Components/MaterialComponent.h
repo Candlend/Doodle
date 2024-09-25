@@ -20,6 +20,7 @@ struct MaterialComponent : public BaseComponent
 
     std::shared_ptr<MaterialInstance> MaterialInstance;
 
+    MaterialComponent() = default;
     MaterialComponent(const std::shared_ptr<Doodle::MaterialInstance> &materialInstance)
         : MaterialInstance(materialInstance)
     {
@@ -168,3 +169,26 @@ struct MaterialComponent : public BaseComponent
 };
 
 } // namespace Doodle
+
+using namespace Doodle;
+namespace rfl
+{
+
+template <> struct Reflector<MaterialComponent> // TODO: Add this to the reflection system
+{
+    struct ReflType
+    {
+    };
+
+    static MaterialComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        return {};
+    }
+
+    static ReflType from(const MaterialComponent &v) noexcept // NOLINT
+    {
+        return {};
+    }
+};
+
+} // namespace rfl

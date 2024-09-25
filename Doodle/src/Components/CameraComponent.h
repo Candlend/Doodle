@@ -86,3 +86,64 @@ struct CameraComponent : public BaseComponent
 };
 
 } // namespace Doodle
+
+using namespace Doodle;
+
+namespace rfl
+{
+
+template <> struct Reflector<CameraComponent>
+{
+    struct ReflType
+    {
+        bool Primary;
+        ProjectionType Projection;
+        float Fov;
+        float NearClip;
+        float FarClip;
+        float Size;
+        float OrthoNearClip;
+        float OrthoFarClip;
+    };
+
+    static CameraComponent to(const ReflType &v) noexcept // NOLINT
+    {
+        CameraComponent component(v.Projection);
+        component.Primary = v.Primary;
+        if (v.Projection == ProjectionType::Perspective)
+        {
+            component.Camera->SetDegPerspectiveVerticalFov(v.Fov);
+            component.Camera->SetPerspectiveNearClip(v.NearClip);
+            component.Camera->SetPerspectiveFarClip(v.FarClip);
+        }
+        else
+        {
+            component.Camera->SetOrthographicSize(v.Size);
+            component.Camera->SetOrthographicNearClip(v.OrthoNearClip);
+            component.Camera->SetOrthographicFarClip(v.OrthoFarClip);
+        }
+        return component;
+    }
+
+    static ReflType from(const CameraComponent &v) noexcept // NOLINT
+    {
+        ReflType component;
+        component.Primary = v.Primary;
+        component.Projection = v.Camera->GetProjectionType();
+        if (component.Projection == ProjectionType::Perspective)
+        {
+            component.Fov = v.Camera->GetDegPerspectiveVerticalFov();
+            component.NearClip = v.Camera->GetPerspectiveNearClip();
+            component.FarClip = v.Camera->GetPerspectiveFarClip();
+        }
+        else
+        {
+            component.Size = v.Camera->GetOrthographicSize();
+            component.OrthoNearClip = v.Camera->GetOrthographicNearClip();
+            component.OrthoFarClip = v.Camera->GetOrthographicFarClip();
+        }
+        return component;
+    }
+};
+
+} // namespace rfl
