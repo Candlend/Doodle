@@ -14,7 +14,6 @@ public:
         return m_keyCode;
     }
 
-    EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 protected:
     KeyEvent(KeyCode keycode) : m_keyCode(keycode)
     {
@@ -85,7 +84,6 @@ public:
     }
 
     EVENT_CLASS_TYPE(CharInput)
-	EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 private:
     uint16_t m_inputChar;
 };

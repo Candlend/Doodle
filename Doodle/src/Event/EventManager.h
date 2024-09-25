@@ -10,6 +10,8 @@
 namespace Doodle
 {
 
+using EventType = std::string;
+
 template <typename T> using EventCallbackFn = std::function<bool(T &)>;
 
 struct EventCallback

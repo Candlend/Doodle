@@ -21,7 +21,6 @@ public:
     }
 
     EVENT_CLASS_TYPE(SceneActivate)
-    EVENT_CLASS_CATEGORY(EventCategoryScene)
 private:
     Scene *m_scene;
 };
@@ -39,7 +38,6 @@ public:
     }
 
     EVENT_CLASS_TYPE(SceneDeactivate)
-    EVENT_CLASS_CATEGORY(EventCategoryScene)
 private:
     Scene *m_scene;
 };
@@ -73,7 +71,6 @@ public:
         return ss.str();
     }
 
-    EVENT_CLASS_CATEGORY(EventCategoryScene)
     EVENT_CLASS_TYPE(SelectionChanged)
 private:
     SelectionContext m_context;
@@ -98,7 +95,6 @@ public:
     }
 
     EVENT_CLASS_TYPE(ViewportResize)
-    EVENT_CLASS_CATEGORY(EventCategoryScene)
 private:
     uint32_t m_width, m_height;
 };

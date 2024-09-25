@@ -21,10 +21,9 @@ namespace Doodle {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(MouseMoved)
-		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
-	private:
-		float m_mouseX, m_mouseY;
+        EVENT_CLASS_TYPE(MouseMoved)
+    private:
+        float m_mouseX, m_mouseY;
 	};
 
 	class DOO_API MouseScrolledEvent : public Event
@@ -43,10 +42,10 @@ namespace Doodle {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(MouseScrolled)
-		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
-	private:
-		float m_xOffset, m_yOffset;
+        EVENT_CLASS_TYPE(MouseScrolled)
+
+    private:
+        float m_xOffset, m_yOffset;
 	};
 
 	class DOO_API MouseButtonEvent : public Event
@@ -54,12 +53,11 @@ namespace Doodle {
 	public:
 		inline int GetMouseButton() const { return m_button; }
 
-		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
-	protected:
         MouseButtonEvent(MouseButton button) : m_button(button)
         {
         }
 
+    protected:
         int m_button;
 	};
 
