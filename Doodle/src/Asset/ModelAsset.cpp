@@ -1,22 +1,21 @@
-#include "SceneAsset.h"
-#include "SceneManager.h"
+#include "ModelAsset.h"
 
 namespace Doodle
 {
 
-void SceneAsset::Reload()
+void ModelAsset::Reload()
 {
     DeserializeFromFile(m_assetPath);
 }
-UUID SceneAsset::GetUUID() const
+UUID ModelAsset::GetUUID() const
 {
     return m_data.UUID;
 }
-void SceneAsset::Save()
+void ModelAsset::Save()
 {
     SerializeToFile(m_assetPath);
 }
-void SceneAsset::SaveAs(const std::filesystem::path &assetPath)
+void ModelAsset::SaveAs(const std::filesystem::path &assetPath)
 {
     DOO_CORE_ASSERT(assetPath.string().ends_with(GetAssetExtension()), "Invalid file extension");
     m_assetPath = assetPath;
@@ -24,7 +23,7 @@ void SceneAsset::SaveAs(const std::filesystem::path &assetPath)
     Save();
 }
 
-bool SceneAsset::Load(const std::filesystem::path &assetPath)
+bool ModelAsset::Load(const std::filesystem::path &assetPath)
 {
     DOO_CORE_ASSERT(assetPath.string().ends_with(GetAssetExtension()), "Invalid file extension");
     m_assetPath = assetPath;

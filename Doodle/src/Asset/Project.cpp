@@ -24,7 +24,8 @@ std::shared_ptr<Project> Project::Create(const std::filesystem::path &filepath)
 {
     auto newProject = std::make_shared<Project>(filepath);
     ProjectSettings settings;
-    auto sceneAsset = AssetManager::Get()->Create<SceneAsset>(newProject->GetDirectory() / "scenes/sampleScene.dscene");
+    auto sceneAsset =
+        AssetManager::Get()->Create<SceneAsset>(newProject->GetDirectory() / "scenes" / "sampleScene.dscene");
     settings.StartSceneUUID = sceneAsset->GetUUID();
     newProject->SetData(settings);
     newProject->Apply();

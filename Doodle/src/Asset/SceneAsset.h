@@ -28,12 +28,8 @@ class SceneAsset : public Asset, public ISerializable<SceneInfo>
     friend class Scene;
 
 public:
-    ASSET_TYPE(Scene, dscene)
-
-    SceneAsset(const std::filesystem::path &filepath = "")
-    {
-        m_filepath = filepath;
-    }
+    ASSET_TYPE(Scene)
+    ASSET_EXTENSION(".dscene")
 
     void Reload() override;
 
@@ -41,9 +37,9 @@ public:
 
     void Save() override;
 
-    void SaveAs(const std::filesystem::path &filepath) override;
+    void SaveAs(const std::filesystem::path &assetPath) override;
 
-    bool Load(const std::filesystem::path &filepath) override;
+    bool Load(const std::filesystem::path &assetPath) override;
 };
 
 } // namespace Doodle

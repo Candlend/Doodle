@@ -30,6 +30,12 @@ enum class FileStatus
     OtherError
 };
 
+struct FileDialogFilterItem
+{
+    const char *m_name;
+    const char *m_spec;
+};
+
 class DOO_API FileSystem
 {
 public:
@@ -67,12 +73,6 @@ public:
     static uint64_t GetLastWriteTime(const std::filesystem::path &filepath);
 
 public:
-    struct FileDialogFilterItem
-    {
-        const char *m_name;
-        const char *m_spec;
-    };
-
     static std::filesystem::path OpenFileDialog(const std::initializer_list<FileDialogFilterItem> inFilters = {});
     static std::filesystem::path OpenFolderDialog(const char *initialFolder = "");
     static std::filesystem::path SaveFileDialog(const std::initializer_list<FileDialogFilterItem> inFilters = {});
