@@ -96,6 +96,11 @@ public:
         return false;
     }
 
+    template <typename... Assets> void TryLoadAssets(const std::filesystem::path &directory)
+    {
+        (TryLoadAsset<Assets>(directory) || ...);
+    }
+
     void RemoveAsset(const std::filesystem::path &filepath)
     {
         auto asset = GetAsset(filepath);

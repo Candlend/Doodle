@@ -44,12 +44,7 @@ Scene *Entity::GetScene() const
 
 bool Entity::IsValid() const
 {
-    bool valid = (m_entityHandle != entt::null) && m_scene && GetRegistry().valid(m_entityHandle);
-    if (!valid)
-    {
-        DOO_CORE_WARN("Entity is not valid: {0}", (int)m_entityHandle);
-    }
-    return valid;
+    return (m_entityHandle != entt::null) && m_scene && GetRegistry().valid(m_entityHandle);
 }
 
 Entity::operator bool() const

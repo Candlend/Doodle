@@ -34,8 +34,6 @@ public:
     void SaveScene(const std::filesystem::path &filepath = "");
 
 private:
-    Entity DeserializeEntity(const EntityInfo &entityInfo);
-    EntityInfo SerializeEntity(const Entity &entity);
     std::shared_ptr<Scene> m_activeScene;
     SceneInfo m_activeSceneInfo;
     SceneState m_state = SceneState::Editor;

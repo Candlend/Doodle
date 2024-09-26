@@ -149,30 +149,6 @@ std::shared_ptr<Mesh> Model::LoadMesh(const aiMesh *mesh, const aiScene *scene)
     return std::make_shared<Mesh>(vertices, indices, textures, uniform1f, uniform4f);
 }
 
-ModelNode Model::ProcessNode(aiNode *node, const aiScene *scene)
-{
-    ModelNode modelNode{node->mName.C_Str()};
-    // process all the node's meshes (if any)
-    for (unsigned int i = 0; i < node->mNumMeshes; i++)
-    {
-        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        std::string name = material->GetName().C_Str();
-        if (modelNode.Meshes.contains(name))
-        {
-            name += std::string("_") + std::to_string(i);
-        }
-        modelNode.Meshes[name] = LoadMesh(mesh, scene);
-    }
-    // then do the same for each of its children
-    for (unsigned int i = 0; i < node->mNumChildren; i++)
-    {
-        auto child = ProcessNode(node->mChildren[i], scene);
-        modelNode.Children.push_back(child);
-    }
-    return modelNode;
-}
-
 std::shared_ptr<Model> Model::Create(const std::filesystem::path &filepath)
 {
     return std::make_shared<Model>(filepath);
@@ -180,6 +156,30 @@ std::shared_ptr<Model> Model::Create(const std::filesystem::path &filepath)
 
 Model::Model(const std::filesystem::path &filepath)
 {
+    std::function<ModelNode(aiNode *, const aiScene *)> processNode = [this, &processNode](aiNode *node,
+                                                                                           const aiScene *scene) {
+        ModelNode modelNode{node->mName.C_Str()};
+        // process all the node's meshes (if any)
+        for (unsigned int i = 0; i < node->mNumMeshes; i++)
+        {
+            aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+            aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+            std::string name = material->GetName().C_Str();
+            if (modelNode.Meshes.contains(name))
+            {
+                name += std::string("_") + std::to_string(i);
+            }
+            modelNode.Meshes[name] = LoadMesh(mesh, scene);
+        }
+        // then do the same for each of its children
+        for (unsigned int i = 0; i < node->mNumChildren; i++)
+        {
+            auto child = processNode(node->mChildren[i], scene);
+            modelNode.Children.push_back(child);
+        }
+        return modelNode;
+    };
+
     LogStream::Initialize();
     DOO_CORE_INFO("Loading model: {0}", filepath.string());
     Assimp::Importer importer;
@@ -196,7 +196,7 @@ Model::Model(const std::filesystem::path &filepath)
     m_directory = GetDirectory(m_filepath);
 
     // process ASSIMP's root node recursively
-    m_root = ProcessNode(scene->mRootNode, scene);
+    m_root = processNode(scene->mRootNode, scene);
 }
 
 } // namespace Doodle

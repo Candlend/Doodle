@@ -18,12 +18,12 @@
 
 using namespace Doodle;
 
-class Sandbox : public Application
+class DoodleEditor : public Application
 {
 public:
-    static std::shared_ptr<Sandbox> Create()
+    static std::shared_ptr<DoodleEditor> Create()
     {
-        return std::make_shared<Sandbox>();
+        return std::make_shared<DoodleEditor>();
     }
 
     void InitializeLayout()

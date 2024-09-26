@@ -1,10 +1,10 @@
 from doodle import *
 
-class Sandbox(Application):
+class DoodleEditor(Application):
     @staticmethod
     def Create():
         DOO_CORE_INFO("Hello")
-        return Sandbox()
+        return DoodleEditor()
 
     def Initialize(self) -> None:
         super().Initialize()
@@ -42,7 +42,7 @@ def main():
     Log.Initialize()
     runner = ApplicationRunner.Get()
     props = WindowProps("Doodle", 1920, 1080)
-    runner.CreateApp(Sandbox, props)
+    runner.CreateApp(DoodleEditor, props)
     runner.Run()
 
 if __name__ == "__main__":

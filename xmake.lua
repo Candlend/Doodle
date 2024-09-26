@@ -89,11 +89,11 @@ target("doodle")
     end)
 
     
-target("Sandbox")
+target("DoodleEditor")
     set_kind("binary")
 
     -- 添加源文件
-    add_files("Sandbox/src/**.cpp")
+    add_files("DoodleEditor/src/**.cpp")
 
     -- 添加依赖库
     add_deps("Doodle")

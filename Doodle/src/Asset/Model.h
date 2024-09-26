@@ -39,8 +39,6 @@ private:
     ModelNode m_root;
     std::unordered_map<std::string, std::shared_ptr<Texture2D>> m_loadedTextures;
 
-    ModelNode ProcessNode(aiNode *node, const aiScene *scene);
-
     void LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures, aiMaterial *material,
                      std::string name, aiTextureType type, int index = 0,
                      TextureSpecification spec = TextureSpecification());
