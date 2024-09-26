@@ -1,5 +1,6 @@
 
 #include "ApplicationEvent.h"
+#include "Core.h"
 #include "Log.h"
 #include "MaterialComponent.h"
 #include "Renderable.h"
@@ -28,8 +29,76 @@ Scene::Scene(const std::string &name)
     m_name = name;
 }
 
+template <typename T>
+bool TryLoadComponent(std::string componentName, rfl::Generic::Object &componentData, Entity &entity)
+{
+    if (componentName != T::GetStaticName())
+    {
+        return false;
+    }
+    if (entity.HasComponent<T>())
+    {
+        auto &component = entity.GetComponent<T>();
+        component.DeserializeFromObject(componentData);
+    }
+    else
+    {
+        auto &component = entity.AddComponent<T>();
+        component.DeserializeFromObject(componentData);
+    }
+    return true;
+}
+
+template <typename... Components>
+void LoadComponent(const std::string &componentName, rfl::Generic::Object &componentData, Entity &entity)
+{
+    bool result = (TryLoadComponent<Components>(componentName, componentData, entity) || ...);
+    DOO_CORE_ASSERT(result, "Failed to load component {0}", componentName);
+}
+
+Scene::Scene(std::shared_ptr<SceneAsset> sceneAsset)
+{
+    DOO_CORE_ASSERT(!sceneAsset->m_loaded, "Scene asset already loaded");
+    std::function<Entity(const EntityInfo &)> deserializeEntity = [this,
+                                                                   &deserializeEntity](const EntityInfo &entityInfo) {
+        UUID uuid = entityInfo.UUID;
+        std::string name = entityInfo.Name;
+        auto entity = CreateEntity(name, uuid);
+        DOO_CORE_DEBUG("Entity {0} ({1}) deserialized", name, uuid.ToString());
+
+        for (const auto &[componentName, componentData] : entityInfo.Components)
+        {
+            auto object = componentData.to_object().value();
+            LoadComponent<TransformComponent, CameraComponent, MeshComponent, MaterialComponent,
+                          DirectionalLightComponent, PointLightComponent, SpotLightComponent, AreaLightComponent>(
+                componentName, object, entity);
+        }
+        for (const auto &child : entityInfo.Children)
+        {
+            Entity childEntity = deserializeEntity(child);
+            childEntity.SetParent(entity);
+        }
+        return entity;
+    };
+
+    auto sceneInfo = sceneAsset->GetData();
+    auto entities = sceneInfo.Entities;
+
+    for (const auto &entityInfo : entities)
+    {
+        Entity entity = deserializeEntity(entityInfo);
+    }
+
+    sceneAsset->m_loaded = true;
+    m_asset = sceneAsset;
+}
+
 Scene::~Scene()
 {
+    if (m_asset)
+    {
+        m_asset->m_loaded = false;
+    }
     m_registry.clear();
 }
 
@@ -128,6 +197,36 @@ Entity Scene::ProcessModelNode(ModelNode node)
 Entity Scene::CreateEntityFromModel(std::shared_ptr<Model> model)
 {
     return ProcessModelNode(model->GetRootNode());
+}
+
+void Scene::SaveAsset(const std::filesystem::path &filepath)
+{
+    std::function<EntityInfo(const Entity &)> serializeEntity = [this, &serializeEntity](const Entity &entity) {
+        EntityInfo entityInfo;
+        entityInfo.UUID = entity.GetUUID();
+        entityInfo.Name = entity.GetName();
+
+        for (auto *component : GetComponents(entity.GetUUID()))
+        {
+            entityInfo.Components[component->GetName()] = component->SerializeToObject();
+        }
+        for (const auto &child : entity.GetChildren())
+        {
+            EntityInfo childInfo = serializeEntity(child);
+            entityInfo.Children.push_back(childInfo);
+        }
+        DOO_CORE_DEBUG("Entity {0} ({1}) serialized", entityInfo.Name, entityInfo.UUID.ToString());
+        return entityInfo;
+    };
+
+    m_asset->m_data.Entities.clear();
+    for (const auto &entity : GetEntities())
+    {
+        EntityInfo entityInfo = serializeEntity(entity);
+        m_asset->m_data.Entities.push_back(entityInfo);
+    }
+
+    filepath.empty() ? m_asset->Save() : m_asset->SaveAs(filepath);
 }
 
 Entity Scene::FindEntity(const std::string &name) const

@@ -4,11 +4,6 @@
 namespace Doodle
 {
 
-std::shared_ptr<Scene> SceneAsset::CreateInstance()
-{
-    auto scene = SceneManager::Get()->LoadScene(m_data);
-    return scene;
-};
 void SceneAsset::Reload()
 {
     DeserializeFromFile(m_filepath);

@@ -65,7 +65,7 @@ void Project::Apply()
     auto startSceneAsset = AssetManager::Get()->GetAsset<SceneAsset>(m_data.StartSceneUUID.value());
     if (startSceneAsset)
     {
-        startSceneAsset->CreateInstance();
+        SceneManager::Get()->LoadScene(startSceneAsset);
     }
     else
     {

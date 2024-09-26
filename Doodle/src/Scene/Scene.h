@@ -4,8 +4,10 @@
 #include <entt/entity/fwd.hpp>
 #include <entt/entt.hpp>
 #include <glm/fwd.hpp>
+#include <memory>
 
 #include "Light.h"
+#include "SceneAsset.h"
 #include "Texture.h"
 #include "UUID.h"
 
@@ -71,7 +73,6 @@ class TransformComponent;
 class Model;
 class ModelNode;
 class SceneManager;
-class EntityInfo;
 class DOO_API Scene : public std::enable_shared_from_this<Scene>
 {
     friend class SceneRenderer;
@@ -80,6 +81,7 @@ class DOO_API Scene : public std::enable_shared_from_this<Scene>
 
 public:
     Scene(const std::string &name = "untitledScene");
+    Scene(std::shared_ptr<SceneAsset> sceneAsset);
     ~Scene();
     Entity GetMainCameraEntity();
 
@@ -130,7 +132,15 @@ public:
 
     Entity CreateEntityFromModel(std::shared_ptr<Model> model);
 
+    std::shared_ptr<SceneAsset> GetAsset() const
+    {
+        return m_asset;
+    }
+
+    void SaveAsset(const std::filesystem::path &filepath);
+
 private:
+    std::shared_ptr<SceneAsset> m_asset;
     std::string m_name;
     bool m_active = false;
     std::unordered_map<UUID, Entity> m_entityMap;

@@ -1,4 +1,5 @@
 #pragma once
+#include "Core.h"
 #include "pch.h"
 #include <filesystem>
 #include <magic_enum.hpp>
@@ -19,106 +20,23 @@ namespace Doodle
 class DOO_API AssetManager : public Singleton<AssetManager>, public IEventHandler<ProjectOpenEvent>
 {
 public:
-    void LoadAllAssets(const std::filesystem::path &directory)
-    {
-        m_fileWatcher = std::make_shared<FileWatcher>(directory);
-        std::function<void(std::filesystem::path, FileEventType)> callback = [this](std::filesystem::path filepath,
-                                                                                    FileEventType fileEventType) {
-            DOO_CORE_DEBUG("File {1}: {0}", filepath.string(), magic_enum::enum_name(fileEventType));
-            if (!std::filesystem::is_regular_file(filepath))
-            {
-                return;
-            }
-            switch (fileEventType)
-            {
-            case FileEventType::Modified:
-                OnFileModified(filepath);
-                break;
-            case FileEventType::Erased:
-                OnFileErased(filepath);
-                break;
-            case FileEventType::Created:
-                OnFileCreated(filepath);
-                break;
-            }
-        };
-        m_fileWatcher->Start(callback);
-    }
+    void LoadAllAssets(const std::filesystem::path &directory);
 
-    void DeleteUnusedAssets()
-    {
-    }
+    void DeleteUnusedAssets();
 
-    void OnFileModified(const std::filesystem::path &filepath)
-    {
-        auto asset = GetAsset(filepath);
-        if (asset)
-            asset->Reload();
-    }
+    void OnFileModified(const std::filesystem::path &filepath);
 
-    void OnFileErased(const std::filesystem::path &filepath)
-    {
-        RemoveAsset(filepath);
-    }
+    void OnFileErased(const std::filesystem::path &filepath);
 
-    void OnFileCreated(const std::filesystem::path &filepath)
-    {
-        TryLoadAsset<SceneAsset>(filepath);
-    }
+    void OnFileCreated(const std::filesystem::path &filepath);
 
-    bool OnEvent(ProjectOpenEvent &event) override
-    {
-        LoadAllAssets(event.GetProject()->GetDirectory());
-        DeleteUnusedAssets();
-        return false;
-    }
+    bool OnEvent(ProjectOpenEvent &event) override;
 
-    void AddAsset(const std::filesystem::path &filepath, std::shared_ptr<BaseAsset> asset)
-    {
-        m_assets[filepath.string()] = asset;
-        m_assetsByUUID[asset->GetUUID()] = asset;
-        DOO_CORE_INFO("Asset loaded: {0} ({1})", filepath.string(), asset->GetUUID().ToString());
-    }
+    void AddAsset(const std::filesystem::path &filepath, std::shared_ptr<Asset> asset);
 
-    template <typename T> bool TryLoadAsset(const std::filesystem::path &filepath)
-    {
-        auto extension = filepath.extension().string().substr(1);
-        if (extension != T::GetStaticExtension())
-        {
-            return false;
-        }
-        auto asset = std::make_shared<T>();
-        if (asset->Load(filepath.string()))
-        {
-            AddAsset(filepath, asset);
-            return true;
-        };
-        return false;
-    }
+    void RemoveAsset(const std::filesystem::path &filepath);
 
-    template <typename... Assets> void TryLoadAssets(const std::filesystem::path &directory)
-    {
-        (TryLoadAsset<Assets>(directory) || ...);
-    }
-
-    void RemoveAsset(const std::filesystem::path &filepath)
-    {
-        auto asset = GetAsset(filepath);
-        if (asset)
-        {
-            m_assetsByUUID.erase(asset->GetUUID());
-            m_assets.erase(filepath.string());
-        }
-    }
-
-    std::shared_ptr<BaseAsset> GetAsset(const std::filesystem::path &filepath)
-    {
-        if (m_assets.contains(filepath.string()))
-        {
-            return m_assets[filepath.string()];
-        }
-        return nullptr;
-    }
+    std::shared_ptr<Asset> GetAsset(const std::filesystem::path &filepath);
 
     template <typename T> std::shared_ptr<T> GetAsset(const std::string &name)
     {
@@ -148,13 +66,33 @@ public:
         }
         auto asset = std::make_shared<T>(filepath);
         asset->Save();
-        AddAsset(filepath, std::dynamic_pointer_cast<BaseAsset>(asset));
+        AddAsset(filepath, std::dynamic_pointer_cast<Asset>(asset));
         return asset;
     }
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<BaseAsset>> m_assets;
-    std::unordered_map<UUID, std::shared_ptr<BaseAsset>> m_assetsByUUID;
+    template <typename T> bool TryLoadAsset(const std::filesystem::path &filepath)
+    {
+        auto extension = filepath.extension().string().substr(1);
+        if (extension != T::GetStaticExtension())
+        {
+            return false;
+        }
+        auto asset = std::make_shared<T>();
+        if (asset->Load(filepath.string()))
+        {
+            AddAsset(filepath, asset);
+            return true;
+        };
+        return false;
+    }
+
+    template <typename... Assets> void LoadAsset(const std::filesystem::path &filepath)
+    {
+        (TryLoadAsset<Assets>(filepath) || ...);
+    }
+    std::unordered_map<std::string, std::shared_ptr<Asset>> m_assets;
+    std::unordered_map<UUID, std::shared_ptr<Asset>> m_assetsByUUID;
     std::shared_ptr<FileWatcher> m_fileWatcher;
 };
 

@@ -5,7 +5,7 @@
 namespace Doodle
 {
 
-class DOO_API BaseAsset
+class DOO_API Asset : public std::enable_shared_from_this<Asset>
 {
 public:
     virtual void OnInspectorLayout() {};
@@ -22,7 +22,13 @@ public:
         return m_filepath;
     }
 
+    bool IsLoaded() const
+    {
+        return m_loaded;
+    }
+
 protected:
+    bool m_loaded = false;
     std::filesystem::path m_filepath;
 };
 
@@ -44,13 +50,7 @@ protected:
         return GetStaticExtension();                                                                                   \
     }
 
-template <typename T> class DOO_API Asset : public BaseAsset
-{
-public:
-    virtual std::shared_ptr<T> CreateInstance() = 0;
-};
-
-template <typename T> class DOO_API NativeAsset : public Asset<T>
+template <typename T> class DOO_API NativeAsset : public Asset
 {
 };
 

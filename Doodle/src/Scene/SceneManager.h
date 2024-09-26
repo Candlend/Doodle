@@ -28,14 +28,12 @@ public:
     {
         return m_state;
     }
-    std::shared_ptr<Scene> LoadScene(const SceneInfo &sceneInfo);
-    SceneInfo GetSceneInfo();
+    std::shared_ptr<Scene> LoadScene(std::shared_ptr<SceneAsset> sceneAsset);
 
     void SaveScene(const std::filesystem::path &filepath = "");
 
 private:
     std::shared_ptr<Scene> m_activeScene;
-    SceneInfo m_activeSceneInfo;
     SceneState m_state = SceneState::Editor;
 };
 

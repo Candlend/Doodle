@@ -4,7 +4,6 @@
 
 #include "Asset.h"
 #include "ISerializable.h"
-#include "Scene.h"
 #include "UUID.h"
 
 namespace Doodle
@@ -24,8 +23,10 @@ struct SceneInfo
     std::vector<EntityInfo> Entities;
 };
 
-class SceneAsset : public Asset<Scene>, public ISerializable<SceneInfo>
+class SceneAsset : public Asset, public ISerializable<SceneInfo>
 {
+    friend class Scene;
+
 public:
     ASSET_TYPE(Scene, dscene)
 
@@ -33,7 +34,6 @@ public:
     {
         m_filepath = filepath;
     }
-    std::shared_ptr<Scene> CreateInstance() override;
 
     void Reload() override;
 
