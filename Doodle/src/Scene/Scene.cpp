@@ -56,9 +56,9 @@ void LoadComponent(const std::string &componentName, rfl::Generic::Object &compo
     DOO_CORE_ASSERT(result, "Failed to load component {0}", componentName);
 }
 
-Scene::Scene(std::shared_ptr<SceneAsset> sceneAsset)
+Scene::Scene(std::shared_ptr<SceneAsset> asset)
 {
-    DOO_CORE_ASSERT(!sceneAsset->m_loaded, "Scene asset already loaded");
+    DOO_CORE_ASSERT(!asset->m_loaded, "Scene asset already loaded");
     std::function<Entity(const EntityInfo &)> deserializeEntity = [this,
                                                                    &deserializeEntity](const EntityInfo &entityInfo) {
         UUID uuid = entityInfo.UUID;
@@ -81,7 +81,7 @@ Scene::Scene(std::shared_ptr<SceneAsset> sceneAsset)
         return entity;
     };
 
-    auto sceneInfo = sceneAsset->GetData();
+    auto sceneInfo = asset->GetData();
     auto entities = sceneInfo.Entities;
 
     for (const auto &entityInfo : entities)
@@ -89,8 +89,8 @@ Scene::Scene(std::shared_ptr<SceneAsset> sceneAsset)
         Entity entity = deserializeEntity(entityInfo);
     }
 
-    sceneAsset->m_loaded = true;
-    m_asset = sceneAsset;
+    asset->m_loaded = true;
+    m_asset = asset;
 }
 
 Scene::~Scene()

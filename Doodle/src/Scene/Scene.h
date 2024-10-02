@@ -81,7 +81,7 @@ class DOO_API Scene : public std::enable_shared_from_this<Scene>
 
 public:
     Scene(const std::string &name = "untitledScene");
-    Scene(std::shared_ptr<SceneAsset> sceneAsset);
+    Scene(std::shared_ptr<SceneAsset> asset);
     ~Scene();
     Entity GetMainCameraEntity();
 

@@ -27,10 +27,7 @@ class DOO_API Mesh
 public:
     static std::shared_ptr<Mesh> Create(const std::string &filename);
     Mesh(const std::string &filename);
-    Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
-         const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures,
-         const std::unordered_map<std::string, float> &uniform1f,
-         const std::unordered_map<std::string, glm::vec4> &uniform4f);
+    Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices);
     ~Mesh();
 
     const std::string &GetPath() const
@@ -44,19 +41,6 @@ public:
     static std::shared_ptr<Mesh> GetSphere();
     static std::shared_ptr<Mesh> GetPlane();
 
-    std::shared_ptr<Texture2D> GetTexture(const std::string &name);
-    std::unordered_map<std::string, std::shared_ptr<Texture2D>> &GetTextures()
-    {
-        return m_textures;
-    }
-    std::unordered_map<std::string, float> &GetUniform1f()
-    {
-        return m_uniform1f;
-    }
-    std::unordered_map<std::string, glm::vec4> &GetUniform4f()
-    {
-        return m_uniform4f;
-    }
     uint32_t GetVertexCount() const
     {
         return m_vertices.size();
@@ -78,10 +62,7 @@ private:
     std::shared_ptr<IndexBuffer> m_indexBuffer;
     std::shared_ptr<VertexArray> m_vertexArray;
 
-    void ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
-                     const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures,
-                     const std::unordered_map<std::string, float> &uniform1f,
-                     const std::unordered_map<std::string, glm::vec4> &uniform4f);
+    void ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices);
 };
 
 } // namespace Doodle

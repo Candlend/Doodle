@@ -1,10 +1,13 @@
 #pragma once
 
+#include "ModelAsset.h"
 #include "pch.h"
 
 #include "Mesh.h"
 #include "Texture.h"
-
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 class aiMesh;
 class aiNode;
@@ -16,33 +19,35 @@ namespace Doodle
 {
 class Entity;
 
+struct MeshInfo
+{
+    unsigned int MeshIndex;
+    std::string Name;
+};
+
 struct ModelNode
 {
     std::string Name;
-    std::unordered_map<std::string, std::shared_ptr<Mesh>> Meshes;
+    std::unordered_map<std::string, MeshInfo> MeshInfos;
     std::vector<ModelNode> Children;
 };
 
 class DOO_API Model
 {
 public:
-    static std::shared_ptr<Model> Create(const std::filesystem::path &filepath);
-    Model(const std::filesystem::path &filepath);
+    static std::shared_ptr<Model> LoadFromAsset(std::shared_ptr<ModelAsset> asset);
+    Model(std::shared_ptr<ModelAsset> asset);
     ModelNode GetRootNode() const
     {
         return m_root;
     }
 
+    ~Model();
+
 private:
-    std::string m_filepath;
-    std::string m_directory;
+    std::shared_ptr<ModelAsset> m_asset;
     ModelNode m_root;
+    std::vector<std::shared_ptr<Mesh>> m_meshes;
     std::unordered_map<std::string, std::shared_ptr<Texture2D>> m_loadedTextures;
-
-    void LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures, aiMaterial *material,
-                     std::string name, aiTextureType type, int index = 0,
-                     TextureSpecification spec = TextureSpecification());
-
-    std::shared_ptr<Mesh> LoadMesh(const aiMesh *mesh, const aiScene *scene);
 };
 } // namespace Doodle

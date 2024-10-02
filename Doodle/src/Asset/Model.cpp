@@ -33,129 +33,138 @@ struct LogStream : public Assimp::LogStream
 namespace Doodle
 {
 
-void Model::LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures, aiMaterial *material,
-                        std::string name, aiTextureType type, int index, TextureSpecification spec)
+// void Model::LoadTexture(std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures, aiMaterial *material,
+//                         std::string name, aiTextureType type, int index, TextureSpecification spec)
+// {
+//     if (textures.contains(name))
+//         return;
+//     aiString str;
+//     aiReturn result = material->GetTexture(type, index, &str);
+//     if (result != aiReturn_SUCCESS)
+//         return;
+//     std::filesystem::path texturePath = std::filesystem::path(m_directory) / str.C_Str();
+//     DOO_CORE_INFO("Loading texture: {0}", texturePath.string());
+//     if (m_loadedTextures.contains(texturePath.string()))
+//     {
+//         textures[name] = m_loadedTextures[texturePath.string()];
+//         return;
+//     }
+//     textures[name] = Texture2D::Create(texturePath.string(), spec);
+//     m_loadedTextures[texturePath.string()] = textures[name];
+// }
+
+Model::Model(std::shared_ptr<ModelAsset> asset)
 {
-    if (textures.contains(name))
-        return;
-    aiString str;
-    aiReturn result = material->GetTexture(type, index, &str);
-    if (result != aiReturn_SUCCESS)
-        return;
-    std::filesystem::path texturePath = std::filesystem::path(m_directory) / str.C_Str();
-    DOO_CORE_INFO("Loading texture: {0}", texturePath.string());
-    if (m_loadedTextures.contains(texturePath.string()))
-    {
-        textures[name] = m_loadedTextures[texturePath.string()];
-        return;
-    }
-    textures[name] = Texture2D::Create(texturePath.string(), spec);
-    m_loadedTextures[texturePath.string()] = textures[name];
-}
+    DOO_CORE_ASSERT(!asset->m_loaded, "Model asset already loaded");
+    auto filepath = asset->GetBindFilepath();
+    LogStream::Initialize();
+    DOO_CORE_INFO("Loading model: {0}", filepath.string());
+    Assimp::Importer importer;
+    const aiScene *scene = importer.ReadFile(filepath.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                                                    aiProcess_CalcTangentSpace);
+    m_meshes.reserve(scene->mNumMeshes);
 
-std::shared_ptr<Mesh> Model::LoadMesh(const aiMesh *mesh, const aiScene *scene)
-{
-    DOO_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
-    DOO_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
-    DOO_CORE_ASSERT(mesh->HasTangentsAndBitangents(), "Meshes require tangents and bitangents.");
-    DOO_CORE_ASSERT(mesh->HasTextureCoords(0), "Meshes require texture coordinates.");
+    auto loadMesh = [this, scene](aiMesh *mesh) {
+        DOO_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
+        DOO_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
+        DOO_CORE_ASSERT(mesh->HasTangentsAndBitangents(), "Meshes require tangents and bitangents.");
+        DOO_CORE_ASSERT(mesh->HasTextureCoords(0), "Meshes require texture coordinates.");
 
-    std::vector<Vertex> vertices;
-    vertices.reserve(mesh->mNumVertices);
+        std::vector<Vertex> vertices;
+        vertices.reserve(mesh->mNumVertices);
 
-    // Extract vertices from model
-    for (size_t i = 0; i < mesh->mNumVertices; i++)
-    {
-        Vertex vertex;
-        vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-        vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-
-        if (mesh->HasTangentsAndBitangents())
+        // Extract vertices from model
+        for (size_t i = 0; i < mesh->mNumVertices; i++)
         {
-            vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-            vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+            Vertex vertex;
+            vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+            vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+
+            if (mesh->HasTangentsAndBitangents())
+            {
+                vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+            }
+
+            if (mesh->HasTextureCoords(0))
+                vertex.TexCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+
+            vertices.push_back(vertex);
         }
 
-        if (mesh->HasTextureCoords(0))
-            vertex.TexCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-
-        vertices.push_back(vertex);
-    }
-
-    std::vector<uint32_t> indices;
-    // Extract indices from model
-    indices.reserve(mesh->mNumFaces * 3); // Each face has 3 indices
-    for (size_t i = 0; i < mesh->mNumFaces; i++)
-    {
-        DOO_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
-        for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
+        std::vector<uint32_t> indices;
+        // Extract indices from model
+        indices.reserve(mesh->mNumFaces * 3); // Each face has 3 indices
+        for (size_t i = 0; i < mesh->mNumFaces; i++)
         {
-            indices.push_back(mesh->mFaces[i].mIndices[j]);
+            DOO_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
+            for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
+            {
+                indices.push_back(mesh->mFaces[i].mIndices[j]);
+            }
         }
-    }
 
-    // process the mesh
-    aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+        // // process the mesh
+        // aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-    std::unordered_map<std::string, std::shared_ptr<Texture2D>> textures;
-    TextureSpecification srgbParams;
-    srgbParams.Format = TextureFormat::SRGB8ALPHA8;
-    LoadTexture(textures, material, "u_AlbedoTexture", AI_MATKEY_BASE_COLOR_TEXTURE, srgbParams);
-    LoadTexture(textures, material, "u_AlbedoTexture", aiTextureType_DIFFUSE, 0, srgbParams);
-    LoadTexture(textures, material, "u_NormalTexture", aiTextureType_NORMALS);
-    LoadTexture(textures, material, "u_MetalnessTexture", AI_MATKEY_METALLIC_TEXTURE);
-    LoadTexture(textures, material, "u_RoughnessTexture", AI_MATKEY_ROUGHNESS_TEXTURE);
-    TextureSpecification invertParams;
-    invertParams.InvertColor = true;
-    LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SPECULAR, 0, invertParams);
-    LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SHININESS, 0, invertParams);
+        // std::unordered_map<std::string, std::shared_ptr<Texture2D>> textures;
+        // TextureSpecification srgbParams;
+        // srgbParams.Format = TextureFormat::SRGB8ALPHA8;
+        // LoadTexture(textures, material, "u_AlbedoTexture", AI_MATKEY_BASE_COLOR_TEXTURE, srgbParams);
+        // LoadTexture(textures, material, "u_AlbedoTexture", aiTextureType_DIFFUSE, 0, srgbParams);
+        // LoadTexture(textures, material, "u_NormalTexture", aiTextureType_NORMALS);
+        // LoadTexture(textures, material, "u_MetalnessTexture", AI_MATKEY_METALLIC_TEXTURE);
+        // LoadTexture(textures, material, "u_RoughnessTexture", AI_MATKEY_ROUGHNESS_TEXTURE);
+        // TextureSpecification invertParams;
+        // invertParams.InvertColor = true;
+        // LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SPECULAR, 0, invertParams);
+        // LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SHININESS, 0, invertParams);
 
-    std::unordered_map<std::string, float> uniform1f;
-    std::unordered_map<std::string, glm::vec4> uniform4f;
+        // std::unordered_map<std::string, float> uniform1f;
+        // std::unordered_map<std::string, glm::vec4> uniform4f;
 
-    aiColor3D color(1.0f);
-    float alpha = 1.0f;
-    if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
+        // aiColor3D color(1.0f);
+        // float alpha = 1.0f;
+        // if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
+        // {
+        //     uniform4f["u_AlbedoColor"] = {color.r, color.g, color.b, alpha};
+        // }
+        // if (material->Get(AI_MATKEY_OPACITY, alpha) == aiReturn_SUCCESS)
+        // {
+        //     uniform4f["u_AlbedoColor"].w = alpha;
+        // }
+
+        // float roughness, metallic;
+        // if (material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == aiReturn_SUCCESS)
+        // {
+        //     uniform1f["u_Roughness"] = roughness;
+        // }
+        // if (material->Get(AI_MATKEY_REFLECTIVITY, metallic) == aiReturn_SUCCESS)
+        // {
+        //     uniform1f["u_Metallic"] = metallic;
+        // }
+        // if (textures.contains("u_AlbedoTexture"))
+        // {
+        //     uniform4f["u_AlbedoColor"] = {1.0f, 1.0f, 1.0f, alpha};
+        // }
+        // if (textures.contains("u_RoughnessTexture"))
+        // {
+        //     uniform1f["u_Roughness"] = 1.0f;
+        // }
+        // if (textures.contains("u_MetalnessTexture"))
+        // {
+        //     uniform1f["u_Metallic"] = 1.0f;
+        // }
+
+        return std::make_shared<Mesh>(vertices, indices);
+    };
+
+    for (size_t i = 0; i < scene->mNumMeshes; i++)
     {
-        uniform4f["u_AlbedoColor"] = {color.r, color.g, color.b, alpha};
-    }
-    if (material->Get(AI_MATKEY_OPACITY, alpha) == aiReturn_SUCCESS)
-    {
-        uniform4f["u_AlbedoColor"].w = alpha;
+        aiMesh *mesh = scene->mMeshes[i];
+        m_meshes.push_back(loadMesh(mesh));
     }
 
-    float roughness, metallic;
-    if (material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == aiReturn_SUCCESS)
-    {
-        uniform1f["u_Roughness"] = roughness;
-    }
-    if (material->Get(AI_MATKEY_REFLECTIVITY, metallic) == aiReturn_SUCCESS)
-    {
-        uniform1f["u_Metallic"] = metallic;
-    }
-    if (textures.contains("u_AlbedoTexture"))
-    {
-        uniform4f["u_AlbedoColor"] = {1.0f, 1.0f, 1.0f, alpha};
-    }
-    if (textures.contains("u_RoughnessTexture"))
-    {
-        uniform1f["u_Roughness"] = 1.0f;
-    }
-    if (textures.contains("u_MetalnessTexture"))
-    {
-        uniform1f["u_Metallic"] = 1.0f;
-    }
-
-    return std::make_shared<Mesh>(vertices, indices, textures, uniform1f, uniform4f);
-}
-
-std::shared_ptr<Model> Model::Create(const std::filesystem::path &filepath)
-{
-    return std::make_shared<Model>(filepath);
-}
-
-Model::Model(const std::filesystem::path &filepath)
-{
     std::function<ModelNode(aiNode *, const aiScene *)> processNode = [this, &processNode](aiNode *node,
                                                                                            const aiScene *scene) {
         ModelNode modelNode{node->mName.C_Str()};
@@ -165,11 +174,7 @@ Model::Model(const std::filesystem::path &filepath)
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
             aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
             std::string name = material->GetName().C_Str();
-            if (modelNode.Meshes.contains(name))
-            {
-                name += std::string("_") + std::to_string(i);
-            }
-            modelNode.Meshes[name] = LoadMesh(mesh, scene);
+            MeshInfo meshInfo{i, name};
         }
         // then do the same for each of its children
         for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -180,23 +185,18 @@ Model::Model(const std::filesystem::path &filepath)
         return modelNode;
     };
 
-    LogStream::Initialize();
-    DOO_CORE_INFO("Loading model: {0}", filepath.string());
-    Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(filepath.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-                                                                    aiProcess_CalcTangentSpace);
-    // check for errors
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
-    {
-        DOO_CORE_ERROR("ERROR::ASSIMP::{0}", importer.GetErrorString());
-        return;
-    }
-    // retrieve the directory path of the filepath
-    m_filepath = NormalizePath(filepath.string());
-    m_directory = GetDirectory(m_filepath);
-
-    // process ASSIMP's root node recursively
     m_root = processNode(scene->mRootNode, scene);
+
+    asset->m_loaded = true;
+    m_asset = asset;
+}
+
+Model::~Model()
+{
+    if (m_asset)
+    {
+        m_asset->m_loaded = false;
+    }
 }
 
 } // namespace Doodle

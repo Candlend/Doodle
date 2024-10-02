@@ -94,27 +94,18 @@ Mesh::Mesh(const std::string &filename) : m_filepath(filename)
 
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-    ProcessMesh(vertices, indices, {}, {}, {});
+    ProcessMesh(vertices, indices);
 }
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
-           const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures,
-           const std::unordered_map<std::string, float> &uniform1f,
-           const std::unordered_map<std::string, glm::vec4> &uniform4f)
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
 {
-    ProcessMesh(vertices, indices, textures, uniform1f, uniform4f);
+    ProcessMesh(vertices, indices);
 }
 
-void Mesh::ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices,
-                       const std::unordered_map<std::string, std::shared_ptr<Texture2D>> &textures,
-                       const std::unordered_map<std::string, float> &uniform1f,
-                       const std::unordered_map<std::string, glm::vec4> &uniform4f)
+void Mesh::ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
 {
     m_vertices = vertices;
     m_indices = indices;
-    m_textures = textures;
-    m_uniform1f = uniform1f;
-    m_uniform4f = uniform4f;
 
     // Create Vertex Buffer Object
     m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
@@ -180,11 +171,6 @@ std::shared_ptr<Mesh> Mesh::GetPlane()
         s_Plane = std::make_shared<Mesh>("assets/meshes/plane.obj");
     }
     return s_Plane;
-}
-
-std::shared_ptr<Texture2D> Mesh::GetTexture(const std::string &name)
-{
-    return m_textures[name];
 }
 
 std::shared_ptr<Mesh> Mesh::Create(const std::string &filename)

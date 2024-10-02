@@ -67,7 +67,6 @@ public:
             return nullptr;
         }
         auto asset = std::make_shared<T>();
-
         asset->SaveAs(assetPath);
         AddAsset(assetPath, std::dynamic_pointer_cast<Asset>(asset));
         DOO_CORE_INFO("NativeAsset created: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());

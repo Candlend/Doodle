@@ -16,7 +16,7 @@ struct ModelInfo
 
 class ModelAsset : public FileAsset, public ISerializable<ModelInfo>
 {
-    friend class Scene;
+    friend class Model;
 
 public:
     ASSET_TYPE(Model)
