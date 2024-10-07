@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 #include <glad/glad.h>
 #include <glm/fwd.hpp>
+#include <memory>
 
 #include "Mesh.h"
 #include "Texture.h"
@@ -39,7 +40,78 @@ struct LogStream : public Assimp::LogStream
     }
 };
 
-Mesh::Mesh(const std::string &filename) : m_filepath(filename)
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
+{
+    m_vertices = vertices;
+    m_indices = indices;
+
+    // Create Vertex Buffer Object
+    m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
+    m_vertexBuffer->PushElement("a_PositionOS", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_NormalOS", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_TangentOS", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_BinormalOS", VertexDataType::Vec3);
+    m_vertexBuffer->PushElement("a_TexCoord", VertexDataType::Vec2);
+
+    // Create Index Buffer Object
+    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size() * sizeof(uint32_t));
+
+    // Create Vertex Array Object
+    m_vertexArray = VertexArray::Create();
+    m_vertexArray->AddVertexBuffer(m_vertexBuffer);
+    m_vertexArray->SetIndexBuffer(m_indexBuffer);
+}
+
+Mesh::~Mesh()
+{
+}
+
+void Mesh::Render()
+{
+    m_vertexArray->Render();
+}
+
+std::shared_ptr<Mesh> Mesh::GetQuad()
+{
+    static std::shared_ptr<Mesh> s_Quad = nullptr;
+    if (!s_Quad)
+    {
+        s_Quad = Mesh::Load("assets/meshes/quad.obj");
+    }
+    return s_Quad;
+}
+
+std::shared_ptr<Mesh> Mesh::GetCube()
+{
+    static std::shared_ptr<Mesh> s_Cube = nullptr;
+    if (!s_Cube)
+    {
+        s_Cube = Mesh::Load("assets/meshes/cube.obj");
+    }
+    return s_Cube;
+}
+
+std::shared_ptr<Mesh> Mesh::GetSphere()
+{
+    static std::shared_ptr<Mesh> s_Sphere = nullptr;
+    if (!s_Sphere)
+    {
+        s_Sphere = Mesh::Load("assets/meshes/sphere.obj");
+    }
+    return s_Sphere;
+}
+
+std::shared_ptr<Mesh> Mesh::GetPlane()
+{
+    static std::shared_ptr<Mesh> s_Plane = nullptr;
+    if (!s_Plane)
+    {
+        s_Plane = Mesh::Load("assets/meshes/plane.obj");
+    }
+    return s_Plane;
+}
+
+std::shared_ptr<Mesh> Mesh::Load(const std::string &filename)
 {
     LogStream::Initialize();
 
@@ -93,89 +165,19 @@ Mesh::Mesh(const std::string &filename) : m_filepath(filename)
     }
 
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-
-    ProcessMesh(vertices, indices);
+    return Mesh::Create(vertices, indices);
 }
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
+std::shared_ptr<Mesh> Mesh::Create(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
 {
-    ProcessMesh(vertices, indices);
-}
-
-void Mesh::ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
-{
-    m_vertices = vertices;
-    m_indices = indices;
-
-    // Create Vertex Buffer Object
-    m_vertexBuffer = VertexBuffer::Create(m_vertices.data(), m_vertices.size() * sizeof(Vertex));
-    m_vertexBuffer->PushElement("a_PositionOS", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_NormalOS", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_TangentOS", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_BinormalOS", VertexDataType::Vec3);
-    m_vertexBuffer->PushElement("a_TexCoord", VertexDataType::Vec2);
-
-    // Create Index Buffer Object
-    m_indexBuffer = IndexBuffer::Create(m_indices.data(), m_indices.size() * sizeof(uint32_t));
-
-    // Create Vertex Array Object
-    m_vertexArray = VertexArray::Create();
-    m_vertexArray->AddVertexBuffer(m_vertexBuffer);
-    m_vertexArray->SetIndexBuffer(m_indexBuffer);
-}
-
-Mesh::~Mesh()
-{
-}
-
-void Mesh::Render()
-{
-    m_vertexArray->Render();
-}
-
-std::shared_ptr<Mesh> Mesh::GetQuad()
-{
-    static std::shared_ptr<Mesh> s_Quad = nullptr;
-    if (!s_Quad)
+    struct MeshWrapper : public Mesh
     {
-        s_Quad = std::make_shared<Mesh>("assets/meshes/quad.obj");
-    }
-    return s_Quad;
-}
+        MeshWrapper(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices) : Mesh(vertices, indices)
+        {
+        }
+    };
 
-std::shared_ptr<Mesh> Mesh::GetCube()
-{
-    static std::shared_ptr<Mesh> s_Cube = nullptr;
-    if (!s_Cube)
-    {
-        s_Cube = std::make_shared<Mesh>("assets/meshes/cube.obj");
-    }
-    return s_Cube;
-}
-
-std::shared_ptr<Mesh> Mesh::GetSphere()
-{
-    static std::shared_ptr<Mesh> s_Sphere = nullptr;
-    if (!s_Sphere)
-    {
-        s_Sphere = std::make_shared<Mesh>("assets/meshes/sphere.obj");
-    }
-    return s_Sphere;
-}
-
-std::shared_ptr<Mesh> Mesh::GetPlane()
-{
-    static std::shared_ptr<Mesh> s_Plane = nullptr;
-    if (!s_Plane)
-    {
-        s_Plane = std::make_shared<Mesh>("assets/meshes/plane.obj");
-    }
-    return s_Plane;
-}
-
-std::shared_ptr<Mesh> Mesh::Create(const std::string &filename)
-{
-    return std::make_shared<Mesh>(filename);
+    return std::make_shared<MeshWrapper>(vertices, indices);
 }
 
 } // namespace Doodle

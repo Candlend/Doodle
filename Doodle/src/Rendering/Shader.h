@@ -3,6 +3,7 @@
 #include "pch.h"
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <unordered_map>
 #include <vector>
 
 #include "Renderer.h"
@@ -29,17 +30,10 @@ enum class ShaderPropertyType
     SamplerCube,
 };
 
-struct ShaderProperty
-{
-    std::string Name;
-    ShaderPropertyType Type;
-};
-
 class DOO_API Shader
 {
 public:
     static std::shared_ptr<Shader> Create(const std::filesystem::path &filepath);
-    Shader(const std::filesystem::path &filepath = "") {};
     virtual std::filesystem::path GetPath() const = 0;
     virtual void Bind() = 0;
     virtual void Unbind() = 0;
@@ -48,7 +42,7 @@ public:
     virtual uint32_t GetUniformBlockBinding(const std::string &name) = 0;
     virtual void BindUniformBlock(const std::string &name, uint32_t slot) = 0;
     virtual void PrintActiveUniforms() = 0;
-    virtual std::vector<ShaderProperty> GetProperties() = 0;
+    virtual std::unordered_map<std::string, ShaderPropertyType> GetPropertyTypes() = 0;
     virtual void PrintActiveUniformBlocks() = 0;
     virtual uint32_t GetRendererID() const = 0;
 
@@ -64,8 +58,20 @@ public:
 
     virtual void SetUniform1i(const std::string &name, int v) = 0;
     virtual void SetUniform2i(const std::string &name, int v1, int v2) = 0;
+    void SetUniform2i(const std::string &name, glm::ivec2 v)
+    {
+        SetUniform2i(name, v.x, v.y);
+    }
     virtual void SetUniform3i(const std::string &name, int v1, int v2, int v3) = 0;
+    void SetUniform3i(const std::string &name, glm::ivec3 v)
+    {
+        SetUniform3i(name, v.x, v.y, v.z);
+    }
     virtual void SetUniform4i(const std::string &name, int v1, int v2, int v3, int v4) = 0;
+    void SetUniform4i(const std::string &name, glm::ivec4 v)
+    {
+        SetUniform4i(name, v.x, v.y, v.z, v.w);
+    }
     virtual void SetUniform1f(const std::string &name, float v) = 0;
     virtual void SetUniform2f(const std::string &name, float v1, float v2) = 0;
     void SetUniform2f(const std::string &name, glm::vec2 v)

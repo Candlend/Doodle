@@ -23,11 +23,11 @@ Project::Project(const std::filesystem::path &filepath)
 std::shared_ptr<Project> Project::Create(const std::filesystem::path &filepath)
 {
     auto newProject = std::make_shared<Project>(filepath);
-    ProjectSettings settings;
+    ProjectInfo info;
     auto sceneAsset =
         AssetManager::Get()->Create<SceneAsset>(newProject->GetDirectory() / "scenes" / "sampleScene.dscene");
-    settings.StartSceneUUID = sceneAsset->GetUUID();
-    newProject->SetData(settings);
+    info.StartSceneUUID = sceneAsset->GetUUID();
+    newProject->SetInfo(info);
     newProject->Apply();
     newProject->Save();
     return newProject;
@@ -61,16 +61,16 @@ bool Project::Reload()
 
 void Project::Apply()
 {
-    DOO_CORE_INFO(rfl::yaml::write(m_data));
+    DOO_CORE_INFO(rfl::yaml::write(m_info));
     EventManager::Get()->Dispatch<ProjectOpenEvent>(this);
-    auto startSceneAsset = AssetManager::Get()->GetAsset<SceneAsset>(m_data.StartSceneUUID.value());
+    auto startSceneAsset = AssetManager::Get()->GetAsset<SceneAsset>(m_info.StartSceneUUID.value());
     if (startSceneAsset)
     {
-        SceneManager::Get()->LoadScene(startSceneAsset);
+        SceneManager::Get()->LoadScene(startSceneAsset->GetAssetPath());
     }
     else
     {
-        DOO_CORE_ERROR("Failed to load start scene {0}", m_data.StartSceneUUID.value().ToString());
+        DOO_CORE_ERROR("Failed to load start scene {0}", m_info.StartSceneUUID.value().ToString());
     }
 }
 

@@ -80,8 +80,6 @@ class DOO_API Scene : public std::enable_shared_from_this<Scene>
     friend class SceneManager;
 
 public:
-    Scene(const std::string &name = "untitledScene");
-    Scene(std::shared_ptr<SceneAsset> asset);
     ~Scene();
     Entity GetMainCameraEntity();
 
@@ -132,15 +130,12 @@ public:
 
     Entity CreateEntityFromModel(std::shared_ptr<Model> model);
 
-    std::shared_ptr<SceneAsset> GetAsset() const
-    {
-        return m_asset;
-    }
+    SceneInfo GetInfo();
 
-    void SaveAsset(const std::filesystem::path &filepath);
+protected:
+    Scene(const SceneInfo &info);
 
-private:
-    std::shared_ptr<SceneAsset> m_asset;
+    SceneInfo m_info;
     std::string m_name;
     bool m_active = false;
     std::unordered_map<UUID, Entity> m_entityMap;

@@ -12,8 +12,6 @@
 namespace Doodle
 {
 
-#define SET_UNIFORMS()
-
 class DOO_API ShadingPass : public RenderPass
 {
 public:
@@ -57,38 +55,6 @@ public:
         auto targetFrameBuffer = GetSpecification().TargetFrameBuffer;
 
         Renderer::SetDepthTest(DepthTestType::LessEqual);
-        auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
-        for (auto entity : vaoView)
-        {
-            const auto &transform = vaoView.get<TransformComponent>(entity);
-            const auto &vao = vaoView.get<VAOComponent>(entity);
-            const auto &material = vaoView.get<MaterialComponent>(entity);
-
-            glm::mat4 model = transform.GetTransformMatrix();
-
-            material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-            material.MaterialInstance->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
-            material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
-            if (irradienceMap != nullptr)
-                material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap->GetTextureHandle());
-            else
-                material.MaterialInstance->SetUniformTexture("u_IrradianceMap", 0);
-            if (prefilterMap != nullptr)
-                material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap->GetTextureHandle());
-            else
-                material.MaterialInstance->SetUniformTexture("u_PrefilterMap", 0);
-            material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT->GetTextureHandle());
-            material.MaterialInstance->SetUniformTexture("u_LTC1", m_ltc1->GetTextureHandle());
-            material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2->GetTextureHandle());
-            material.MaterialInstance->SetUniformMatrix4f("u_LightSpaceMatrix", lightSpaceMatrix);
-            material.MaterialInstance->SetUniformTexture("u_ShadowMap", shadowMap->GetDepthAttachmentTextureHandle());
-            material.MaterialInstance->SetUniformTexture("u_OcclusionMap",
-                                                         occlusionMap->GetColorAttachmentTextureHandle(0));
-
-            material.MaterialInstance->Bind();
-            vao.Render();
-            material.MaterialInstance->Unbind();
-        }
 
         auto meshView = scene->View<TransformComponent, MeshComponent, MaterialComponent>();
         for (auto entity : meshView)
@@ -99,29 +65,23 @@ public:
             const auto &material = meshView.get<MaterialComponent>(entity);
 
             glm::mat4 model = transform.GetTransformMatrix();
+            auto shader = material.Material->GetShader();
 
-            material.MaterialInstance->SetUniformMatrix4f("u_Model", model);
-            material.MaterialInstance->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
-            material.MaterialInstance->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
-            if (irradienceMap != nullptr)
-                material.MaterialInstance->SetUniformTexture("u_IrradianceMap", irradienceMap->GetTextureHandle());
-            else
-                material.MaterialInstance->SetUniformTexture("u_IrradianceMap", 0);
-            if (prefilterMap != nullptr)
-                material.MaterialInstance->SetUniformTexture("u_PrefilterMap", prefilterMap->GetTextureHandle());
-            else
-                material.MaterialInstance->SetUniformTexture("u_PrefilterMap", 0);
-            material.MaterialInstance->SetUniformTexture("u_BrdfLUT", m_brdfLUT->GetTextureHandle());
-            material.MaterialInstance->SetUniformTexture("u_LTC1", m_ltc1->GetTextureHandle());
-            material.MaterialInstance->SetUniformTexture("u_LTC2", m_ltc2->GetTextureHandle());
-            material.MaterialInstance->SetUniformMatrix4f("u_LightSpaceMatrix", lightSpaceMatrix);
-            material.MaterialInstance->SetUniformTexture("u_ShadowMap", shadowMap->GetDepthAttachmentTextureHandle());
-            material.MaterialInstance->SetUniformTexture("u_OcclusionMap",
-                                                         occlusionMap->GetColorAttachmentTextureHandle(0));
+            shader->SetUniformMatrix4f("u_Model", model);
+            shader->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
+            shader->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
+            shader->SetUniformTexture("u_IrradianceMap", irradienceMap);
+            shader->SetUniformTexture("u_PrefilterMap", prefilterMap);
+            shader->SetUniformTexture("u_BrdfLUT", m_brdfLUT);
+            shader->SetUniformTexture("u_LTC1", m_ltc1);
+            shader->SetUniformTexture("u_LTC2", m_ltc2);
+            shader->SetUniformMatrix4f("u_LightSpaceMatrix", lightSpaceMatrix);
+            shader->SetUniformTexture("u_ShadowMap", shadowMap->GetDepthAttachmentTextureHandle());
+            shader->SetUniformTexture("u_OcclusionMap", occlusionMap->GetColorAttachmentTextureHandle(0));
 
-            material.MaterialInstance->Bind();
+            material.Material->Bind();
             mesh.Render();
-            material.MaterialInstance->Unbind();
+            material.Material->Unbind();
         }
         Renderer::SetDepthTest(DepthTestType::Less);
     }

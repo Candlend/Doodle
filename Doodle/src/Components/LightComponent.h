@@ -27,40 +27,13 @@ struct DirectionalLightComponent : public BaseComponent
     {
     }
 
-    void OnInspectorLayout() override
-    {
-        ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
-        ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 100.0f);
-    }
+    void OnInspectorLayout() override;
 
-    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override
-    {
-        ImU32 color = ImGuiUtils::GetHexColor(ImColor(Radiance.x, Radiance.y, Radiance.z));
-        glm::mat4 modelNoScale = RemoveScaling(model);
-        ImGuizmo::DrawDirectionalLightGizmos(glm::value_ptr(view), glm::value_ptr(projection),
-                                             glm::value_ptr(modelNoScale), 1, color, 0.3f, 1.0f);
-    }
+    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override;
 
-    rfl::Generic::Object SerializeToObject() const override
-    {
-        rfl::Generic::Object object;
-        auto radiance = rfl::Generic::Object();
-        radiance["x"] = Radiance.x;
-        radiance["y"] = Radiance.y;
-        radiance["z"] = Radiance.z;
-        object["Radiance"] = radiance;
-        object["Intensity"] = Intensity;
-        return object;
-    }
+    rfl::Generic::Object SerializeToObject() const override;
 
-    void DeserializeFromObject(const rfl::Generic::Object &object) override
-    {
-        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
-        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
-        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
-        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
-        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
-    }
+    void DeserializeFromObject(const rfl::Generic::Object &object) override;
 };
 
 struct PointLightComponent : public BaseComponent
@@ -78,45 +51,13 @@ struct PointLightComponent : public BaseComponent
     {
     }
 
-    void OnInspectorLayout() override
-    {
-        ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
-        ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 100.0f);
-        ImGui::DragFloatRange2("Range", &MinRange, &Range, 0.1f, 0.0f, 100.0f);
-    }
+    void OnInspectorLayout() override;
 
-    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override
-    {
-        ImU32 color = ImGuiUtils::GetHexColor(ImColor(Radiance.x, Radiance.y, Radiance.z));
-        glm::mat4 modelNoScale = RemoveScaling(model);
-        ImGuizmo::DrawPointLightGizmos(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(modelNoScale),
-                                       1, color, Range);
-    }
+    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override;
 
-    rfl::Generic::Object SerializeToObject() const override
-    {
-        rfl::Generic::Object object;
-        auto radiance = rfl::Generic::Object();
-        radiance["x"] = Radiance.x;
-        radiance["y"] = Radiance.y;
-        radiance["z"] = Radiance.z;
-        object["Radiance"] = radiance;
-        object["Intensity"] = Intensity;
-        object["MinRange"] = MinRange;
-        object["Range"] = Range;
-        return object;
-    }
+    rfl::Generic::Object SerializeToObject() const override;
 
-    void DeserializeFromObject(const rfl::Generic::Object &object) override
-    {
-        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
-        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
-        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
-        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
-        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
-        MinRange = object.get("MinRange").and_then(rfl::to_double).value();
-        Range = object.get("Range").and_then(rfl::to_double).value();
-    }
+    void DeserializeFromObject(const rfl::Generic::Object &object) override;
 };
 
 struct SpotLightComponent : public BaseComponent
@@ -137,50 +78,13 @@ struct SpotLightComponent : public BaseComponent
     {
     }
 
-    void OnInspectorLayout() override
-    {
-        ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
-        ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 100.0f);
-        ImGui::DragFloatRange2("Range", &MinRange, &Range, 0.1f, 0.0f, 100.0f);
-        ImGui::DragFloatRange2("Angle", &MinAngle, &Angle, 0.1f, 0.0f, 180.0f);
-    }
+    void OnInspectorLayout() override;
 
-    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override
-    {
-        ImU32 color = ImGuiUtils::GetHexColor(ImColor(Radiance.x, Radiance.y, Radiance.z));
-        glm::mat4 modelNoScale = RemoveScaling(model);
-        ImGuizmo::DrawSpotLightGizmos(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(model), 1, color,
-                                      Range, Angle);
-    }
+    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override;
 
-    rfl::Generic::Object SerializeToObject() const override
-    {
-        rfl::Generic::Object object;
-        auto radiance = rfl::Generic::Object();
-        radiance["x"] = Radiance.x;
-        radiance["y"] = Radiance.y;
-        radiance["z"] = Radiance.z;
-        object["Radiance"] = radiance;
-        object["Intensity"] = Intensity;
-        object["MinRange"] = MinRange;
-        object["Range"] = Range;
-        object["MinAngle"] = MinAngle;
-        object["Angle"] = Angle;
-        return object;
-    }
+    rfl::Generic::Object SerializeToObject() const override;
 
-    void DeserializeFromObject(const rfl::Generic::Object &object) override
-    {
-        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
-        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
-        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
-        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
-        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
-        MinRange = object.get("MinRange").and_then(rfl::to_double).value();
-        Range = object.get("Range").and_then(rfl::to_double).value();
-        MinAngle = object.get("MinAngle").and_then(rfl::to_double).value();
-        Angle = object.get("Angle").and_then(rfl::to_double).value();
-    }
+    void DeserializeFromObject(const rfl::Generic::Object &object) override;
 };
 
 struct AreaLightComponent : public BaseComponent
@@ -198,50 +102,13 @@ struct AreaLightComponent : public BaseComponent
     {
     }
 
-    void OnInspectorLayout() override
-    {
-        ImGui::ColorEdit3("Radiance", glm::value_ptr(Radiance));
-        ImGui::DragFloat("Intensity", &Intensity, 0.1f, 0.0f, 100.0f);
-        ImGui::DragFloat2("Size", glm::value_ptr(Size), 0.1f, 0.0f, 100.0f);
-        ImGui::Checkbox("Two Sided", &TwoSided);
-    }
+    void OnInspectorLayout() override;
 
-    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override
-    {
-        ImU32 color = ImGuiUtils::GetHexColor(ImColor(Radiance.x, Radiance.y, Radiance.z));
-        ImGuizmo::DrawAreaLightGizmos(glm::value_ptr(view), glm::value_ptr(projection), glm::value_ptr(model), 1, color,
-                                      Size.x, Size.y);
-    }
+    void OnDrawGizmos(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) override;
 
-    rfl::Generic::Object SerializeToObject() const override
-    {
-        rfl::Generic::Object object;
-        auto radiance = rfl::Generic::Object();
-        radiance["x"] = Radiance.x;
-        radiance["y"] = Radiance.y;
-        radiance["z"] = Radiance.z;
-        object["Radiance"] = radiance;
-        object["Intensity"] = Intensity;
-        auto size = rfl::Generic::Object();
-        size["x"] = Size.x;
-        size["y"] = Size.y;
-        object["Size"] = size;
-        object["TwoSided"] = TwoSided;
-        return object;
-    }
+    rfl::Generic::Object SerializeToObject() const override;
 
-    void DeserializeFromObject(const rfl::Generic::Object &object) override
-    {
-        auto radiance = object.get("Radiance").and_then(rfl::to_object).value();
-        Radiance.x = radiance.get("x").and_then(rfl::to_double).value();
-        Radiance.y = radiance.get("y").and_then(rfl::to_double).value();
-        Radiance.z = radiance.get("z").and_then(rfl::to_double).value();
-        Intensity = object.get("Intensity").and_then(rfl::to_double).value();
-        auto size = object.get("Size").and_then(rfl::to_object).value();
-        Size.x = size.get("x").and_then(rfl::to_double).value();
-        Size.y = size.get("y").and_then(rfl::to_double).value();
-        TwoSided = object.get("TwoSided").and_then(rfl::to_bool).value();
-    }
+    void DeserializeFromObject(const rfl::Generic::Object &object) override;
 };
 
 } // namespace Doodle

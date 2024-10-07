@@ -16,7 +16,7 @@ template <typename T> class DOO_API ISerializable
 public:
     std::string Serialize()
     {
-        return rfl::json::write(m_data, YYJSON_WRITE_PRETTY);
+        return rfl::json::write(m_info, YYJSON_WRITE_PRETTY);
     }
 
     void SerializeToFile(const std::string &path)
@@ -38,7 +38,7 @@ public:
         auto result = rfl::json::read<T>(json);
         if (result)
         {
-            SetData(result.value());
+            SetInfo(result.value());
             return true;
         }
         else
@@ -72,18 +72,18 @@ public:
         return DeserializeFromFile(path.string());
     }
 
-    T GetData() const
+    T GetInfo() const
     {
-        return m_data;
+        return m_info;
     }
 
-    void SetData(const T &data)
+    void SetInfo(const T &info)
     {
-        m_data = data;
+        m_info = info;
     }
 
 protected:
-    T m_data;
+    T m_info;
 };
 
 } // namespace Doodle

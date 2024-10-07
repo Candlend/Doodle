@@ -7,9 +7,13 @@
 #include <assimp/scene.h>
 #include <assimp/types.h>
 #include <filesystem>
+#include <memory>
 
+#include "AssetManager.h"
 #include "Mesh.h"
 #include "Model.h"
+#include "ModelAsset.h"
+#include "ResourceManager.h"
 #include "Texture.h"
 #include "Utils.h"
 
@@ -53,9 +57,10 @@ namespace Doodle
 //     m_loadedTextures[texturePath.string()] = textures[name];
 // }
 
-Model::Model(std::shared_ptr<ModelAsset> asset)
+Model::Model(const ModelInfo &info)
 {
-    DOO_CORE_ASSERT(!asset->m_loaded, "Model asset already loaded");
+    m_info = info;
+    auto asset = AssetManager::Get()->GetAsset<ModelAsset>(info.UUID);
     auto filepath = asset->GetBindFilepath();
     LogStream::Initialize();
     DOO_CORE_INFO("Loading model: {0}", filepath.string());
@@ -103,60 +108,7 @@ Model::Model(std::shared_ptr<ModelAsset> asset)
                 indices.push_back(mesh->mFaces[i].mIndices[j]);
             }
         }
-
-        // // process the mesh
-        // aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-
-        // std::unordered_map<std::string, std::shared_ptr<Texture2D>> textures;
-        // TextureSpecification srgbParams;
-        // srgbParams.Format = TextureFormat::SRGB8ALPHA8;
-        // LoadTexture(textures, material, "u_AlbedoTexture", AI_MATKEY_BASE_COLOR_TEXTURE, srgbParams);
-        // LoadTexture(textures, material, "u_AlbedoTexture", aiTextureType_DIFFUSE, 0, srgbParams);
-        // LoadTexture(textures, material, "u_NormalTexture", aiTextureType_NORMALS);
-        // LoadTexture(textures, material, "u_MetalnessTexture", AI_MATKEY_METALLIC_TEXTURE);
-        // LoadTexture(textures, material, "u_RoughnessTexture", AI_MATKEY_ROUGHNESS_TEXTURE);
-        // TextureSpecification invertParams;
-        // invertParams.InvertColor = true;
-        // LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SPECULAR, 0, invertParams);
-        // LoadTexture(textures, material, "u_RoughnessTexture", aiTextureType_SHININESS, 0, invertParams);
-
-        // std::unordered_map<std::string, float> uniform1f;
-        // std::unordered_map<std::string, glm::vec4> uniform4f;
-
-        // aiColor3D color(1.0f);
-        // float alpha = 1.0f;
-        // if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
-        // {
-        //     uniform4f["u_AlbedoColor"] = {color.r, color.g, color.b, alpha};
-        // }
-        // if (material->Get(AI_MATKEY_OPACITY, alpha) == aiReturn_SUCCESS)
-        // {
-        //     uniform4f["u_AlbedoColor"].w = alpha;
-        // }
-
-        // float roughness, metallic;
-        // if (material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == aiReturn_SUCCESS)
-        // {
-        //     uniform1f["u_Roughness"] = roughness;
-        // }
-        // if (material->Get(AI_MATKEY_REFLECTIVITY, metallic) == aiReturn_SUCCESS)
-        // {
-        //     uniform1f["u_Metallic"] = metallic;
-        // }
-        // if (textures.contains("u_AlbedoTexture"))
-        // {
-        //     uniform4f["u_AlbedoColor"] = {1.0f, 1.0f, 1.0f, alpha};
-        // }
-        // if (textures.contains("u_RoughnessTexture"))
-        // {
-        //     uniform1f["u_Roughness"] = 1.0f;
-        // }
-        // if (textures.contains("u_MetalnessTexture"))
-        // {
-        //     uniform1f["u_Metallic"] = 1.0f;
-        // }
-
-        return std::make_shared<Mesh>(vertices, indices);
+        return Mesh::Create(vertices, indices);
     };
 
     for (size_t i = 0; i < scene->mNumMeshes; i++)
@@ -174,7 +126,7 @@ Model::Model(std::shared_ptr<ModelAsset> asset)
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
             aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
             std::string name = material->GetName().C_Str();
-            MeshInfo meshInfo{i, name};
+            MeshInfo meshInfo{m_info.UUID, i, name};
         }
         // then do the same for each of its children
         for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -186,17 +138,36 @@ Model::Model(std::shared_ptr<ModelAsset> asset)
     };
 
     m_root = processNode(scene->mRootNode, scene);
+}
 
-    asset->m_loaded = true;
-    m_asset = asset;
+std::shared_ptr<Model> Model::Load(const std::filesystem::path &assetPath)
+{
+    auto asset = AssetManager::Get()->GetAsset(assetPath);
+    return ResourceManager::Get()->Load<Model>(asset->GetUUID());
+}
+
+std::shared_ptr<Model> Model::Create(const ModelInfo &info)
+{
+    struct ModelWrapper : public Model
+    {
+        ModelWrapper(const ModelInfo &info) : Model(info) {};
+    };
+
+    return std::make_shared<ModelWrapper>(info);
 }
 
 Model::~Model()
 {
-    if (m_asset)
+}
+
+std::shared_ptr<Model> Create(const ModelInfo &info)
+{
+    struct ModelWrapper : public Model
     {
-        m_asset->m_loaded = false;
-    }
+        ModelWrapper(const ModelInfo &info) : Model(info) {};
+    };
+
+    return std::make_shared<ModelWrapper>(info);
 }
 
 } // namespace Doodle

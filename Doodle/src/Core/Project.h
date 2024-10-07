@@ -5,18 +5,13 @@
 #include <rfl/Rename.hpp>
 
 #include "ISerializable.h"
+#include "ProjectInfo.h"
 #include "UUID.h"
 
 namespace Doodle
 {
 
-struct ProjectSettings
-{
-    std::string Name = "untitledProject";
-    rfl::Rename<"StartScene", UUID> StartSceneUUID = UUID::Nil();
-};
-
-class DOO_API Project : ISerializable<ProjectSettings>
+class DOO_API Project : ISerializable<ProjectInfo>
 {
 public:
     Project(const std::filesystem::path &filepath = "");
@@ -42,7 +37,7 @@ public:
 
     std::string GetName() const
     {
-        return m_data.Name;
+        return m_info.Name;
     }
 
 private:

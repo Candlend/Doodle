@@ -4,19 +4,19 @@
 
 #include "Asset.h"
 #include "ISerializable.h"
-#include "SceneInfo.h"
+#include "MaterialInfo.h"
 #include "UUID.h"
 
 namespace Doodle
 {
 
-class SceneAsset : public NativeAsset, public ISerializable<SceneInfo>
+class MaterialAsset : public NativeAsset, public ISerializable<MaterialInfo>
 {
-    friend class Scene;
+    friend class Material;
 
 public:
     ASSET_TYPE(Scene)
-    ASSET_EXTENSION(".dscene")
+    ASSET_EXTENSION(".dmat")
 };
 
 } // namespace Doodle

@@ -22,7 +22,7 @@ namespace Doodle
 class DOO_API AssetManager : public Singleton<AssetManager>, public IEventHandler<ProjectOpenEvent>
 {
 public:
-    void LoadAllAssets(const std::filesystem::path &directory);
+    void ImportAllAssets(const std::filesystem::path &directory);
 
     void DeleteUnusedAssets();
 
@@ -34,26 +34,35 @@ public:
 
     bool OnEvent(ProjectOpenEvent &event) override;
 
-    void AddAsset(const std::filesystem::path &assetPath, std::shared_ptr<Asset> asset);
-
-    void RemoveAsset(const std::filesystem::path &assetPath);
-
     std::shared_ptr<Asset> GetAsset(const std::filesystem::path &assetPath);
+    std::shared_ptr<Asset> GetAsset(const UUID &uuid);
+    std::shared_ptr<Asset> TryGetAsset(const std::filesystem::path &assetPath);
+    std::shared_ptr<Asset> TryGetAsset(const UUID &uuid);
 
     template <typename T> std::shared_ptr<T> GetAsset(const std::filesystem::path &assetPath)
     {
-        if (m_assets.contains(assetPath))
-        {
-            return std::dynamic_pointer_cast<T>(m_assets[assetPath]);
-        }
-        return nullptr;
+        return std::dynamic_pointer_cast<T>(m_assets[assetPath]);
     }
 
     template <typename T> std::shared_ptr<T> GetAsset(const UUID &uuid)
     {
-        if (m_assetsByUUID.contains(uuid))
+        return std::dynamic_pointer_cast<T>(m_assetsByUUID[uuid]);
+    }
+
+    template <typename T> std::shared_ptr<T> TryGetAsset(const std::filesystem::path &assetPath)
+    {
+        if (auto asset = TryGetAsset(assetPath))
         {
-            return std::dynamic_pointer_cast<T>(m_assetsByUUID[uuid]);
+            return std::dynamic_pointer_cast<T>(asset);
+        }
+        return nullptr;
+    }
+
+    template <typename T> std::shared_ptr<T> TryGetAsset(const UUID &uuid)
+    {
+        if (auto asset = TryGetAsset(uuid))
+        {
+            return std::dynamic_pointer_cast<T>(asset);
         }
         return nullptr;
     }
@@ -67,14 +76,17 @@ public:
             return nullptr;
         }
         auto asset = std::make_shared<T>();
-        asset->SaveAs(assetPath);
+        asset->Export(assetPath);
         AddAsset(assetPath, std::dynamic_pointer_cast<Asset>(asset));
         DOO_CORE_INFO("NativeAsset created: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());
         return asset;
     }
 
 private:
-    template <typename T> bool TryLoadFileAsset(const std::filesystem::path &filepath)
+    void AddAsset(const std::filesystem::path &assetPath, std::shared_ptr<Asset> asset);
+    void RemoveAsset(const std::filesystem::path &assetPath);
+
+    template <typename T> bool TryImportFileAsset(const std::filesystem::path &filepath)
     {
         if (!T::IsSupported(filepath))
         {
@@ -94,20 +106,20 @@ private:
             else
             {
                 auto asset = std::make_shared<T>(filepath);
-                asset->Load(assetPath);
+                asset->Import(assetPath);
                 AddAsset(assetPath, asset);
-                DOO_CORE_INFO("FileAsset loaded: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());
+                DOO_CORE_INFO("FileAsset imported: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());
             }
             return true;
         }
     }
 
-    template <typename... Assets> void LoadFileAsset(const std::filesystem::path &filepath)
+    template <typename... Assets> void ImportFileAsset(const std::filesystem::path &filepath)
     {
-        (TryLoadFileAsset<Assets>(filepath) || ...);
+        (TryImportFileAsset<Assets>(filepath) || ...);
     }
 
-    template <typename T> bool TryLoadNativeAsset(const std::filesystem::path &assetPath)
+    template <typename T> bool TryImportNativeAsset(const std::filesystem::path &assetPath)
     {
         if (m_assets.contains(assetPath))
         {
@@ -119,18 +131,18 @@ private:
             return false;
         }
         auto asset = std::make_shared<T>();
-        if (asset->Load(assetPath.string()))
+        if (asset->Import(assetPath.string()))
         {
             AddAsset(assetPath, asset);
-            DOO_CORE_INFO("NativeAsset loaded: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());
+            DOO_CORE_INFO("NativeAsset imported: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());
             return true;
         };
         return false;
     }
 
-    template <typename... Assets> void LoadNativeAsset(const std::filesystem::path &assetPath)
+    template <typename... Assets> void ImportNativeAsset(const std::filesystem::path &assetPath)
     {
-        (TryLoadNativeAsset<Assets>(assetPath) || ...);
+        (TryImportNativeAsset<Assets>(assetPath) || ...);
     }
     std::unordered_map<std::filesystem::path, std::filesystem::path> m_fileToFileAsset;
     std::unordered_map<std::filesystem::path, std::shared_ptr<Asset>> m_assets;

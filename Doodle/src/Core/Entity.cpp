@@ -169,4 +169,21 @@ bool Entity::IsDescendantOf(Entity entity) const
     return entity.IsAncestorOf(*this);
 }
 
+void Entity::OnComponentAdded(BaseComponent *component)
+{
+    Scene *scene = GetScene();
+    scene->m_entityComponents[GetUUID()].push_back(component);
+}
+
+void Entity::OnComponentRemoved(BaseComponent *component)
+{
+    Scene *scene = GetScene();
+    auto &components = scene->m_entityComponents[GetUUID()];
+    auto it = std::find(components.begin(), components.end(), component);
+    if (it != components.end())
+    {
+        components.erase(it);
+    }
+}
+
 } // namespace Doodle

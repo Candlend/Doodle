@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "RenderPipeline.h"
 #include "Renderer.h"
+#include "TextureInfo.h"
 #include "pch.h"
 
 #include "Component.h"
@@ -47,23 +48,6 @@ public:
         m_shader->SetUniform1f("u_FarPlane", sceneData.CameraData.Far);
 
         Renderer::SetDepthTest(DepthTestType::LessEqual);
-        auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
-        for (auto entity : vaoView)
-        {
-            const auto &transform = vaoView.get<TransformComponent>(entity);
-            const auto &vao = vaoView.get<VAOComponent>(entity);
-            const auto &material = vaoView.get<MaterialComponent>(entity);
-
-            glm::mat4 model = transform.GetTransformMatrix();
-            auto normalScale = material.MaterialInstance->GetUniform1f("u_NormalScale");
-            auto normalTexture = material.MaterialInstance->GetUniformTexture("u_NormalTexture");
-
-            m_shader->SetUniformMatrix4f("u_Model", model);
-            m_shader->SetUniform1f("u_NormalScale", normalScale);
-            m_shader->SetUniformTexture("u_NormalTexture", normalTexture);
-            m_shader->Bind();
-            vao.Render();
-        }
 
         auto meshView = scene->View<TransformComponent, MeshComponent, MaterialComponent>();
         for (auto entity : meshView)
@@ -73,8 +57,8 @@ public:
             const auto &material = meshView.get<MaterialComponent>(entity);
 
             glm::mat4 model = transform.GetTransformMatrix();
-            auto normalScale = material.MaterialInstance->GetUniform1f("u_NormalScale");
-            auto normalTexture = material.MaterialInstance->GetUniformTexture("u_NormalTexture");
+            auto normalScale = material.Material->GetProperty<float>("u_NormalScale");
+            auto normalTexture = material.Material->GetTexture("u_NormalTexture");
 
             m_shader->SetUniformMatrix4f("u_Model", model);
             m_shader->SetUniform1f("u_NormalScale", normalScale);

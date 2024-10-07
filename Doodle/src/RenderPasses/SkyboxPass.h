@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RendererAPI.h"
+#include "ShaderLibrary.h"
 #include "pch.h"
 #include <glad/glad.h>
 
@@ -17,7 +18,7 @@ class DOO_API SkyboxPass : public RenderPass
 public:
     SkyboxPass(const RenderPassSpecification &specification) : RenderPass(specification)
     {
-        m_material = Material::Create("skybox");
+        m_shader = ShaderLibrary::Get()->GetShader("skybox");
         m_mesh = Mesh::GetCube();
 
         std::array<std::string, 6> faces = {
@@ -55,15 +56,15 @@ public:
 
         Renderer::SetDepthTest(DepthTestType::LessEqual);
         Renderer::SetCullFace(CullFaceType::Front);
-        m_material->Bind();
-        m_material->SetUniformTexture("u_Skybox", skyboxTexture);
-        m_material->SetUniform1f("u_Intensity", environment.Intensity);
-        m_material->SetUniform1f("u_Rotation", environment.Rotation);
-        m_material->SetUniformMatrix4f("u_View", view);
-        m_material->SetUniformMatrix4f("u_Projection", projection);
+        m_shader->Bind();
+        m_shader->SetUniformTexture("u_Skybox", skyboxTexture);
+        m_shader->SetUniform1f("u_Intensity", environment.Intensity);
+        m_shader->SetUniform1f("u_Rotation", environment.Rotation);
+        m_shader->SetUniformMatrix4f("u_View", view);
+        m_shader->SetUniformMatrix4f("u_Projection", projection);
 
         m_mesh->Render();
-        m_material->Unbind();
+        m_shader->Unbind();
         Renderer::SetDepthTest(DepthTestType::Less);
         Renderer::SetCullFace(CullFaceType::Back);
     }
@@ -76,7 +77,7 @@ public:
     }
 
 private:
-    std::shared_ptr<Material> m_material;
+    std::shared_ptr<Shader> m_shader;
     std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<TextureCube> m_textureCube;
     std::shared_ptr<TextureCube> m_defaultTextureCube;

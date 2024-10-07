@@ -7,6 +7,7 @@
 #include <magic_enum.hpp>
 #include <stb_image.h>
 
+#include "AssetManager.h"
 #include "Buffer.h"
 #include "Renderer.h"
 #include "Texture.h"
@@ -348,6 +349,12 @@ private:
     uint32_t m_binding;
 };
 
+std::shared_ptr<Texture2D> Texture2D::Load(const std::filesystem::path &assetPath)
+{
+    // TODO: Load texture from asset path
+    return nullptr;
+}
+
 std::shared_ptr<Texture2D> Texture2D::Create(const std::filesystem::path &filepath, const TextureSpecification &spec)
 {
     return std::make_shared<OpenGLTexture2D>(filepath, spec);
@@ -639,6 +646,12 @@ private:
     uint32_t m_binding;
     bool m_hdr;
 };
+
+std::shared_ptr<TextureCube> TextureCube::Load(const std::filesystem::path &assetPath)
+{
+    // TODO: Load texture from asset path
+    return nullptr;
+}
 
 std::shared_ptr<TextureCube> TextureCube::Create(const std::array<std::string, 6> &facePaths,
                                                  const TextureSpecification &spec)

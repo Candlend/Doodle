@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "IndexBuffer.h"
+#include "MeshInfo.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 
@@ -25,15 +26,11 @@ class Texture2D;
 class DOO_API Mesh
 {
 public:
-    static std::shared_ptr<Mesh> Create(const std::string &filename);
-    Mesh(const std::string &filename);
-    Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices);
+    static std::shared_ptr<Mesh> Load(const std::string &filename);
+    static std::shared_ptr<Mesh> Create(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices);
+
     ~Mesh();
 
-    const std::string &GetPath() const
-    {
-        return m_filepath;
-    }
     void Render();
 
     static std::shared_ptr<Mesh> GetQuad();
@@ -50,8 +47,9 @@ public:
         return m_indices.size() / 3;
     }
 
-private:
-    std::string m_filepath;
+protected:
+    Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices);
+
     std::vector<Vertex> m_vertices;
     std::vector<uint32_t> m_indices;
     std::unordered_map<std::string, std::shared_ptr<Texture2D>> m_textures;
@@ -61,8 +59,6 @@ private:
     std::shared_ptr<VertexBuffer> m_vertexBuffer;
     std::shared_ptr<IndexBuffer> m_indexBuffer;
     std::shared_ptr<VertexArray> m_vertexArray;
-
-    void ProcessMesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices);
 };
 
 } // namespace Doodle

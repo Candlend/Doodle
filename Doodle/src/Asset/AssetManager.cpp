@@ -8,7 +8,7 @@
 namespace Doodle
 {
 
-void AssetManager::LoadAllAssets(const std::filesystem::path &directory)
+void AssetManager::ImportAllAssets(const std::filesystem::path &directory)
 {
     m_fileWatcher = std::make_shared<FileWatcher>(directory);
     std::function<void(std::filesystem::path, FileEventType)> callback = [this](std::filesystem::path filepath,
@@ -53,7 +53,7 @@ void AssetManager::OnFileModified(const std::filesystem::path &filepath)
     if (asset)
     {
         DOO_CORE_INFO("asset modified: {0}", filepath.string());
-        asset->Reload();
+        asset->Reimport();
     }
 }
 
@@ -82,13 +82,13 @@ void AssetManager::OnFileErased(const std::filesystem::path &filepath)
 
 void AssetManager::OnFileCreated(const std::filesystem::path &filepath)
 {
-    LoadFileAsset<ModelAsset>(filepath);
-    LoadNativeAsset<SceneAsset>(filepath);
+    ImportFileAsset<ModelAsset>(filepath);
+    ImportNativeAsset<SceneAsset>(filepath);
 }
 
 bool AssetManager::OnEvent(ProjectOpenEvent &event)
 {
-    LoadAllAssets(event.GetProject()->GetDirectory());
+    ImportAllAssets(event.GetProject()->GetDirectory());
     DeleteUnusedAssets();
     return false;
 }
@@ -102,19 +102,35 @@ void AssetManager::AddAsset(const std::filesystem::path &assetPath, std::shared_
 void AssetManager::RemoveAsset(const std::filesystem::path &assetPath)
 {
     auto asset = GetAsset(assetPath);
-    if (asset)
-    {
-        DOO_CORE_INFO("Asset erased: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());
-        m_assetsByUUID.erase(asset->GetUUID());
-        m_assets.erase(assetPath.string());
-    }
+    DOO_CORE_INFO("Asset erased: {0} ({1})", assetPath.string(), asset->GetUUID().ToString());
+    m_assetsByUUID.erase(asset->GetUUID());
+    m_assets.erase(assetPath.string());
 }
 
 std::shared_ptr<Asset> AssetManager::GetAsset(const std::filesystem::path &assetPath)
 {
+    return m_assets[assetPath.string()];
+}
+
+std::shared_ptr<Asset> AssetManager::GetAsset(const UUID &uuid)
+{
+    return m_assetsByUUID[uuid];
+}
+
+std::shared_ptr<Asset> AssetManager::TryGetAsset(const std::filesystem::path &assetPath)
+{
     if (m_assets.contains(assetPath.string()))
     {
         return m_assets[assetPath.string()];
+    }
+    return nullptr;
+}
+
+std::shared_ptr<Asset> AssetManager::TryGetAsset(const UUID &uuid)
+{
+    if (m_assetsByUUID.contains(uuid))
+    {
+        return m_assetsByUUID[uuid];
     }
     return nullptr;
 }

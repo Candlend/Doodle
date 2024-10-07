@@ -28,9 +28,9 @@ public:
     {
         return m_state;
     }
-    std::shared_ptr<Scene> LoadScene(std::shared_ptr<SceneAsset> sceneAsset);
+    std::shared_ptr<Scene> LoadScene(const std::filesystem::path &assetPath);
 
-    void SaveScene(const std::filesystem::path &filepath = "");
+    void SaveScene(const std::filesystem::path &assetPath = "");
 
 private:
     std::shared_ptr<Scene> m_activeScene;

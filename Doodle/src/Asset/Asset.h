@@ -14,24 +14,18 @@ public:
     virtual void OnInspectorLayout() {};
     virtual std::string GetAssetType() const = 0;
     virtual std::string GetAssetExtension() const = 0;
-    virtual void Reload() = 0;
+    virtual void Reimport() = 0;
     virtual UUID GetUUID() const = 0;
     virtual void Save() = 0;
-    virtual void SaveAs(const std::filesystem::path &filepath) = 0;
-    virtual bool Load(const std::filesystem::path &filepath) = 0;
+    virtual void Export(const std::filesystem::path &filepath) = 0;
+    virtual bool Import(const std::filesystem::path &filepath) = 0;
 
     std::filesystem::path GetAssetPath() const
     {
         return m_assetPath;
     }
 
-    bool IsLoaded() const
-    {
-        return m_loaded;
-    }
-
 protected:
-    bool m_loaded = false;
     std::filesystem::path m_assetPath;
 };
 
@@ -75,6 +69,31 @@ protected:
     virtual std::string GetAssetType() const override                                                                  \
     {                                                                                                                  \
         return GetStaticType();                                                                                        \
+    }                                                                                                                  \
+    void Reimport() override                                                                                           \
+    {                                                                                                                  \
+        DeserializeFromFile(m_assetPath);                                                                              \
+    }                                                                                                                  \
+    UUID GetUUID() const override                                                                                      \
+    {                                                                                                                  \
+        return m_info.UUID;                                                                                            \
+    }                                                                                                                  \
+    void Save() override                                                                                               \
+    {                                                                                                                  \
+        SerializeToFile(m_assetPath);                                                                                  \
+    }                                                                                                                  \
+    void Export(const std::filesystem::path &assetPath) override                                                       \
+    {                                                                                                                  \
+        DOO_CORE_ASSERT(assetPath.string().ends_with(GetAssetExtension()), "Invalid file extension");                  \
+        m_assetPath = assetPath;                                                                                       \
+        m_info.UUID = UUID();                                                                                          \
+        Save();                                                                                                        \
+    }                                                                                                                  \
+    bool Import(const std::filesystem::path &assetPath) override                                                       \
+    {                                                                                                                  \
+        DOO_CORE_ASSERT(assetPath.string().ends_with(GetAssetExtension()), "Invalid file extension");                  \
+        m_assetPath = assetPath;                                                                                       \
+        return DeserializeFromFile(assetPath);                                                                         \
     }
 
 #define ASSET_EXTENSION(ext)                                                                                           \
@@ -118,5 +137,4 @@ protected:
         auto directory = filepath.parent_path();                                                                       \
         return directory / (filepath.string() + GetStaticExtension());                                                 \
     }
-
 } // namespace Doodle

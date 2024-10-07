@@ -6,6 +6,7 @@
 #include "Entity.h"
 #include "FileSystem.h"
 #include "HierarchyPanel.h"
+#include "MeshInfo.h"
 #include "Model.h"
 #include "SceneManager.h"
 #include "SelectionManager.h"
@@ -99,29 +100,29 @@ void HierarchyPanel::OnPanelLayout()
             if (ImGui::MenuItem("Quad"))
             {
                 auto entity = scene->CreateEntity("Quad");
-                entity.AddComponent<MeshComponent>(Mesh::GetQuad());
-                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+                entity.AddComponent<MeshComponent>(MeshInfo{PrimitiveMeshType::Quad});
+                entity.AddComponent<MaterialComponent>();
             }
 
             if (ImGui::MenuItem("Cube"))
             {
                 auto entity = scene->CreateEntity("Cube");
-                entity.AddComponent<MeshComponent>(Mesh::GetCube());
-                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+                entity.AddComponent<MeshComponent>(MeshInfo{PrimitiveMeshType::Cube});
+                entity.AddComponent<MaterialComponent>();
             }
 
             if (ImGui::MenuItem("Sphere"))
             {
                 auto entity = scene->CreateEntity("Sphere");
-                entity.AddComponent<MeshComponent>(Mesh::GetSphere());
-                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+                entity.AddComponent<MeshComponent>(MeshInfo{PrimitiveMeshType::Sphere});
+                entity.AddComponent<MaterialComponent>();
             }
 
             if (ImGui::MenuItem("Plane"))
             {
                 auto entity = scene->CreateEntity("Plane");
-                entity.AddComponent<MeshComponent>(Mesh::GetPlane());
-                entity.AddComponent<MaterialComponent>(StandardMaterial::Create());
+                entity.AddComponent<MeshComponent>(MeshInfo{PrimitiveMeshType::Plane});
+                entity.AddComponent<MaterialComponent>();
             }
 
             ImGui::EndMenu();
@@ -158,11 +159,10 @@ void HierarchyPanel::OnPanelLayout()
 
         if (ImGui::MenuItem("Load Model..."))
         {
-            std::filesystem::path filepath = FileSystem::OpenFileDialog(
-                {{"Wavefront OBJ", "obj"}, {"Autodesk FBX", "fbx"}, {"GL Transmission", "gltf,glb"}});
+            std::filesystem::path filepath = FileSystem::OpenFileDialog({{"Doodle Model", "dmodel"}});
             if (filepath != "")
             {
-                auto model = Model::Create(filepath.string());
+                auto model = Model::Load(filepath.string());
                 auto entity = scene->CreateEntityFromModel(model);
             }
         }

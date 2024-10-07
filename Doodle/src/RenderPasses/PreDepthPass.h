@@ -36,18 +36,6 @@ public:
         m_shader->SetUniformMatrix4f("u_View", sceneData.CameraData.View);
         m_shader->SetUniformMatrix4f("u_Projection", sceneData.CameraData.Projection);
 
-        auto vaoView = scene->View<TransformComponent, VAOComponent, MaterialComponent>();
-        for (auto entity : vaoView)
-        {
-            const auto &transform = vaoView.get<TransformComponent>(entity);
-            const auto &vao = vaoView.get<VAOComponent>(entity);
-
-            glm::mat4 model = transform.GetTransformMatrix();
-            m_shader->SetUniformMatrix4f("u_Model", glm::mat4(0.123f) + model);
-            m_shader->Bind();
-            vao.Render();
-        }
-
         auto meshView = scene->View<TransformComponent, MeshComponent, MaterialComponent>();
         for (auto entity : meshView)
         {

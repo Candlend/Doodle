@@ -3,7 +3,6 @@
 #include "Core.h"
 #include "Log.h"
 #include "MaterialComponent.h"
-#include "Renderable.h"
 #include "SelectionManager.h"
 #include "UUID.h"
 #include "glm/fwd.hpp"
@@ -23,11 +22,6 @@
 
 namespace Doodle
 {
-
-Scene::Scene(const std::string &name)
-{
-    m_name = name;
-}
 
 template <typename T>
 bool TryLoadComponent(std::string componentName, rfl::Generic::Object &componentData, Entity &entity)
@@ -56,9 +50,8 @@ void LoadComponent(const std::string &componentName, rfl::Generic::Object &compo
     DOO_CORE_ASSERT(result, "Failed to load component {0}", componentName);
 }
 
-Scene::Scene(std::shared_ptr<SceneAsset> asset)
+Scene::Scene(const SceneInfo &info) : m_info(info)
 {
-    DOO_CORE_ASSERT(!asset->m_loaded, "Scene asset already loaded");
     std::function<Entity(const EntityInfo &)> deserializeEntity = [this,
                                                                    &deserializeEntity](const EntityInfo &entityInfo) {
         UUID uuid = entityInfo.UUID;
@@ -81,24 +74,16 @@ Scene::Scene(std::shared_ptr<SceneAsset> asset)
         return entity;
     };
 
-    auto sceneInfo = asset->GetData();
-    auto entities = sceneInfo.Entities;
+    auto entities = m_info.Entities;
 
     for (const auto &entityInfo : entities)
     {
         Entity entity = deserializeEntity(entityInfo);
     }
-
-    asset->m_loaded = true;
-    m_asset = asset;
 }
 
 Scene::~Scene()
 {
-    if (m_asset)
-    {
-        m_asset->m_loaded = false;
-    }
     m_registry.clear();
 }
 
@@ -165,25 +150,12 @@ Entity Scene::CreateEntity(const std::string &name, const UUID &uuid)
 Entity Scene::ProcessModelNode(ModelNode node)
 {
     Entity entity = CreateEntity(node.Name);
-    for (auto &[meshName, mesh] : node.Meshes)
+    for (auto &[meshName, meshInfo] : node.MeshInfos)
     {
         Entity meshEntity = CreateEntity(meshName);
-        meshEntity.AddComponent<MeshComponent>(mesh);
+        meshEntity.AddComponent<MeshComponent>(meshInfo);
         meshEntity.GetComponent<TransformComponent>().SetParent(entity);
-        auto material = StandardMaterial::Create();
-        for (auto &[name, texture] : mesh->GetTextures())
-        {
-            material->SetUniformTexture(name, texture);
-        }
-        for (auto &[name, value] : mesh->GetUniform1f())
-        {
-            material->SetUniform1f(name, value);
-        }
-        for (auto &[name, value] : mesh->GetUniform4f())
-        {
-            material->SetUniform4f(name, value);
-        }
-        meshEntity.AddComponent<MaterialComponent>(material);
+        meshEntity.AddComponent<MaterialComponent>();
     }
 
     for (auto &childNode : node.Children)
@@ -199,7 +171,7 @@ Entity Scene::CreateEntityFromModel(std::shared_ptr<Model> model)
     return ProcessModelNode(model->GetRootNode());
 }
 
-void Scene::SaveAsset(const std::filesystem::path &filepath)
+SceneInfo Scene::GetInfo()
 {
     std::function<EntityInfo(const Entity &)> serializeEntity = [this, &serializeEntity](const Entity &entity) {
         EntityInfo entityInfo;
@@ -219,14 +191,14 @@ void Scene::SaveAsset(const std::filesystem::path &filepath)
         return entityInfo;
     };
 
-    m_asset->m_data.Entities.clear();
+    m_info.Entities.clear();
     for (const auto &entity : GetEntities())
     {
         EntityInfo entityInfo = serializeEntity(entity);
-        m_asset->m_data.Entities.push_back(entityInfo);
+        m_info.Entities.push_back(entityInfo);
     }
 
-    filepath.empty() ? m_asset->Save() : m_asset->SaveAs(filepath);
+    return m_info;
 }
 
 Entity Scene::FindEntity(const std::string &name) const

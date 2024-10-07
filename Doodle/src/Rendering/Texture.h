@@ -81,6 +81,7 @@ public:
 class DOO_API Texture2D : public Texture
 {
 public:
+    static std::shared_ptr<Texture2D> Load(const std::filesystem::path &assetPath);
     static std::shared_ptr<Texture2D> Create(const std::filesystem::path &filepath,
                                              const TextureSpecification &spec = TextureSpecification());
 
@@ -100,6 +101,7 @@ public:
 class DOO_API TextureCube : public Texture
 {
 public:
+    static std::shared_ptr<TextureCube> Load(const std::filesystem::path &assetPath);
     static std::shared_ptr<TextureCube> Create(const std::array<std::string, 6> &facePaths,
                                                const TextureSpecification &spec = TextureSpecification());
     static std::shared_ptr<TextureCube> Create(const std::array<Buffer, 6> &faceBuffers,

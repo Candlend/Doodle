@@ -50,7 +50,7 @@ class OpenGLShader : public Shader
 {
 
 public:
-    OpenGLShader(const std::filesystem::path &filepath) : Shader(filepath), m_filepath(filepath)
+    OpenGLShader(const std::filesystem::path &filepath) : m_filepath(filepath)
     {
         ReadShaderFromFile(filepath);
         Renderer::Submit([this, filepath]() {
@@ -223,7 +223,7 @@ private:
         GLsizei length;
         int location;
         std::vector<GLchar> uniformName(uniformMaxLength);
-        m_properties.clear();
+        m_propertyTypes.clear();
         for (int i = 0; i < numUniforms; i++)
         {
             glGetActiveUniform(program, i, uniformMaxLength, &length, &count, &type, uniformName.data());
@@ -231,10 +231,7 @@ private:
             location = glGetUniformLocation(program, name.c_str());
             if (location == -1)
                 continue;
-            ShaderProperty property;
-            property.Name = name;
-            property.Type = GetShaderPropertyType(type);
-            m_properties.push_back(property);
+            m_propertyTypes[name] = GetShaderPropertyType(type);
             m_uniformsCache[name] = location;
             auto arrayPos = name.find('[');
             if (arrayPos != std::string::npos)
@@ -362,9 +359,9 @@ private:
         DOO_CORE_INFO(oss.str());
     }
 
-    std::vector<ShaderProperty> GetProperties() override
+    std::unordered_map<std::string, ShaderPropertyType> GetPropertyTypes() override
     {
-        return m_properties;
+        return m_propertyTypes;
     }
 
     void PrintActiveUniformBlocks() override
@@ -511,7 +508,7 @@ private:
     }
 
     std::filesystem::path m_filepath;
-    std::vector<ShaderProperty> m_properties;
+    std::unordered_map<std::string, ShaderPropertyType> m_propertyTypes;
     std::unordered_map<std::string, uint32_t> m_uniformsCache;
     std::unordered_map<std::string, uint32_t> m_uniformBlocksCache;
     uint32_t m_rendererID;

@@ -2,7 +2,7 @@ set_project("Doodle")
 set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
 add_requires("fmt", "assimp", "boost", "stb", "spdlog", "nlohmann_json", "glfw", "glm", "entt", "magic_enum","yaml-cpp")
-add_requires("reflect-cpp 2880c0b55b4317af46349ad5e517f9891da9af52")
+add_requires("reflect-cpp 099211943df63f9318950f824667846d7639690a", {configs = {cxxflags = "-DREFLECTCPP_BUILD_TEST"}})
 add_requires("nativefiledialog-extended", {configs = {debug = true}})
 add_requires("glad", {configs = {extensions = "GL_ARB_bindless_texture"}})
 add_requires("imgui v1.91.0-docking", {configs = {glfw_opengl3 = true}})
@@ -37,6 +37,7 @@ function traverse_directory(path)
 end
 
 function build_doodle() 
+    add_cxxflags("/bigobj")
     add_defines("DOO_BUILD_DLL")
 
     -- 添加源文件
@@ -68,26 +69,6 @@ end
 target("Doodle")
     set_kind("shared")
     build_doodle()
-
-target("doodle")
-    add_deps("Doodle")
-    add_defines("DOO_BUILD_PYTHON")
-    add_files("Doodle/pybind11/**.cpp")
-    add_rules("python.library", {soabi = true})
-    add_packages("pybind11")
-
-    build_doodle()
-    
-    after_build(function (target)
-        local targetdir = target:targetdir()
-        local pythondir = targetdir .. "/python"
-        os.mkdir(pythondir)
-        os.cp(target:targetfile(), pythondir .. "/doodle.pyd")
-        os.cp("assets/", pythondir)
-        os.cp("config/", pythondir)
-        os.cp("python/*", pythondir)
-    end)
-
     
 target("DoodleEditor")
     set_kind("binary")
